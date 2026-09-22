@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { type ReactNode, useEffect, useId, useRef, useState } from "react";
 import { useDraft } from "../_lib/draft";
 import { getPath, move } from "../_lib/paths";
@@ -170,6 +171,8 @@ function Record({
           </span>
         </button>
 
+        {block.page ? <PageLink block={block} index={index} /> : null}
+
         {confirming ? (
           <span className="flex shrink-0 items-center gap-1">
             <button
@@ -212,5 +215,37 @@ function Record({
         </div>
       ) : null}
     </div>
+  );
+}
+
+/**
+ * The way into a record's own page. A record that has not been given its
+ * addressing field yet has no page to open, and says so rather than linking
+ * nowhere.
+ */
+function PageLink({ block, index }: { block: RecordsBlock; index: number }) {
+  const draft = useDraft();
+  const page = block.page;
+  if (!page) return null;
+
+  const address = String(
+    draft.read(`${block.path}.${index}.${page.key}`) ?? "",
+  ).trim();
+
+  if (!address) {
+    return (
+      <span className="pf-meta pf-faint shrink-0 px-2.5">
+        Needs a {page.key}
+      </span>
+    );
+  }
+
+  return (
+    <Link
+      href={`${page.basePath}/${address}`}
+      className="pf-button-quiet shrink-0"
+    >
+      {page.label}
+    </Link>
   );
 }

@@ -81,6 +81,8 @@ export type Portfolio = {
     }>;
     articles: ListSection<{
       title: string;
+      /** Addresses the post's own page, in the admin and later on the site. */
+      slug: string;
       url: string;
       coverImage: string;
       publishedAt: string;

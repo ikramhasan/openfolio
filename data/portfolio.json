@@ -236,6 +236,7 @@
       "items": [
         {
           "title": "I made an app that turns your email inbox into tinder",
+          "slug": "i-made-an-app-that-turns-your-email-inbox-into-tinder",
           "url": "https://blog.ikramhasan.com/i-made-an-app-that-turns-your-email-inbox-into-tinder",
           "coverImage": "https://cdn.hashnode.com/res/hashnode/image/upload/v1741596857569/5840e0eb-3be1-440c-9151-ca467b38cb70.png",
           "publishedAt": "2025-03-10",
@@ -245,6 +246,7 @@
         },
         {
           "title": "GG: The Journey of Building and Marketing an App",
+          "slug": "gg-the-journey-of-building-and-marketing-an-app",
           "url": "https://blog.ikramhasan.com/gg-the-journey-of-building-and-marketing-an-app",
           "coverImage": "https://cdn.hashnode.com/res/hashnode/image/upload/v1693955047432/36cda8dd-fa69-4b0b-bdf6-8e0d860a14ad.png",
           "publishedAt": "2023-09-06",
@@ -254,6 +256,7 @@
         },
         {
           "title": "Automagically translate your entire app with just one command using AI ✨",
+          "slug": "automagically-translate-your-entire-app-with-just-one-command-using-ai",
           "url": "https://blog.ikramhasan.com/automagically-translate-your-entire-app-with-just-one-command-using-ai",
           "coverImage": "https://cdn.hashnode.com/res/hashnode/image/stock/unsplash/5u6bz2tYhX8/upload/1753f9d517c0f04cb38563f9a750cd54.jpeg",
           "publishedAt": "2023-08-13",
@@ -263,6 +266,7 @@
         },
         {
           "title": "How I Made a TicTacToe Game That You Cannot Beat 🙅‍♂️",
+          "slug": "how-i-made-a-tictactoe-game-that-you-cannot-beat",
           "url": "https://blog.ikramhasan.com/how-i-made-a-tictactoe-game-that-you-cannot-beat",
           "coverImage": "https://cdn.hashnode.com/res/hashnode/image/upload/v1650989303399/6-QoPOhaK.png",
           "publishedAt": "2022-04-26",
@@ -273,6 +277,7 @@
         },
         {
           "title": "BEST VSCode Settings for Flutter Developers 🚀",
+          "slug": "best-vscode-settings-for-flutter-developers",
           "url": "https://blog.ikramhasan.com/best-vscode-settings-for-flutter-developers",
           "coverImage": "https://cdn.hashnode.com/res/hashnode/image/unsplash/Gll-v69L8iA/upload/v1650912449015/NVi3KWzAz.jpeg",
           "publishedAt": "2022-04-25",

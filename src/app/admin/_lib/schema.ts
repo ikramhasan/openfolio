@@ -37,6 +37,17 @@ export type RecordSchema = {
   blank: Record<string, unknown>;
 };
 
+/**
+ * A record too large to edit in a row — an article body — is written on a page of
+ * its own, addressed by one of its own fields.
+ */
+export type RecordPage = {
+  basePath: string;
+  /** The field that addresses the page. A record without it cannot be opened. */
+  key: string;
+  label: string;
+};
+
 export type Block =
   | { kind: "fields"; label: string; base: string; fields: Field[] }
   | {
@@ -50,6 +61,7 @@ export type Block =
       orderKey?: string;
       /** Off where the site derives the order from the content itself. */
       sortable?: false;
+      page?: RecordPage;
     }
   | {
       kind: "order";
@@ -306,11 +318,19 @@ export const ADMIN_GROUPS: AdminGroup[] = [
         path: "sections.articles.items",
         addLabel: "Add post",
         sortable: false,
-        note: "Shown newest first, from the publish date — there is nothing to drag.",
+        note: "Shown newest first, from the publish date — there is nothing to drag. The body is written on each post's own page.",
+        page: { basePath: "/admin/articles", key: "slug", label: "Write" },
         record: {
           summaryKey: "title",
           fields: [
             { key: "title", label: "Title", kind: "text", wide: true },
+            {
+              key: "slug",
+              label: "Slug",
+              kind: "text",
+              wide: true,
+              hint: "Addresses the post's own page. Changing it breaks the old link.",
+            },
             { key: "url", label: "URL", kind: "url", wide: true },
             { key: "publishedAt", label: "Published", kind: "date" },
             {
@@ -323,6 +343,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
           ],
           blank: {
             title: "",
+            slug: "",
             url: "",
             publishedAt: "",
             readTimeMinutes: 1,
