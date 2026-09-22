@@ -34,10 +34,21 @@ const [current, transmedia, ictDivision, techshoi] = roles;
 
 export function About() {
   return (
-    <div>
+    /*
+     * One measure for the whole panel, set here rather than on each child.
+     * `ch` resolves against the element's own font-size, so the same
+     * `max-w-[54ch]` on the strip and on the prose produced two different widths
+     * and the photographs overhung the text by 34px. Declaring it once, on a
+     * parent neither of them sets type on, keeps the column honest.
+     *
+     * 30rem is the measure the prose already had — about 54 characters at body
+     * size, which is the comfortable range. The photographs come in to meet it
+     * rather than the text stretching out to meet them.
+     */
+    <div className="max-w-[30rem]">
       <Strip />
 
-      <div className="pf-body mt-8 max-w-[54ch] space-y-4">
+      <div className="pf-body mt-8 space-y-4">
         <p>
           A <span className="pf-strong">{currentRole.title}</span> of{" "}
           {yearsSince(roles[roles.length - 1].dateRange)} years, currently at{" "}
