@@ -29,6 +29,16 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${inter.variable} h-full antialiased`}>
+      <head>
+        {/* Has to run before the first paint, or a pinned theme flashes the system
+            ramp. The key mirrors `THEME_STORAGE_KEY` in `theme-toggle.tsx`. */}
+        <script
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: a static literal, and it has to run before paint
+          dangerouslySetInnerHTML={{
+            __html: `try{var t=localStorage.getItem("pf-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}`,
+          }}
+        />
+      </head>
       <body className="flex min-h-full flex-col">
         <div
           id="top"

@@ -1,12 +1,15 @@
 import { bookingUrl, footerLinks, portfolio, resumeUrl } from "./data";
 import { Newsletter } from "./newsletter";
+import { Signature } from "./signature";
 
 const footer = portfolio.footer;
 
-/** The footer: newsletter sign-up, links, copyright. */
+/** The footer: signature, newsletter sign-up, links, copyright. */
 export function Footer() {
   return (
     <footer className="pf-rule mt-16 border-t pt-9 pb-14">
+      <Signature />
+
       <Newsletter />
 
       {/* `mt-9` matches the `pt-9` above, so the form sits evenly between the

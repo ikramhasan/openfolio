@@ -26,13 +26,15 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ```
 data/portfolio.json     All content. The only file to edit for copy changes.
+public/signature.svg    The footer signature, used as a CSS mask.
 src/app/page.tsx        Assembles the panels and hands them to <Tabs>.
 src/app/layout.tsx      Document shell, font, metadata.
 src/app/globals.css     The whole stylesheet. Classes are prefixed `pf-`.
 src/app/_components/
   data.ts               Typed view over portfolio.json, plus sorting/formatting.
   sections.tsx          The section registry — order, labels, notes.
-  tabs.tsx              The only client component: tab state, keyboard, URL hash.
+  rail.tsx              Client: the section index, drag-to-scroll, edge fades.
+  theme-toggle.tsx      Client: Auto / Light / Dark, lives at the foot of the rail.
   panel.tsx             The frame around one section.
   table.tsx             Shared row/grid primitives every section is built from.
   masthead.tsx          Portrait, name, bio. Persists across tabs.
@@ -59,7 +61,15 @@ registry logs a warning.
 
 ## Notes
 
-- The newsletter form in `_components/connect.tsx` has no backend; `subscribe()`
+- The newsletter form in `_components/newsletter.tsx` has no backend; `subscribe()`
   resolves locally. Point it at a real endpoint when one exists — the error path
   and its copy are already wired.
-- Dark mode follows `prefers-color-scheme`; there is no manual toggle.
+- Dark mode: the `Auto / Light / Dark` control at the foot of the rail writes
+  `<html data-theme>` and mirrors it to `localStorage`. `Auto` removes the
+  attribute, which hands the decision back to `prefers-color-scheme`, so the
+  system default still works with JavaScript off. An inline script in
+  `layout.tsx` restores the choice before the first paint; it hardcodes the
+  storage key that `theme-toggle.tsx` exports, so the two have to change
+  together. The dark ramp is spelled twice in `globals.css` — once under the
+  media query, once under `[data-theme="dark"]` — because a declaration block
+  cannot be shared across a media query boundary.
