@@ -580,14 +580,6 @@ body {
   }
 }
 
-/* The typeset signature in the footer. */
-.pf-signature {
-  font-size: 1.375rem;
-  line-height: 1.2;
-  font-weight: 600;
-  letter-spacing: -0.03em;
-}
-
 .pf-skip {
   position: absolute;
   left: -9999px;

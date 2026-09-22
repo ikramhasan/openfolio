@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import { About } from "./about";
 import { Articles, ArticlesAside } from "./articles";
 import { Awards } from "./awards";
-import { Connect } from "./connect";
 import { sectionOrder, sectionTitles } from "./data";
 import { Education } from "./education";
 import { Experience } from "./experience";
@@ -58,9 +57,11 @@ export type SectionEntry = {
  *
  * `intro` is the masthead. `skills` is no longer rendered at all: three
  * self-assessed percentages said less about the work than the summary in the
- * About panel does, so the data is left in place and unused.
+ * About panel does, so the data is left in place and unused. `connect` moved to
+ * the footer — one form and two links did not earn a section beside Experience
+ * and Projects, and contact is what a reader looks for at the bottom of a page.
  */
-const STANDALONE_IDS = new Set(["intro", "skills"]);
+const STANDALONE_IDS = new Set(["intro", "skills", "connect"]);
 
 const REGISTRY: SectionEntry[] = [
   {
@@ -94,7 +95,6 @@ const REGISTRY: SectionEntry[] = [
     slug: "references",
     body: <Recommendations />,
   },
-  { id: "connect", navLabel: "Contact", slug: "contact", body: <Connect /> },
 ];
 
 const byId = new Map(REGISTRY.map((entry) => [entry.id, entry]));

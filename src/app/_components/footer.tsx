@@ -1,15 +1,28 @@
 import { bookingUrl, footerLinks, portfolio, resumeUrl } from "./data";
+import { Newsletter } from "./newsletter";
 
 const footer = portfolio.footer;
 
+/**
+ * The footer, and the only place on the site that asks the reader for anything.
+ *
+ * Contact used to be a section of its own in the rail. It is one form and two
+ * links — the shortest panel on the site, and the thing a reader looks for at the
+ * bottom of a page rather than in a section index — so it lives here instead, on
+ * every page, and the rail is nine entries of actual content.
+ *
+ * No name above it. The masthead already carries it at full display size a few
+ * hundred pixels up, and a signature repeating it was the largest type in the
+ * footer for the least information.
+ */
 export function Footer() {
   return (
-    <footer className="pf-rule mt-16 border-t pt-7 pb-14">
-      {/* The source data references a vector signature asset; it is typeset
-          here instead of shipping an image. */}
-      <p className="pf-signature">{footer.signature.owner}</p>
+    <footer className="pf-rule mt-16 border-t pt-9 pb-14">
+      <Newsletter />
 
-      <ul className="pf-meta mt-5 flex flex-wrap gap-x-4 gap-y-1.5">
+      {/* `mt-9` matches the `pt-9` above the form, so the block sits evenly
+          between the footer's top rule and its links. */}
+      <ul className="pf-meta mt-9 flex flex-wrap gap-x-4 gap-y-1.5">
         {footerLinks.map((link) => (
           <li key={link.site}>
             <a

@@ -6,7 +6,6 @@ import { Masthead } from "./_components/masthead";
 import { Rail } from "./_components/rail";
 import { navItems } from "./_components/sections";
 import "./globals.css";
-
 /**
  * One neutral grotesque for the whole site. Inter's alternate glyphs are enabled
  * in `globals.css` (`cv05`, `cv08`, `ss03`) to soften the default l/I/i shapes,
@@ -53,7 +52,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             behind a menu button. It is a sticky vertical index from `lg` and a
             sticky horizontal strip below that — see `_components/rail.tsx`.
           */}
-          <Rail items={navItems} name={sections.intro.title} />
+          <Rail items={navItems} />
 
           <div className="min-w-0">
             <Masthead />

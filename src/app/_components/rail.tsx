@@ -36,14 +36,7 @@ type NavItem = {
 /** Past this many pixels a pointer gesture is a scroll, not a click. */
 const DRAG_THRESHOLD = 6;
 
-export function Rail({
-  items,
-  name,
-}: {
-  items: NavItem[];
-  /** Sits at the top of the rail, from `lg`. */
-  name: string;
-}) {
+export function Rail({ items }: { items: NavItem[] }) {
   const pathname = usePathname();
   const scrollerRef = useRef<HTMLUListElement>(null);
   /** Distinguishes first paint from a later navigation. */
@@ -215,11 +208,10 @@ export function Rail({
 
   return (
     <div className="pf-rule sticky top-0 z-20 -mx-6 min-w-0 border-b bg-[var(--pf-bg)] px-6 py-2 sm:-mx-10 sm:px-10 lg:mx-0 lg:h-screen lg:self-start lg:border-b-0 lg:px-0 lg:pt-16 lg:pb-0">
-      {/* The masthead's `h1` repeats this immediately below on a narrow
-          viewport, where the rail sits above the content rather than beside it. */}
-      <p className="pf-title pf-strong hidden lg:block">{name}</p>
-
-      <nav aria-label="Portfolio sections" className="lg:mt-6">
+      {/* No heading. The masthead's `h1` names the site a column away on `lg` and
+          directly below on a narrow viewport, so a second copy here was only
+          pushing the first section down. */}
+      <nav aria-label="Portfolio sections">
         <ul
           ref={scrollerRef}
           className="pf-rail flex gap-1 overflow-x-auto lg:flex-col lg:gap-0.5 lg:overflow-x-visible"
