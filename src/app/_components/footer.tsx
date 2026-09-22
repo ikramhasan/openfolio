@@ -1,4 +1,4 @@
-import { bookingUrl, footerLinks, portfolio, resumeUrl } from "./data";
+import { footerActions, footerLinks, portfolio } from "./data";
 import { Newsletter } from "./newsletter";
 import { Signature } from "./signature";
 
@@ -28,30 +28,19 @@ export function Footer() {
             </a>
           </li>
         ))}
-        {resumeUrl ? (
-          <li>
+
+        {footerActions.map((action) => (
+          <li key={action.url}>
             <a
-              href={resumeUrl}
+              href={action.url}
               target="_blank"
               rel="noreferrer"
               className="pf-link-quiet"
             >
-              Resume
+              {action.label}
             </a>
           </li>
-        ) : null}
-        {bookingUrl ? (
-          <li>
-            <a
-              href={bookingUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="pf-link-quiet"
-            >
-              Book a meeting
-            </a>
-          </li>
-        ) : null}
+        ))}
       </ul>
 
       <div className="pf-rule mt-8 border-t pt-4">

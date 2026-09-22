@@ -1,0 +1,255 @@
+/*
+ * The editor's own pieces. Everything else — the ink ramp, the rail, the panel,
+ * the rows — comes from `globals.css`. Classes are prefixed `pf-`, as there.
+ */
+
+/* ---------------------------------------------------------------- inputs */
+
+.pf-field {
+  width: 100%;
+  padding: 0.4375rem 0.625rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  background-color: transparent;
+  border: 1px solid var(--pf-rule);
+  border-radius: 6px;
+  transition: border-color 150ms ease;
+}
+
+.pf-field:focus {
+  outline: none;
+}
+
+.pf-field:focus-visible {
+  outline: 2px solid var(--pf-ink);
+  outline-offset: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pf-field:hover:not(:focus-visible) {
+    border-color: color-mix(in srgb, var(--pf-ink) 24%, transparent);
+  }
+}
+
+/* Squared off against the field beside it: 6px radius less the 1px border. */
+.pf-thumb {
+  flex: none;
+  display: block;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 1px;
+  border-radius: 5px;
+  overflow: hidden;
+  outline: 1px solid var(--pf-edge);
+  outline-offset: -1px;
+}
+
+/* --------------------------------------------------------------- buttons */
+
+/* The unfilled counterpart to `.pf-button`: an outline, for the actions that sit
+   inside a list rather than closing the page. */
+.pf-button-quiet {
+  font-size: 0.75rem;
+  line-height: 1.3;
+  color: var(--pf-muted);
+  padding: 0.3125rem 0.625rem;
+  border: 1px solid var(--pf-rule);
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    color 150ms ease,
+    border-color 150ms ease,
+    background-color 140ms ease,
+    transform 140ms ease-out;
+}
+
+.pf-button-quiet:active {
+  transform: scale(0.96);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pf-button-quiet:hover {
+    color: var(--pf-ink);
+    background-color: var(--pf-hover);
+  }
+}
+
+.pf-button-quiet:focus-visible {
+  outline: 2px solid var(--pf-ink);
+  outline-offset: 2px;
+}
+
+/* `.pf-button`'s twin, for the one place the two sit side by side: same box, same
+   type, so only the fill tells them apart. */
+.pf-button-outline {
+  color: var(--pf-muted);
+  background-color: transparent;
+  border: 1px solid var(--pf-rule);
+  cursor: pointer;
+  transition:
+    color 150ms ease,
+    border-color 150ms ease,
+    background-color 140ms ease,
+    transform 140ms ease-out;
+}
+
+.pf-button-outline:active {
+  transform: scale(0.96);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pf-button-outline:hover {
+    color: var(--pf-ink);
+    border-color: color-mix(in srgb, var(--pf-ink) 32%, transparent);
+  }
+}
+
+.pf-button-outline:focus-visible {
+  outline: 2px solid var(--pf-ink);
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------- records */
+
+/* The lifted row has to sit above its neighbours, and opaque, or the rows it
+   passes over show through it. */
+.pf-sortable {
+  position: relative;
+}
+
+.pf-sortable[data-dragging="true"] {
+  z-index: 10;
+  background-color: var(--pf-bg);
+}
+
+.pf-record {
+  border-radius: 3px;
+  transition: background-color 140ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pf-record:hover {
+    background-color: var(--pf-hover);
+  }
+}
+
+/* The whole summary is the target, so it has to fill the row. */
+.pf-record-toggle {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  align-items: baseline;
+  gap: 0.625rem;
+  padding: 0.375rem 0.25rem;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+.pf-record-toggle:focus-visible,
+.pf-handle:focus-visible {
+  outline: 2px solid var(--pf-ink);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+.pf-caret {
+  margin-left: auto;
+  font-size: 0.6875rem;
+  color: var(--pf-faint);
+  transition: transform 160ms ease-out;
+}
+
+[aria-expanded="true"] > .pf-caret {
+  transform: rotate(180deg);
+}
+
+.pf-record-body {
+  display: grid;
+  gap: 1.25rem 1.5rem;
+  padding: 0.5rem 0.25rem 1.25rem 2.25rem;
+}
+
+@media (min-width: 640px) {
+  .pf-record-body {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ---------------------------------------------------------------- handle */
+
+.pf-handle {
+  position: relative;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.75rem;
+  color: var(--pf-faint);
+  cursor: grab;
+  touch-action: none;
+  transition: color 150ms ease;
+}
+
+.pf-handle:active {
+  cursor: grabbing;
+}
+
+/* 24px is under the target size and the row is too shallow to grow. Kept narrow
+   enough not to reach the summary button beside it. */
+.pf-handle::after {
+  content: "";
+  position: absolute;
+  inset: -0.375rem -0.125rem;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pf-handle:hover {
+    color: var(--pf-ink);
+  }
+}
+
+/* ------------------------------------------------------------------ dock */
+
+/* Only shown when there is something to save, so it may animate in. */
+.pf-dock {
+  position: sticky;
+  bottom: 0;
+  z-index: 40;
+  background-color: var(--pf-bg);
+  border-top: 1px solid var(--pf-rule);
+  animation: pf-dock-in 200ms ease-out;
+}
+
+@keyframes pf-dock-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pf-button-outline,
+  .pf-button-quiet,
+  .pf-caret,
+  .pf-field,
+  .pf-handle,
+  .pf-record {
+    transition: none;
+  }
+
+  .pf-button-outline:active,
+  .pf-button-quiet:active {
+    transform: none;
+  }
+
+  .pf-dock {
+    animation: none;
+  }
+}

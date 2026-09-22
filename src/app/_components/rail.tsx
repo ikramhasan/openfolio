@@ -7,7 +7,7 @@ import { ThemeToggle } from "./theme-toggle";
 
 /**
  * The index rail: a sticky vertical list from `lg`, a horizontal scrolling strip
- * below that.
+ * below that. Shared by the portfolio and `/admin`.
  */
 
 type NavItem = {
@@ -18,7 +18,13 @@ type NavItem = {
 
 const DRAG_THRESHOLD = 6;
 
-export function Rail({ items }: { items: NavItem[] }) {
+export function Rail({
+  items,
+  label = "Portfolio sections",
+}: {
+  items: NavItem[];
+  label?: string;
+}) {
   const pathname = usePathname();
   const scrollerRef = useRef<HTMLUListElement>(null);
   const mountedRef = useRef(false);
@@ -153,10 +159,7 @@ export function Rail({ items }: { items: NavItem[] }) {
 
   return (
     <div className="pf-rule sticky top-0 z-20 -mx-6 flex min-w-0 items-center gap-4 border-b bg-[var(--pf-bg)] px-6 py-0.5 sm:-mx-10 sm:px-10 lg:mx-0 lg:h-screen lg:flex-col lg:items-stretch lg:gap-0 lg:self-start lg:border-b-0 lg:px-0 lg:pt-16 lg:pb-8">
-      <nav
-        aria-label="Portfolio sections"
-        className="min-w-0 flex-1 lg:flex-none"
-      >
+      <nav aria-label={label} className="min-w-0 flex-1 lg:flex-none">
         <ul
           ref={scrollerRef}
           className="pf-rail flex gap-1 overflow-x-auto lg:flex-col lg:gap-0.5 lg:overflow-x-visible"

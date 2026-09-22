@@ -20,16 +20,13 @@
     }
   },
   "sectionOrder": [
-    "intro",
-    "skills",
     "education",
     "experience",
     "youtubeVideos",
     "articles",
     "projects",
     "awards",
-    "recommendations",
-    "connect"
+    "recommendations"
   ],
   "sections": {
     "intro": {
@@ -104,6 +101,9 @@
         }
       ]
     },
+    "about": {
+      "title": "About"
+    },
     "skills": {
       "title": "Skills",
       "items": [
@@ -155,6 +155,7 @@
     },
     "experience": {
       "title": "Experience",
+      "note": "Four roles, most recent first.",
       "items": [
         {
           "company": "Markopolo.ai",
@@ -216,6 +217,7 @@
     },
     "youtubeVideos": {
       "title": "Youtube Videos",
+      "navLabel": "Video",
       "items": [
         {
           "order": 1,
@@ -282,6 +284,7 @@
     },
     "projects": {
       "title": "Projects",
+      "note": "Shipped work and technical studies.",
       "items": [
         {
           "description": "Reach inbox zero with a single swipe. Take control of your emails with intuitive swipe gestures and finally say goodbye to overwhelm.",
@@ -472,6 +475,7 @@
     },
     "recommendations": {
       "title": "Recommendations",
+      "navLabel": "References",
       "items": [
         {
           "author": {
@@ -516,7 +520,8 @@
   "footer": {
     "signature": {
       "type": "vector",
-      "owner": "Ikramul Hasan"
+      "owner": "Ikramul Hasan",
+      "image": "/signature.svg"
     },
     "socialLinks": [
       {

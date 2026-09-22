@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { About } from "./about";
 import { Articles, ArticlesAside } from "./articles";
 import { Awards } from "./awards";
-import { sectionOrder, sectionTitles } from "./data";
+import { sectionMeta, sectionOrder } from "./data";
 import { Education } from "./education";
 import { Experience } from "./experience";
 import { Projects } from "./projects";
@@ -14,19 +14,15 @@ import { Videos } from "./videos";
  *
  * Adding a section: write the component, add an entry to `REGISTRY`. Ordering
  * comes from `sectionOrder` in the JSON, except `lead: true` which pins to the
- * front. Anything registered but unsequenced is appended.
+ * front. Anything registered but unsequenced is appended. Headings, subtitles and
+ * rail labels come from the JSON, not from here.
  */
 
 export type SectionEntry = {
   /** Matches the key under `sections` in `data/portfolio.json`. */
   id: string;
-  title?: string;
-  /** Shorter wording for the rail. Falls back to the title. */
-  navLabel?: string;
   /** URL segment, where the id reads badly. Ignored for the lead section. */
   slug?: string;
-  /** One-line gloss under the panel heading. */
-  note?: string;
   body: ReactNode;
   /** Trailing element on the panel's heading row. */
   aside?: ReactNode;
@@ -39,37 +35,14 @@ export type SectionEntry = {
 const STANDALONE_IDS = new Set(["intro", "skills", "connect"]);
 
 const REGISTRY: SectionEntry[] = [
-  {
-    id: "about",
-    title: "About",
-    lead: true,
-    body: <About />,
-  },
-  {
-    id: "experience",
-    note: "Four roles, most recent first.",
-    body: <Experience />,
-  },
-  {
-    id: "projects",
-    note: "Shipped work and technical studies.",
-    body: <Projects />,
-  },
+  { id: "about", lead: true, body: <About /> },
+  { id: "experience", body: <Experience /> },
+  { id: "projects", body: <Projects /> },
   { id: "articles", body: <Articles />, aside: <ArticlesAside /> },
-  {
-    id: "youtubeVideos",
-    navLabel: "Video",
-    slug: "videos",
-    body: <Videos />,
-  },
+  { id: "youtubeVideos", slug: "videos", body: <Videos /> },
   { id: "education", body: <Education /> },
   { id: "awards", body: <Awards /> },
-  {
-    id: "recommendations",
-    navLabel: "References",
-    slug: "references",
-    body: <Recommendations />,
-  },
+  { id: "recommendations", slug: "references", body: <Recommendations /> },
 ];
 
 const byId = new Map(REGISTRY.map((entry) => [entry.id, entry]));
@@ -88,7 +61,11 @@ export const pageSections: SectionEntry[] = (() => {
 })();
 
 export function sectionTitle(entry: SectionEntry): string {
-  return entry.title ?? sectionTitles[entry.id] ?? entry.id;
+  return sectionMeta[entry.id]?.title ?? entry.id;
+}
+
+export function sectionNote(entry: SectionEntry): string | undefined {
+  return sectionMeta[entry.id]?.note || undefined;
 }
 
 // The first section answers for `/` rather than a path of its own, so promoting a
@@ -113,7 +90,7 @@ export const sectionByPath = new Map(
 
 export const navItems = pageSections.map((entry, index) => ({
   href: sectionPath(entry),
-  label: entry.navLabel ?? sectionTitle(entry),
+  label: sectionMeta[entry.id]?.navLabel || sectionTitle(entry),
   index: String(index + 1).padStart(2, "0"),
 }));
 

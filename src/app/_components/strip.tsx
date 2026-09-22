@@ -11,6 +11,9 @@ const [lead, ...rest] = images;
  * No width of its own — the caller sets the measure it shares with the prose.
  */
 export function Strip() {
+  // The list is editable, and one frame is the minimum this makes sense at.
+  if (!lead) return null;
+
   return (
     <div>
       <div className="pf-frame relative aspect-16/9 overflow-hidden">

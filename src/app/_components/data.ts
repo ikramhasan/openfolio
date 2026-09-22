@@ -22,106 +22,97 @@ export type Action = {
   calendar?: { namespace: string; username: string };
 };
 
+/** Every section's heading row. `note` and `navLabel` are optional at source. */
+export type SectionHeader = {
+  title: string;
+  /** One-line gloss under the panel heading. */
+  note?: string;
+  /** Shorter wording for the rail. Falls back to the title. */
+  navLabel?: string;
+};
+
+type ListSection<Item> = SectionHeader & { items: Item[] };
+
 export type Portfolio = {
   site: { title: string; description: string };
   sectionOrder: string[];
   sections: {
-    intro: {
-      title: string;
+    intro: SectionHeader & {
       bio: string;
       profileImage: string;
       headingImages: { url: string; alt: string }[];
       socialLinks: SocialLink[];
       actions: Action[];
     };
-    skills: {
-      /** Retained in the type because the JSON still carries it; unused in the UI. */
+    /** Heading only: the panel's body is composed from the other sections. */
+    about: SectionHeader;
+    /** Retained because the JSON still carries it; unused in the UI. */
+    skills: ListSection<{
+      icon: string;
+      level: number;
+      order: number;
       title: string;
-      items: {
-        icon: string;
-        level: number;
-        order: number;
-        title: string;
-        url: string;
-      }[];
-    };
-    education: {
+      url: string;
+    }>;
+    education: ListSection<{
+      dateRange: string;
+      description: string | null;
+      institution: string;
+      location: string;
+      logo: string;
       title: string;
-      items: {
-        dateRange: string;
-        description: string | null;
-        institution: string;
-        location: string;
-        logo: string;
-        title: string;
-        url: string | null;
-      }[];
-    };
-    experience: {
+      url: string | null;
+    }>;
+    experience: ListSection<{
+      company: string;
+      dateRange: string;
+      details: string[];
+      location: string;
+      logo: string;
+      order: number;
       title: string;
-      items: {
-        company: string;
-        dateRange: string;
-        details: string[];
-        location: string;
-        logo: string;
-        order: number;
-        title: string;
-        url: string | null;
-      }[];
-    };
-    youtubeVideos: {
+      url: string | null;
+    }>;
+    youtubeVideos: ListSection<{
+      order: number;
+      thumbnail: string;
       title: string;
-      items: { order: number; thumbnail: string; title: string; url: string }[];
-    };
-    articles: {
+      url: string;
+    }>;
+    articles: ListSection<{
       title: string;
-      viewAll: { label: string; url: string };
-      items: {
-        title: string;
-        url: string;
-        coverImage: string;
-        publishedAt: string;
-        readTimeMinutes: number;
-        views: number;
-        pinned?: boolean;
-        excerpt: string | null;
-      }[];
-    };
-    projects: {
+      url: string;
+      coverImage: string;
+      publishedAt: string;
+      readTimeMinutes: number;
+      views: number;
+      pinned?: boolean;
+      excerpt: string | null;
+    }> & { viewAll: { label: string; url: string } };
+    projects: ListSection<{
+      description: string;
+      link: string;
+      logo: string;
+      order: number;
+      tags: string[];
       title: string;
-      items: {
-        description: string;
-        link: string;
-        logo: string;
-        order: number;
-        tags: string[];
-        title: string;
-      }[];
-    };
-    awards: {
+    }>;
+    awards: ListSection<{
+      date: string;
+      description: string;
+      logo: string;
+      order: number;
+      organization: string;
       title: string;
-      items: {
-        date: string;
-        description: string;
-        logo: string;
-        order: number;
-        organization: string;
-        title: string;
-        url: string | null;
-      }[];
-    };
-    recommendations: {
+      url: string | null;
+    }>;
+    recommendations: ListSection<{
+      author: { bio: string; image: string; name: string };
+      body: string;
       title: string;
-      items: {
-        author: { bio: string; image: string; name: string };
-        body: string;
-        title: string;
-        url: string;
-      }[];
-    };
-    connect: {
-      title: string;
+      url: string;
+    }>;
+    connect: SectionHeader & {
       newsletter: {
         inputLabel: string;
         placeholder: string;
@@ -132,7 +123,7 @@ export type Portfolio = {
     };
   };
   footer: {
-    signature: { type: string; owner: string };
+    signature: { type: string; owner: string; image: string };
     socialLinks: SocialLink[];
     actions: Action[];
     copyright: string;
@@ -148,11 +139,8 @@ export const sectionOrder = portfolio.sectionOrder;
 
 // Read structurally, so the registry can resolve a heading for a section not yet
 // added to the `Portfolio` type.
-export const sectionTitles: Record<string, string> = Object.fromEntries(
-  Object.entries(portfolio.sections as Record<string, { title?: string }>).map(
-    ([id, section]) => [id, section?.title ?? id],
-  ),
-);
+export const sectionMeta: Record<string, SectionHeader | undefined> =
+  portfolio.sections;
 
 export const sortedExperience = [...sections.experience.items].sort(
   (a, b) => a.order - b.order,
@@ -176,35 +164,40 @@ export const sortedArticles = [...sections.articles.items].sort(
     new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
 );
 
-export const socialLinks = [...sections.intro.socialLinks].sort(
-  (a, b) => a.order - b.order,
-);
-
 export const footerLinks = [...portfolio.footer.socialLinks].sort(
   (a, b) => a.order - b.order,
 );
 
 export const currentRole = sortedExperience[0];
 
-const bookingAction = [
-  ...sections.intro.actions,
-  ...portfolio.footer.actions,
-].find((action) => action.type === "calendar");
+type Link = { label: string; url: string };
 
-export const bookingUrl = bookingAction?.calendar
-  ? `https://cal.com/${bookingAction.calendar.username}/${bookingAction.calendar.namespace}`
-  : null;
+// A `calendar` action addresses Cal.com by user and event rather than by URL.
+function actionLink(action: Action): Link | null {
+  if (action.calendar) {
+    const { username, namespace } = action.calendar;
+    return {
+      label: action.label,
+      url: `https://cal.com/${username}/${namespace}`,
+    };
+  }
 
-export const resumeUrl =
-  [...sections.intro.actions, ...portfolio.footer.actions].find(
-    (action) => action.label === "View Resume" && action.url,
-  )?.url ?? null;
+  return action.url ? { label: action.label, url: action.url } : null;
+}
 
-// The source `viewAll.url` is a relative path from the old site, so the blog root
-// is derived from the articles' own absolute URLs.
+export const footerActions = portfolio.footer.actions
+  .map(actionLink)
+  .filter((link): link is Link => link !== null);
+
+// The source `viewAll.url` is a relative path from the old site, so an unusable
+// one falls back to the origin of the articles' own absolute URLs.
 export const blogUrl = (() => {
+  const authored = sections.articles.viewAll.url;
+  if (/^https?:\/\//.test(authored)) return authored;
+
   const sample = sections.articles.items[0]?.url;
   if (!sample) return null;
+
   try {
     return new URL(sample).origin;
   } catch {

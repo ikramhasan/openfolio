@@ -518,13 +518,14 @@ html[data-theme="dark"] body {
 }
 
 /* A mask rather than an `<img>`, so it takes the ink colour; Safari still needs
-   the `-webkit-` form. */
+   the `-webkit-` form. `--pf-signature-image` comes from the data. */
 .pf-signature {
+  --pf-signature-image: url("/signature.svg");
   width: 11.5rem;
   aspect-ratio: 2748 / 631;
   background-color: var(--pf-ink);
-  -webkit-mask: url("/signature.svg") no-repeat center / contain;
-  mask: url("/signature.svg") no-repeat center / contain;
+  -webkit-mask: var(--pf-signature-image) no-repeat center / contain;
+  mask: var(--pf-signature-image) no-repeat center / contain;
 }
 
 /* Forced colours repaints backgrounds, which would erase the mask entirely. */
@@ -647,10 +648,12 @@ html[data-theme="dark"] .pf-theme-icon[data-value="dark"] {
   transform: translateY(0);
 }
 
-/* The one filled control: inverted rather than coloured. */
+/* The one filled control: inverted rather than coloured. The transparent border
+   keeps its box identical to an outlined button of the same padding. */
 .pf-button {
   background-color: var(--pf-ink);
   color: var(--pf-bg);
+  border: 1px solid transparent;
   transition:
     transform 140ms ease-out,
     opacity 150ms ease;

@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Panel } from "../_components/panel";
+import { Panel } from "../../_components/panel";
 import {
   isHome,
   pageSections,
   sectionByPath,
+  sectionNote,
   sectionSegments,
   sectionTitle,
-} from "../_components/sections";
+} from "../../_components/sections";
 
 /**
  * One section per route: `/` for the lead section, then `/experience` and the
@@ -38,9 +39,11 @@ export async function generateMetadata({
   // The home section keeps the layout's site-wide title.
   if (isHome(entry)) return {};
 
+  const note = sectionNote(entry);
+
   return {
     title: sectionTitle(entry),
-    ...(entry.note ? { description: entry.note } : {}),
+    ...(note ? { description: note } : {}),
   };
 }
 
@@ -53,7 +56,11 @@ export default async function SectionPage({
   if (!entry) notFound();
 
   return (
-    <Panel title={sectionTitle(entry)} note={entry.note} aside={entry.aside}>
+    <Panel
+      title={sectionTitle(entry)}
+      note={sectionNote(entry)}
+      aside={entry.aside}
+    >
       {entry.body}
     </Panel>
   );
