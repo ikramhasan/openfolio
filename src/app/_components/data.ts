@@ -1,0 +1,288 @@
+import portfolioJson from "../../../data/portfolio.json";
+
+/**
+ * Typed view over `data/portfolio.json`.
+ *
+ * The raw JSON infers awkward union types (several collections hold objects with
+ * optional keys), so the shape is declared explicitly and the import is cast
+ * once, here.
+ *
+ * ADDING A SECTION (e.g. "tools", "travels"):
+ *   1. Add the section to `data/portfolio.json` under `sections`, and its id to
+ *      `sectionOrder`.
+ *   2. Declare its shape in `Portfolio["sections"]` below.
+ *   3. Write the component, then register it in `sections.tsx`.
+ * Nothing in `page.tsx` needs to change — the page renders whatever the registry
+ * resolves. See `sections.tsx` for the ordering rules.
+ */
+
+export type SocialLink = {
+  order: number;
+  site: string;
+  title: string;
+  url: string;
+};
+
+export type Action = {
+  label: string;
+  url?: string | null;
+  type?: string;
+  calendar?: { namespace: string; username: string };
+};
+
+export type Portfolio = {
+  site: { title: string; description: string };
+  sectionOrder: string[];
+  sections: {
+    intro: {
+      title: string;
+      bio: string;
+      profileImage: string;
+      headingImages: { url: string; alt: string }[];
+      socialLinks: SocialLink[];
+      actions: Action[];
+    };
+    skills: {
+      title: string;
+      items: {
+        icon: string;
+        level: number;
+        order: number;
+        title: string;
+        url: string;
+      }[];
+    };
+    education: {
+      title: string;
+      items: {
+        dateRange: string;
+        description: string | null;
+        institution: string;
+        location: string;
+        logo: string;
+        title: string;
+        url: string | null;
+      }[];
+    };
+    experience: {
+      title: string;
+      items: {
+        company: string;
+        dateRange: string;
+        details: string[];
+        location: string;
+        logo: string;
+        order: number;
+        title: string;
+        url: string | null;
+      }[];
+    };
+    youtubeVideos: {
+      title: string;
+      items: { order: number; thumbnail: string; title: string; url: string }[];
+    };
+    articles: {
+      title: string;
+      viewAll: { label: string; url: string };
+      items: {
+        title: string;
+        url: string;
+        coverImage: string;
+        publishedAt: string;
+        readTimeMinutes: number;
+        views: number;
+        pinned?: boolean;
+        excerpt: string | null;
+      }[];
+    };
+    projects: {
+      title: string;
+      items: {
+        description: string;
+        link: string;
+        logo: string;
+        order: number;
+        tags: string[];
+        title: string;
+      }[];
+    };
+    awards: {
+      title: string;
+      items: {
+        date: string;
+        description: string;
+        logo: string;
+        order: number;
+        organization: string;
+        title: string;
+        url: string | null;
+      }[];
+    };
+    recommendations: {
+      title: string;
+      items: {
+        author: { bio: string; image: string; name: string };
+        body: string;
+        title: string;
+        url: string;
+      }[];
+    };
+    connect: {
+      title: string;
+      newsletter: {
+        inputLabel: string;
+        placeholder: string;
+        submitLabel: string;
+        loadingLabel: string;
+        messages: { invalidEmail: string; success: string; error: string };
+      };
+    };
+  };
+  footer: {
+    signature: { type: string; owner: string };
+    socialLinks: SocialLink[];
+    actions: Action[];
+    copyright: string;
+  };
+};
+
+export const portfolio = portfolioJson as unknown as Portfolio;
+
+export const sections = portfolio.sections;
+
+/** Source order of the page's sections, including `intro`. */
+export const sectionOrder = portfolio.sectionOrder;
+
+/**
+ * Titles keyed by section id, read structurally rather than through the typed
+ * `sections` map. This is what lets the registry in `sections.tsx` resolve a
+ * heading for a section that exists in the JSON but has not been added to the
+ * `Portfolio` type yet.
+ */
+export const sectionTitles: Record<string, string> = Object.fromEntries(
+  Object.entries(portfolio.sections as Record<string, { title?: string }>).map(
+    ([id, section]) => [id, section?.title ?? id],
+  ),
+);
+
+export const sortedSkills = [...sections.skills.items].sort(
+  (a, b) => a.order - b.order,
+);
+
+export const sortedExperience = [...sections.experience.items].sort(
+  (a, b) => a.order - b.order,
+);
+
+export const sortedAwards = [...sections.awards.items].sort(
+  (a, b) => a.order - b.order,
+);
+
+export const sortedVideos = [...sections.youtubeVideos.items].sort(
+  (a, b) => a.order - b.order,
+);
+
+/**
+ * Projects in authored order. Every project gets the same table row — the ledger
+ * is the concept, so a featured band would break it.
+ */
+export const sortedProjects = [...sections.projects.items].sort(
+  (a, b) => a.order - b.order,
+);
+
+/** Articles newest-first. The source order interleaves a pinned post. */
+export const sortedArticles = [...sections.articles.items].sort(
+  (a, b) =>
+    new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
+);
+
+export const socialLinks = [...sections.intro.socialLinks].sort(
+  (a, b) => a.order - b.order,
+);
+
+export const footerLinks = [...portfolio.footer.socialLinks].sort(
+  (a, b) => a.order - b.order,
+);
+
+/** The most recent role, used as the intro's standfirst line. */
+export const currentRole = sortedExperience[0];
+
+const bookingAction = [
+  ...sections.intro.actions,
+  ...portfolio.footer.actions,
+].find((action) => action.type === "calendar");
+
+export const bookingUrl = bookingAction?.calendar
+  ? `https://cal.com/${bookingAction.calendar.username}/${bookingAction.calendar.namespace}`
+  : null;
+
+/** Resume link, rendered only when the source data actually carries a URL. */
+export const resumeUrl =
+  [...sections.intro.actions, ...portfolio.footer.actions].find(
+    (action) => action.label === "View Resume" && action.url,
+  )?.url ?? null;
+
+/**
+ * The publication root. The source `viewAll.url` is a relative `/blogs` path
+ * on the old site, which does not exist in this project, so the link is
+ * derived from the articles' own absolute URLs instead.
+ */
+export const blogUrl = (() => {
+  const sample = sections.articles.items[0]?.url;
+  if (!sample) return null;
+  try {
+    return new URL(sample).origin;
+  } catch {
+    return null;
+  }
+})();
+
+const MONTHS = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
+
+/** Formats an ISO date from its UTC parts so server and client agree. */
+export function formatDate(iso: string): string {
+  const date = new Date(iso);
+  return `${MONTHS[date.getUTCMonth()]} ${date.getUTCDate()}, ${date.getUTCFullYear()}`;
+}
+
+export function formatMonthYear(iso: string): string {
+  const date = new Date(iso);
+  return `${MONTHS[date.getUTCMonth()]} ${date.getUTCFullYear()}`;
+}
+
+export function formatViews(views: number): string {
+  return views >= 1000 ? `${(views / 1000).toFixed(1)}k` : String(views);
+}
+
+/**
+ * The year that anchors an entry.
+ *
+ * Source date ranges are written long-hand and inconsistently
+ * ("October, 2022 - Present", "2019 - 2022"), so the first four-digit run is
+ * taken as the start year. Falls back to the raw string if there is no year.
+ */
+export function startYear(value: string): string {
+  return value.match(/\d{4}/)?.[0] ?? value.trim();
+}
+
+/** Source bullets are stored with a literal "- " prefix. */
+export function cleanBullet(detail: string): string {
+  return detail.replace(/^\s*-\s*/, "").trim();
+}
+
+/** Tags are cased inconsistently at source ("UNMAINTAINED", "Unmaintained"). */
+export function formatTags(tags: string[]): string {
+  return tags.map((tag) => tag.toLowerCase()).join(", ");
+}

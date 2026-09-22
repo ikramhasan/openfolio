@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Portfolio
 
-## Getting Started
+A single-page portfolio built with Next.js. A sticky index rail on the left, one
+section at a time on the right, switched as tabs.
 
-First, run the development server:
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Command       | What it does                          |
+| ------------- | ------------------------------------- |
+| `pnpm dev`    | Development server                    |
+| `pnpm build`  | Production build                      |
+| `pnpm start`  | Serve the production build            |
+| `pnpm lint`   | Biome check (lint + format + imports) |
+| `pnpm format` | Rewrite files to Biome's formatting   |
 
-## Learn More
+## Layout
 
-To learn more about Next.js, take a look at the following resources:
+```
+data/portfolio.json     All content. The only file to edit for copy changes.
+src/app/page.tsx        Assembles the panels and hands them to <Tabs>.
+src/app/layout.tsx      Document shell, font, metadata.
+src/app/globals.css     The whole stylesheet. Classes are prefixed `pf-`.
+src/app/_components/
+  data.ts               Typed view over portfolio.json, plus sorting/formatting.
+  sections.tsx          The section registry — order, labels, notes.
+  tabs.tsx              The only client component: tab state, keyboard, URL hash.
+  panel.tsx             The frame around one section.
+  table.tsx             Shared row/grid primitives every section is built from.
+  masthead.tsx          Portrait, name, bio. Persists across tabs.
+  about.tsx             Current role, links, photo strip, skills.
+  <section>.tsx         One file per section.
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Content
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+All copy and data comes from `data/portfolio.json`; no strings are hardcoded in
+components. Images are remote — `next.config.ts` allows the Sanity and Hashnode
+CDNs, so new hosts need adding there.
 
-## Deploy on Vercel
+## Adding a section
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Add it to `data/portfolio.json` under `sections`, and its id to `sectionOrder`.
+2. Declare its shape in `Portfolio["sections"]` in `_components/data.ts`.
+3. Write the component, then add one entry to `REGISTRY` in
+   `_components/sections.tsx`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The rail, the numbering and the panel follow automatically. `page.tsx` does not
+change. In development, a section present in the JSON but missing from the
+registry logs a warning.
+
+## Notes
+
+- The newsletter form in `_components/connect.tsx` has no backend; `subscribe()`
+  resolves locally. Point it at a real endpoint when one exists — the error path
+  and its copy are already wired.
+- Dark mode follows `prefers-color-scheme`; there is no manual toggle.

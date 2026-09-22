@@ -1,26 +1,393 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/*
+ * The portfolio's styling.
+ *
+ * A monochrome ledger: the ink is a single neutral ramp from near-black to
+ * hairline grey, and emphasis is made with weight, size and position rather than
+ * hue. Imagery is never desaturated — logos, portraits and stills are always in
+ * full colour, and the only hover affordance is the row tint.
+ *
+ * The layout is a sticky index rail on the left and one section at a time on the
+ * right, switched as tabs. Structurally each panel is a table: a set of rows on
+ * a shared grid (year · content · link), with tiny column headers stating what
+ * the columns are. Every row is a hover-tinted target across its full width,
+ * whether or not it leads anywhere.
+ *
+ * Class names are prefixed `pf-` to keep them clear of Tailwind's utilities.
+ */
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/*
+ * Reserve the scrollbar's width whether or not the page needs one.
+ *
+ * Only one panel shows at a time, and the short ones (Education, Contact) do not
+ * fill the viewport while the long ones do. Without this the scrollbar appears
+ * and disappears as you move between tabs, and the centred layout shifts
+ * sideways by its width each time.
+ *
+ * Browsers without `scrollbar-gutter` ignore this and keep the shift; browsers
+ * with overlay scrollbars (macOS by default) never had it to begin with.
+ */
+html {
+  scrollbar-gutter: stable;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  --pf-bg: #ffffff;
+  --pf-ink: #0a0a0a;
+  --pf-muted: #52525b;
+  --pf-faint: #8f8f97;
+  --pf-rule: #e4e4e7;
+  --pf-hover: #f4f4f5;
+
+  background-color: var(--pf-bg);
+  color: var(--pf-ink);
+  font-family:
+    var(--font-inter), "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  font-feature-settings:
+    "cv05" 1,
+    "cv08" 1,
+    "ss03" 1;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    --pf-bg: #09090b;
+    --pf-ink: #f4f4f5;
+    --pf-muted: #a1a1aa;
+    --pf-faint: #6e6e78;
+    --pf-rule: #232327;
+    --pf-hover: #131316;
+  }
+}
+
+/* ----------------------------------------------------------------- type */
+
+/*
+ * The name. Tightly tracked and heavy — with no colour and no serif available,
+ * weight is the only way to make the masthead sit above everything else.
+ */
+.pf-display {
+  font-size: clamp(2.25rem, 5.5vw, 3.25rem);
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+  font-weight: 620;
+}
+
+.pf-standfirst {
+  font-size: clamp(1.0625rem, 1.5vw, 1.1875rem);
+  line-height: 1.55;
+  letter-spacing: -0.014em;
+  font-weight: 400;
+  color: var(--pf-muted);
+}
+
+/* Section headings. Set at body size, in weight, not uppercase. */
+.pf-section-title {
+  font-size: 1rem;
+  line-height: 1.4;
+  font-weight: 580;
+  letter-spacing: -0.016em;
+}
+
+/*
+ * Column headers inside a section, and the section index in the margin. The
+ * smallest type on the page — it labels structure and is not meant to be read
+ * as prose.
+ */
+.pf-column {
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--pf-faint);
+}
+
+.pf-title {
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  font-weight: 530;
+  letter-spacing: -0.012em;
+}
+
+.pf-body {
+  font-size: 0.875rem;
+  line-height: 1.62;
+  letter-spacing: -0.006em;
+  color: var(--pf-muted);
+}
+
+.pf-meta {
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  letter-spacing: -0.004em;
+  color: var(--pf-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Anything that has to align down a column: years, counts, levels. */
+.pf-figure {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+
+.pf-muted {
+  color: var(--pf-muted);
+}
+
+.pf-faint {
+  color: var(--pf-faint);
+}
+
+.pf-strong {
+  color: var(--pf-ink);
+}
+
+.pf-rule {
+  border-color: var(--pf-rule);
+}
+
+/*
+ * Tailwind's `divide-*` utilities set a border *width* on the children and
+ * leave the colour at `currentColor`, which would draw full-strength ink rules
+ * instead of hairlines. Passing the rule colour down one level fixes every
+ * `.pf-rule divide-y` list on the page. Children only paint a border where a
+ * width is also set, so this cannot introduce a rule of its own.
+ */
+.pf-rule > * {
+  border-color: var(--pf-rule);
+}
+
+.pf-quote {
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  letter-spacing: -0.008em;
+  color: var(--pf-ink);
+}
+
+/* ---------------------------------------------------------------- links */
+
+/*
+ * With no accent colour, links darken and their underline goes solid on hover.
+ * That is the whole interaction vocabulary.
+ */
+.pf-link {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+  text-decoration-color: color-mix(in srgb, var(--pf-ink) 28%, transparent);
+  transition: text-decoration-color 150ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pf-link:hover {
+    text-decoration-color: var(--pf-ink);
+  }
+}
+
+.pf-link-quiet {
+  color: var(--pf-muted);
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pf-link-quiet:hover {
+    color: var(--pf-ink);
+  }
+}
+
+.pf-link:focus-visible,
+.pf-link-quiet:focus-visible,
+.pf-row:focus-visible,
+.pf-skip:focus-visible,
+.pf-button:focus-visible,
+.pf-input:focus-visible {
+  outline: 2px solid var(--pf-ink);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Full-width table rows. A tint on hover; the arrow fades in.
+   Applied to every row in every section, linked or not, so the whole record
+   is the target rather than just its title. */
+.pf-row {
+  transition: background-color 140ms ease;
+  border-radius: 3px;
+}
+
+.pf-row-arrow {
+  opacity: 0;
+  transition: opacity 140ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pf-row:hover {
+    background-color: var(--pf-hover);
+  }
+
+  .pf-row:hover .pf-row-arrow {
+    opacity: 1;
+  }
+}
+
+/* Touch and keyboard users never get the hover, so the arrow is always there. */
+@media (hover: none), (pointer: coarse) {
+  .pf-row-arrow {
+    opacity: 1;
+  }
+}
+
+.pf-row:focus-visible .pf-row-arrow {
+  opacity: 1;
+}
+
+/* --------------------------------------------------------------- pieces */
+
+/*
+ * Several source logos are dark-on-transparent (Next.js, Express), so in dark
+ * mode the mark sits on a soft light backdrop to stay legible. Marks are
+ * decorative — the name is always adjacent as text.
+ */
+.pf-mark {
+  background-color: transparent;
+}
+
+@media (prefers-color-scheme: dark) {
+  .pf-mark {
+    background-color: #f0f0ee;
+  }
+}
+
+.pf-frame {
+  background-color: var(--pf-hover);
+}
+
+/* ------------------------------------------------------------------ tabs */
+
+/*
+ * The rail. A quiet list — muted ink, a hover tint, no marker or rule — so it
+ * stays subordinate to the content beside it.
+ *
+ * The current tab reuses that same hover tint and ink made persistent, rather
+ * than introducing a border or a heavier weight: without some current state
+ * nothing says which section you are looking at.
+ */
+.pf-tab {
+  /* A `<button>` needs these reset to sit like the plain link this looks like. */
+  width: 100%;
+  text-align: left;
+  color: var(--pf-muted);
+  text-decoration: none;
+  transition:
+    color 150ms ease,
+    background-color 140ms ease;
+  border-radius: 3px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pf-tab:hover {
+    color: var(--pf-ink);
+    background-color: var(--pf-hover);
+  }
+}
+
+.pf-tab:focus-visible {
+  outline: 2px solid var(--pf-ink);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* The current section, in the rail's own hover vocabulary. */
+.pf-tab[data-active="true"] {
+  color: var(--pf-ink);
+  background-color: var(--pf-hover);
+}
+
+/*
+ * Panels are swapped, not scrolled to, so a very short fade-in confirms the
+ * change without animating layout.
+ */
+.pf-panel-enter {
+  animation: pf-fade 180ms ease-out;
+}
+
+@keyframes pf-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.pf-input {
+  color: var(--pf-ink);
+}
+
+.pf-input::placeholder {
+  color: var(--pf-faint);
+}
+
+/*
+ * The one filled control on the page — the newsletter submit. Inverted rather
+ * than coloured, which keeps the monochrome rule intact.
+ */
+.pf-button {
+  background-color: var(--pf-ink);
+  color: var(--pf-bg);
+  transition:
+    transform 140ms ease-out,
+    opacity 150ms ease;
+}
+
+.pf-button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pf-button:hover:not(:disabled) {
+    opacity: 0.85;
+  }
+}
+
+/* The typeset signature in the footer. */
+.pf-signature {
+  font-size: 1.375rem;
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.pf-skip {
+  position: absolute;
+  left: -9999px;
+}
+
+.pf-skip:focus {
+  position: static;
+  display: inline-block;
+  margin: 1rem 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pf-button:active:not(:disabled) {
+    transform: none;
+  }
+
+  .pf-row,
+  .pf-row-arrow,
+  .pf-tab {
+    transition: none;
+  }
+
+  .pf-panel-enter {
+    animation: none;
+  }
 }
