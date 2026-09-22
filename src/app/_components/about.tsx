@@ -3,17 +3,17 @@ import { Skills } from "./skills";
 import { Strip } from "./strip";
 
 /**
- * The About panel — the tab the page opens on.
+ * The About panel — the section the site opens on.
  *
  * It gathers everything that is *about* the person rather than a record of their
  * work: the current role, the links, the workshop photography, and the skills
  * list. Keeping them here rather than in the masthead lets the persistent header
- * above the tabs stay down to a portrait, a name and a line of bio.
+ * above the sections stay down to a portrait, a name and a line of bio.
  *
- * Skills lives here rather than as its own tab because it is three rows — a tab
- * of its own would be the shortest panel on the page by a wide margin, and it
- * answers the same question the rest of this panel does. The component is reused
- * as-is, so the table matches every other one on the site.
+ * Skills lives here rather than as its own section because it is three rows — a
+ * route of its own would be the shortest panel on the site by a wide margin, and
+ * it answers the same question the rest of this panel does. The component is
+ * reused as-is, so the table matches every other one on the site.
  */
 export function About() {
   return (

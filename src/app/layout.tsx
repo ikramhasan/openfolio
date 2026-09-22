@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { portfolio } from "./_components/data";
+import { portfolio, sections } from "./_components/data";
+import { Footer } from "./_components/footer";
+import { Masthead } from "./_components/masthead";
+import { Rail } from "./_components/rail";
+import { navItems } from "./_components/sections";
 import "./globals.css";
 
 /**
@@ -15,14 +19,49 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: portfolio.site.title,
+  title: {
+    /* Section pages set only their own name; the site title completes it. */
+    template: `%s | ${sections.intro.title}`,
+    default: portfolio.site.title,
+  },
   description: portfolio.site.description,
 };
 
+/**
+ * The persistent shell: the index rail on the left, one section's route on the
+ * right.
+ *
+ * Everything that survives a section change lives here rather than in the pages,
+ * so navigating re-renders only the panel. The rail keeps its scroll position and
+ * the masthead is never re-requested.
+ *
+ * The persistent header is only the portrait, name and bio. Everything that reads
+ * as content — the current role, the links, the photo strip, the skills table —
+ * lives in the About panel, so a section page shows that section rather than a
+ * header taller than its content.
+ */
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${inter.variable} h-full antialiased`}>
-      <body className="flex min-h-full flex-col">{children}</body>
+      <body className="flex min-h-full flex-col">
+        <div
+          id="top"
+          className="mx-auto grid w-full max-w-6xl flex-1 gap-x-16 px-6 sm:px-10 lg:grid-cols-[200px_minmax(0,1fr)]"
+        >
+          {/*
+            Sticky from `lg`. Below that the rail stays put as a plain vertical
+            list above the content: it is the only way to reach a section, so it
+            can never be hidden.
+          */}
+          <Rail items={navItems} name={sections.intro.title} />
+
+          <div className="min-w-0">
+            <Masthead />
+            <main>{children}</main>
+            <Footer />
+          </div>
+        </div>
+      </body>
     </html>
   );
 }

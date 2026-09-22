@@ -6,11 +6,11 @@ const intro = sections.intro;
 /**
  * The masthead: portrait, name, bio. Nothing else.
  *
- * This is the only block that persists across tabs, so it carries just the
+ * This is the only block that persists across sections, so it carries just the
  * identity — who this is and what they do in one line. Everything that used to
  * sit here and reads as *content* (the current role, the links, the photo strip)
- * moved into the About panel, so switching tabs does not leave a growing header
- * pinned above the section you actually asked for.
+ * moved into the About panel, so navigating to a section does not leave a growing
+ * header pinned above the section you actually asked for.
  */
 export function Masthead() {
   return (
