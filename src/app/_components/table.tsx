@@ -19,7 +19,31 @@ import type { ReactNode } from "react";
  */
 
 const GRID =
-  "grid grid-cols-[3.5rem_minmax(0,1fr)] gap-x-4 sm:grid-cols-[4.5rem_minmax(0,1fr)_6.5rem] sm:gap-x-6";
+  "grid grid-cols-[4.25rem_minmax(0,1fr)] gap-x-4 sm:grid-cols-[5.5rem_minmax(0,1fr)_6.5rem] sm:gap-x-6";
+
+/**
+ * The dates for one record, in the left column.
+ *
+ * Two lines rather than one: "Feb 22 – Sep 22" on a single line would force the
+ * column to roughly a third of the row on a phone, and wrapping it naturally puts
+ * the break wherever it lands. Stacking the endpoints keeps the column narrow and
+ * the years aligned down the page — and a single-date record is simply one line.
+ *
+ * The dash trails the first line so the pair reads as a range while stacked.
+ */
+export function DateCell({ from, to }: { from: string; to?: string | null }) {
+  return (
+    <span className="pf-meta pf-figure block pt-px">
+      <span className="block whitespace-nowrap">
+        {from}
+        {to ? <span aria-hidden="true"> –</span> : null}
+      </span>
+      {to ? (
+        <span className="pf-faint block whitespace-nowrap">{to}</span>
+      ) : null}
+    </span>
+  );
+}
 
 /** The column-header row. Hidden below `sm`, where the grid collapses. */
 export function TableHead({
@@ -59,14 +83,15 @@ export function TableRow({
   right,
   children,
 }: {
-  left: string;
+  /** Usually a `DateCell`; carries its own type styling. */
+  left: ReactNode;
   right?: ReactNode;
   children: ReactNode;
 }) {
   return (
     <li>
       <div className={`pf-row ${GRID} -mx-3 px-3 py-4`}>
-        <span className="pf-meta pf-figure pt-px">{left}</span>
+        <div className="min-w-0">{left}</div>
 
         <div className="min-w-0">{children}</div>
 
@@ -93,7 +118,8 @@ export function TableLinkRow({
   right,
   children,
 }: {
-  left: string;
+  /** Usually a `DateCell`; carries its own type styling. */
+  left: ReactNode;
   href: string;
   right?: ReactNode;
   children: ReactNode;
@@ -107,7 +133,7 @@ export function TableLinkRow({
         {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
         className={`pf-row ${GRID} -mx-3 px-3 py-4`}
       >
-        <span className="pf-meta pf-figure pt-px">{left}</span>
+        <span className="block min-w-0">{left}</span>
 
         <span className="block min-w-0">{children}</span>
 

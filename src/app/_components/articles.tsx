@@ -1,23 +1,29 @@
 import {
   blogUrl,
-  formatMonthYear,
   formatViews,
   sections,
+  shortDate,
   sortedArticles,
-  startYear,
 } from "./data";
-import { TableHead, TableLinkRow, TableList } from "./table";
+import { DateCell, TableHead, TableLinkRow, TableList } from "./table";
 
+/**
+ * Posts as rows.
+ *
+ * One date, in the left column only. The metadata line under each title used to
+ * restate the month and year the column already carried, so it is down to the
+ * read time.
+ */
 export function Articles() {
   return (
     <div>
-      <TableHead left="Year" middle="Article" right="Views" />
+      <TableHead left="Date" middle="Article" right="Views" />
 
       <TableList>
         {sortedArticles.map((article) => (
           <TableLinkRow
             key={article.url}
-            left={startYear(article.publishedAt)}
+            left={<DateCell from={shortDate(article.publishedAt)} />}
             href={article.url}
             right={<span>{formatViews(article.views)}</span>}
           >
@@ -30,8 +36,7 @@ export function Articles() {
             ) : null}
 
             <span className="pf-meta mt-1.5 block">
-              {formatMonthYear(article.publishedAt)} · {article.readTimeMinutes}{" "}
-              min read
+              {article.readTimeMinutes} min read
             </span>
           </TableLinkRow>
         ))}

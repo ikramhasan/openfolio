@@ -248,17 +248,7 @@ const MONTHS = [
   "Dec",
 ];
 
-/** Formats an ISO date from its UTC parts so server and client agree. */
-export function formatDate(iso: string): string {
-  const date = new Date(iso);
-  return `${MONTHS[date.getUTCMonth()]} ${date.getUTCDate()}, ${date.getUTCFullYear()}`;
-}
-
-export function formatMonthYear(iso: string): string {
-  const date = new Date(iso);
-  return `${MONTHS[date.getUTCMonth()]} ${date.getUTCFullYear()}`;
-}
-
+/** Thousands abbreviated, for the Articles view counts. */
 export function formatViews(views: number): string {
   return views >= 1000 ? `${(views / 1000).toFixed(1)}k` : String(views);
 }
@@ -300,6 +290,57 @@ export function yearsSince(dateRange: string): number {
  */
 export function shortCompany(company: string): string {
   return company.split("|")[0].trim();
+}
+
+/**
+ * A source date range as two short endpoints — `["Feb 22", "Sep 22"]`.
+ *
+ * Source ranges are long-hand and inconsistently punctuated ("October, 2022 -
+ * Present", "September, 2021 – February, 2022 (Contractual)", "2019 - 2022"), and
+ * were being printed in full inside the record while the left column showed only
+ * the start year — the same date twice, in two different formats. This is the one
+ * form both ends of a row can share.
+ *
+ * A range with no months keeps its years ("2019" – "2022"). An ongoing range ends
+ * in "Now", which is shorter than "Present" and does not wrap. Any trailing
+ * qualifier like "(Contract)" is dropped here: it belongs beside the role, not in
+ * a date column, and `rangeQualifier` returns it separately.
+ */
+export function dateEndpoints(dateRange: string): [string, string | null] {
+  const ongoing = /present|current|now/i.test(dateRange);
+
+  // "February, 2022" / "Feb 2022" / a bare "2022", in source order.
+  const parts = [
+    ...dateRange.matchAll(/([A-Za-z]+)[,\s]+(\d{4})|(\d{4})/g),
+  ].map((match) => {
+    const [, month, year, bareYear] = match;
+    if (bareYear) return bareYear;
+
+    const index = MONTHS.findIndex((name) =>
+      month.toLowerCase().startsWith(name.toLowerCase()),
+    );
+
+    return index === -1 ? year : `${MONTHS[index]} ${year.slice(2)}`;
+  });
+
+  if (parts.length === 0) return [dateRange.trim(), null];
+
+  const start = parts[0];
+  if (ongoing) return [start, "Now"];
+
+  const end = parts[parts.length - 1];
+  return [start, end === start ? null : end];
+}
+
+/** A trailing "(Contract)" or "(Contractual)", which qualifies the role. */
+export function rangeQualifier(dateRange: string): string | null {
+  return dateRange.match(/\(([^)]+)\)/)?.[1] ?? null;
+}
+
+/** An ISO date as one short endpoint, for sections holding a single date. */
+export function shortDate(iso: string): string {
+  const date = new Date(iso);
+  return `${MONTHS[date.getUTCMonth()]} ${String(date.getUTCFullYear()).slice(2)}`;
 }
 
 /**

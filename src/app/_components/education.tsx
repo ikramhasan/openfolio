@@ -1,20 +1,31 @@
-import { sections, startYear } from "./data";
+import { dateEndpoints, sections } from "./data";
 import { Mark } from "./mark";
-import { TableHead, TableLinkRow, TableList, TableRow } from "./table";
+import {
+  DateCell,
+  TableHead,
+  TableLinkRow,
+  TableList,
+  TableRow,
+} from "./table";
 
 const education = sections.education;
 
 /**
  * Qualifications as rows. Where the institution has a URL the whole row is the
  * link, matching every other section.
+ *
+ * The dates live only in the left column. These ranges carry no months at source
+ * ("2019 - 2022"), so the column shows the two years.
  */
 export function Education() {
   return (
     <div>
-      <TableHead left="From" middle="Qualification" />
+      <TableHead left="Dates" middle="Qualification" />
 
       <TableList>
         {education.items.map((item) => {
+          const [from, to] = dateEndpoints(item.dateRange);
+
           const body = (
             <>
               <span className="pf-title block">{item.title}</span>
@@ -30,8 +41,6 @@ export function Education() {
                 </span>
               </span>
 
-              <span className="pf-meta block">{item.dateRange}</span>
-
               {item.description ? (
                 <span className="pf-body mt-2.5 block max-w-[72ch]">
                   {item.description}
@@ -43,13 +52,16 @@ export function Education() {
           return item.url ? (
             <TableLinkRow
               key={item.institution}
-              left={startYear(item.dateRange)}
+              left={<DateCell from={from} to={to} />}
               href={item.url}
             >
               {body}
             </TableLinkRow>
           ) : (
-            <TableRow key={item.institution} left={startYear(item.dateRange)}>
+            <TableRow
+              key={item.institution}
+              left={<DateCell from={from} to={to} />}
+            >
               {body}
             </TableRow>
           );
