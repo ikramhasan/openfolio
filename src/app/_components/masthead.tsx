@@ -14,10 +14,10 @@ export function Masthead() {
         height={497}
         sizes="64px"
         priority
-        className="pf-rule size-16 rounded-full border object-cover"
+        className="pf-portrait size-16 rounded-full object-cover"
       />
 
-      <h1 className="pf-display mt-7">{intro.title}</h1>
+      <h1 className="pf-display mt-7 text-balance">{intro.title}</h1>
 
       <p className="pf-standfirst mt-4 max-w-[38ch] text-pretty">
         {intro.bio}.

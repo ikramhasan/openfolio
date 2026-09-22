@@ -151,7 +151,7 @@ export function Rail({ items }: { items: NavItem[] }) {
   }, []);
 
   return (
-    <div className="pf-rule sticky top-0 z-20 -mx-6 min-w-0 border-b bg-[var(--pf-bg)] px-6 py-2 sm:-mx-10 sm:px-10 lg:mx-0 lg:h-screen lg:self-start lg:border-b-0 lg:px-0 lg:pt-16 lg:pb-0">
+    <div className="pf-rule sticky top-0 z-20 -mx-6 min-w-0 border-b bg-[var(--pf-bg)] px-6 py-0.5 sm:-mx-10 sm:px-10 lg:mx-0 lg:h-screen lg:self-start lg:border-b-0 lg:px-0 lg:pt-16 lg:pb-0">
       <nav aria-label="Portfolio sections">
         <ul
           ref={scrollerRef}
@@ -169,7 +169,7 @@ export function Rail({ items }: { items: NavItem[] }) {
                   data-rail-href={item.href}
                   data-active={active}
                   aria-current={active ? "page" : undefined}
-                  className="pf-tab pf-meta shrink-0 whitespace-nowrap px-2.5 py-1 lg:-mx-2 lg:flex lg:items-baseline lg:gap-2.5 lg:px-2"
+                  className="pf-tab pf-meta shrink-0 whitespace-nowrap px-2.5 lg:-mx-2 lg:flex lg:items-baseline lg:gap-2.5 lg:px-2"
                 >
                   <span
                     aria-hidden="true"

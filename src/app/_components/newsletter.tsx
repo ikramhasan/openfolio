@@ -86,7 +86,8 @@ export function Newsletter() {
             copy and `aria-invalid`. Takes no room until there is a message. */}
         <output
           id={`${inputId}-message`}
-          className={`pf-meta block ${message ? "pf-strong mt-2.5" : ""}`}
+          data-shown={Boolean(message)}
+          className={`pf-status pf-meta block ${message ? "pf-strong mt-2.5" : ""}`}
         >
           {message}
         </output>
