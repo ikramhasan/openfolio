@@ -1,36 +1,18 @@
 import type { ReactNode } from "react";
 
 /**
- * The table primitives that give the page its structure.
+ * Shared row primitives: a three-column grid of dates, content and right-aligned
+ * metadata.
  *
- * Every section is the same three-column grid — a fixed left column for the
- * year or ordinal, a flexible middle for content, and a narrow right column for
- * metadata that has to align vertically (views, levels, a link arrow). Column
- * headers name those columns once at the top of the section.
- *
- * Semantically these are lists, not `<table>`s: the data is a sequence of
- * records rather than a matrix, and a real table would promise row/column
- * relationships to a screen reader that do not exist here.
- *
- * Both row kinds carry `.pf-row`, so the hover tint spans the full width of
- * every record in every section — not just the linkable ones. Where a record
- * has a destination, `TableLinkRow` makes the entire row the anchor, so the
- * whole thing is clickable rather than only its title.
+ * Lists rather than `<table>`s — these are records, not a matrix. Both row kinds
+ * carry `.pf-row` so the hover tint spans every record, linkable or not.
  */
 
 const GRID =
   "grid grid-cols-[4.25rem_minmax(0,1fr)] gap-x-4 sm:grid-cols-[5.5rem_minmax(0,1fr)_6.5rem] sm:gap-x-6";
 
-/**
- * The dates for one record, in the left column.
- *
- * Two lines rather than one: "Feb 22 – Sep 22" on a single line would force the
- * column to roughly a third of the row on a phone, and wrapping it naturally puts
- * the break wherever it lands. Stacking the endpoints keeps the column narrow and
- * the years aligned down the page — and a single-date record is simply one line.
- *
- * The dash trails the first line so the pair reads as a range while stacked.
- */
+// Endpoints stacked on two lines: on one line the column would take a third of
+// the row on a phone. A single date is just one line.
 export function DateCell({ from, to }: { from: string; to?: string | null }) {
   return (
     <span className="pf-meta pf-figure block pt-px">
@@ -71,19 +53,12 @@ export function TableList({ children }: { children: ReactNode }) {
   return <ol className="pf-rule divide-y">{children}</ol>;
 }
 
-/**
- * One record with no destination. Same grid and same hover tint as a link row,
- * so sections without URLs still read as rows rather than loose text.
- *
- * Below `sm` the right column drops under the content rather than squeezing
- * into a third of the width.
- */
+/** One record with no destination. */
 export function TableRow({
   left,
   right,
   children,
 }: {
-  /** Usually a `DateCell`; carries its own type styling. */
   left: ReactNode;
   right?: ReactNode;
   children: ReactNode;
@@ -106,11 +81,8 @@ export function TableRow({
 }
 
 /**
- * A record whose whole row is a link — the full grid is the target, with a
- * trailing arrow that fades in on hover.
- *
- * Content passed here must not contain its own anchors: nested links are
- * invalid, and the point of this row is that there is exactly one target.
+ * A record whose whole row is the link. Content must not contain its own
+ * anchors — nested links are invalid.
  */
 export function TableLinkRow({
   left,
@@ -118,7 +90,6 @@ export function TableLinkRow({
   right,
   children,
 }: {
-  /** Usually a `DateCell`; carries its own type styling. */
   left: ReactNode;
   href: string;
   right?: ReactNode;

@@ -2,14 +2,11 @@ import Image from "next/image";
 import { sortedVideos } from "./data";
 
 /**
- * Videos. The source holds a single item, so this renders as one still at card
- * width rather than a grid — a one-cell grid reads as a mistake.
+ * Videos, as stills at card width rather than a grid — the source holds one item.
  *
- * The whole record is the link and carries the same hover tint as a table row,
- * but unlike a table row it is not full-bleed: the anchor is capped at the
- * card's own width so the tint hugs the still, instead of running off across the
- * empty space to its right. The `1.5rem` added to the cap is the `-mx-3 px-3`
- * bleed, which keeps the tint's left edge aligned with the rows above.
+ * The anchor is capped at the card's width so the hover tint hugs the still. The
+ * extra `1.5rem` is the `-mx-3 px-3` bleed, keeping its left edge aligned with the
+ * rows in other sections.
  */
 export function Videos() {
   return (

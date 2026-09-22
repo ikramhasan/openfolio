@@ -4,12 +4,10 @@ import { sections } from "./data";
 const recommendations = sections.recommendations;
 
 /**
- * Recommendations as quoted records, each attributed beneath and each linking
- * to its source on LinkedIn — so the whole quote is the target, with the same
- * hover tint as every other row on the page.
+ * Quoted records, attributed beneath and linking to the source.
  *
- * Deliberately not cards: the two source testimonials differ hugely in length,
- * and boxing them would leave one padded with empty space.
+ * Not cards: the testimonials differ hugely in length, so boxes would leave one
+ * padded with empty space.
  */
 export function Recommendations() {
   return (

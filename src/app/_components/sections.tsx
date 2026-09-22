@@ -10,57 +10,32 @@ import { Recommendations } from "./recommendations";
 import { Videos } from "./videos";
 
 /**
- * The section registry.
+ * The section registry. Each entry becomes a rail item and a route.
  *
- * Each entry resolves to an item in the rail and a route of its own — `/` for the
- * section that leads, then `/experience`, `/projects` and the rest. To add a
- * section — "tools", "travels", "reading" — write the component and add one entry
- * to `REGISTRY` below. The rail, the numbering, the route and its static params
- * all follow; no file under `app/[[...section]]` needs to change.
- *
- * Ordering comes from `sectionOrder` in `data/portfolio.json`, so sequence is a
- * data decision, not a code one. One exception, marked on the entry: `lead: true`
- * pins a tab to the front regardless of the data. About uses it because it is
- * assembled here rather than being a section in the JSON. Anything registered
- * but missing from `sectionOrder` is appended in registry order, which keeps a
- * new section reachable even before the JSON is updated.
+ * Adding a section: write the component, add an entry to `REGISTRY`. Ordering
+ * comes from `sectionOrder` in the JSON, except `lead: true` which pins to the
+ * front. Anything registered but unsequenced is appended.
  */
 
 export type SectionEntry = {
   /** Matches the key under `sections` in `data/portfolio.json`. */
   id: string;
-  /** Overrides the source `title`. Rarely needed. */
   title?: string;
   /** Shorter wording for the rail. Falls back to the title. */
   navLabel?: string;
-  /**
-   * The URL segment, when the id would make a poor one. Falls back to the id,
-   * which is why most entries leave this out. Ignored for the leading section,
-   * which answers for `/`.
-   */
+  /** URL segment, where the id reads badly. Ignored for the lead section. */
   slug?: string;
-  /**
-   * A one-line gloss set beneath the panel heading. Optional, and worth
-   * skipping when the heading is already self-explanatory.
-   */
+  /** One-line gloss under the panel heading. */
   note?: string;
   body: ReactNode;
-  /** Optional trailing element on the panel's heading row. */
+  /** Trailing element on the panel's heading row. */
   aside?: ReactNode;
-  /** Pins the tab ahead of the data-ordered ones. */
+  /** Pins ahead of the data-ordered entries. */
   lead?: boolean;
 };
 
-/**
- * Sections in the JSON that have no section of their own, so the dev-time warning
- * below does not flag them as unregistered.
- *
- * `intro` is the masthead. `skills` is no longer rendered at all: three
- * self-assessed percentages said less about the work than the summary in the
- * About panel does, so the data is left in place and unused. `connect` moved to
- * the footer — one form and two links did not earn a section beside Experience
- * and Projects, and contact is what a reader looks for at the bottom of a page.
- */
+// In the JSON but deliberately not rendered as sections: `intro` is the masthead,
+// `skills` was dropped, `connect` moved to the footer.
 const STANDALONE_IDS = new Set(["intro", "skills", "connect"]);
 
 const REGISTRY: SectionEntry[] = [
@@ -99,11 +74,6 @@ const REGISTRY: SectionEntry[] = [
 
 const byId = new Map(REGISTRY.map((entry) => [entry.id, entry]));
 
-/**
- * Sections in final order: `lead` entries first, then `sectionOrder`, then
- * anything registered that the data has not sequenced yet. The first one is the
- * home page.
- */
 export const pageSections: SectionEntry[] = (() => {
   const lead = REGISTRY.filter((entry) => entry.lead);
 
@@ -117,68 +87,38 @@ export const pageSections: SectionEntry[] = (() => {
   return [...lead, ...ordered, ...unsequenced];
 })();
 
-/** Resolves a section's heading. Registry override wins over the source title. */
 export function sectionTitle(entry: SectionEntry): string {
   return entry.title ?? sectionTitles[entry.id] ?? entry.id;
 }
 
-/**
- * The section that *is* the home page.
- *
- * The first section in resolved order answers for `/` rather than living at a
- * path of its own — there is no landing page above the sections, so the one the
- * site opens on is the site's root. About holds the position by way of
- * `lead: true`; promoting a different section moves `/` with it and no URL is
- * spelled out anywhere to keep in step.
- */
+// The first section answers for `/` rather than a path of its own, so promoting a
+// different one moves the home page with it.
 const homeId = pageSections[0].id;
 
 export function isHome(entry: SectionEntry): boolean {
   return entry.id === homeId;
 }
 
-/**
- * The section's URL segments — none for the home section, one otherwise. This is
- * what `generateStaticParams` hands the catch-all route.
- *
- * Ids are data keys and a few of them read badly in a URL (`youtubeVideos`), so
- * an entry may name its own slug.
- */
 export function sectionSegments(entry: SectionEntry): string[] {
   return isHome(entry) ? [] : [entry.slug ?? entry.id];
 }
 
-/** The section's route. The only place a section URL is assembled. */
 export function sectionPath(entry: SectionEntry): string {
   return `/${sectionSegments(entry).join("/")}`;
 }
 
-/**
- * Entries keyed by route, for the page to resolve the URL it was given. The home
- * section sits under `/`, matching `usePathname` in the rail and the empty
- * catch-all param.
- */
 export const sectionByPath = new Map(
   pageSections.map((entry) => [sectionPath(entry), entry]),
 );
 
-/**
- * Rail items, numbered in resolved order. The number is positional, so
- * inserting a section renumbers the rest for free.
- */
 export const navItems = pageSections.map((entry, index) => ({
   href: sectionPath(entry),
   label: entry.navLabel ?? sectionTitle(entry),
   index: String(index + 1).padStart(2, "0"),
 }));
 
-/*
- * Dev-time registry checks.
- *
- * Last in the file deliberately: these call the helpers above, and the helpers
- * close over `homeId`, so running them any earlier reads a `const` that has not
- * been initialised yet. Function declarations hoist; their dependencies do not.
- */
+// Last in the file deliberately: these call helpers that close over `homeId`, so
+// running them earlier would read it before initialisation.
 if (process.env.NODE_ENV !== "production") {
   const missing = sectionOrder.filter(
     (id) => !byId.has(id) && !STANDALONE_IDS.has(id),
@@ -190,7 +130,6 @@ if (process.env.NODE_ENV !== "production") {
     );
   }
 
-  // Two sections resolving to the same URL would silently hide one of them.
   const paths = pageSections.map((entry) => sectionPath(entry));
   const duplicates = paths.filter((path, i) => paths.indexOf(path) !== i);
 

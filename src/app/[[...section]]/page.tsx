@@ -10,36 +10,19 @@ import {
 } from "../_components/sections";
 
 /**
- * One section, one route: `/` for the section that leads — About — then
- * `/experience`, `/projects` and the rest.
- *
- * Every section is served by this one optional catch-all rather than a folder
- * each, because the registry in `_components/sections.tsx` already knows the full
- * list. An optional catch-all rather than `[section]` so the home section can be
- * `/` itself instead of redirecting there: the site opens on a real page, not a
- * hop. Adding a section to the registry adds its URL here for free, including its
- * entry in `generateStaticParams`, so it is prerendered with the rest.
- *
- * The shell around this — rail, masthead, footer — is the root layout, so
- * navigating between sections re-renders only what follows.
+ * One section per route: `/` for the lead section, then `/experience` and the
+ * rest. An optional catch-all rather than `[section]`, so the lead section can be
+ * `/` itself instead of redirecting there. The registry supplies the full list.
  */
 
-/**
- * Prerender every section at build time; the set is known and small. The home
- * section contributes no segments, which is how `/` gets generated.
- */
 export function generateStaticParams() {
   return pageSections.map((entry) => ({ section: sectionSegments(entry) }));
 }
 
-/**
- * Anything outside that list is a 404 rather than a render attempt. The sections
- * are a closed set, so an unknown path is a wrong URL, not a missing record. This
- * is also what stops the catch-all from swallowing deep paths like `/about/x`.
- */
+// Sections are a closed set, so an unknown path is a 404. Also stops the
+// catch-all swallowing deep paths like `/about/x`.
 export const dynamicParams = false;
 
-/** The path this route was asked for, rebuilt from the catch-all segments. */
 function pathOf(segments: string[] | undefined): string {
   return `/${(segments ?? []).join("/")}`;
 }
@@ -52,10 +35,7 @@ export async function generateMetadata({
 
   if (!entry) return {};
 
-  /*
-   * The home section keeps the layout's site-wide title. Prefixing it would read
-   * as "About | Ikramul Hasan" on the page that *is* the site.
-   */
+  // The home section keeps the layout's site-wide title.
   if (isHome(entry)) return {};
 
   return {

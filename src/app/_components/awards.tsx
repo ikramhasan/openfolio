@@ -7,13 +7,7 @@ import {
   TableRow,
 } from "./table";
 
-/**
- * Awards as rows. Linked where the source carries a URL, and hover-tinted
- * either way.
- *
- * One date, not a range, so the left column is a single line. The record no
- * longer repeats it beside the organisation.
- */
+/** Awards as rows. One date each, so the left column is a single line. */
 export function Awards() {
   return (
     <div>

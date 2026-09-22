@@ -1,34 +1,12 @@
 @import "tailwindcss";
 
 /*
- * The portfolio's styling.
- *
- * A monochrome ledger: the ink is a single neutral ramp from near-black to
- * hairline grey, and emphasis is made with weight, size and position rather than
- * hue. Imagery is never desaturated — logos, portraits and stills are always in
- * full colour, and the only hover affordance is the row tint.
- *
- * The layout is a sticky index rail and one section at a time beside it — the
- * rail vertical and to the left from `lg`, and a sticky horizontal strip above
- * the content below that. Structurally each panel is a table: a set of rows on
- * a shared grid (year · content · link), with tiny column headers stating what
- * the columns are. Every row is a hover-tinted target across its full width,
- * whether or not it leads anywhere.
- *
- * Class names are prefixed `pf-` to keep them clear of Tailwind's utilities.
+ * A monochrome ledger: one neutral ink ramp, emphasis by weight and position
+ * rather than hue. Imagery stays in full colour. Classes are prefixed `pf-`.
  */
 
-/*
- * Reserve the scrollbar's width whether or not the page needs one.
- *
- * Only one section shows at a time, and the short ones (Education, Contact) do
- * not fill the viewport while the long ones do. Without this the scrollbar
- * appears and disappears as you move between sections, and the centred layout
- * shifts sideways by its width each time.
- *
- * Browsers without `scrollbar-gutter` ignore this and keep the shift; browsers
- * with overlay scrollbars (macOS by default) never had it to begin with.
- */
+/* Short sections do not fill the viewport while long ones do; without this the
+   scrollbar comes and goes and the centred layout shifts sideways. */
 html {
   scrollbar-gutter: stable;
 }
@@ -68,10 +46,7 @@ body {
 
 /* ----------------------------------------------------------------- type */
 
-/*
- * The name. Tightly tracked and heavy — with no colour and no serif available,
- * weight is the only way to make the masthead sit above everything else.
- */
+/* The name. Weight is the only way to raise it, with no colour or serif. */
 .pf-display {
   font-size: clamp(2.25rem, 5.5vw, 3.25rem);
   line-height: 1.04;
@@ -87,7 +62,7 @@ body {
   color: var(--pf-muted);
 }
 
-/* Section headings. Set at body size, in weight, not uppercase. */
+/* Section headings: body size, raised by weight. */
 .pf-section-title {
   font-size: 1rem;
   line-height: 1.4;
@@ -95,11 +70,7 @@ body {
   letter-spacing: -0.016em;
 }
 
-/*
- * Column headers inside a section, and the section index in the margin. The
- * smallest type on the page — it labels structure and is not meant to be read
- * as prose.
- */
+/* Column headers and the rail index: labels structure, not prose. */
 .pf-column {
   font-size: 0.6875rem;
   line-height: 1.4;
@@ -131,7 +102,7 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-/* Anything that has to align down a column: years, counts, levels. */
+/* Anything aligning down a column: dates, counts. */
 .pf-figure {
   font-variant-numeric: tabular-nums;
   letter-spacing: 0;
@@ -153,13 +124,8 @@ body {
   border-color: var(--pf-rule);
 }
 
-/*
- * Tailwind's `divide-*` utilities set a border *width* on the children and
- * leave the colour at `currentColor`, which would draw full-strength ink rules
- * instead of hairlines. Passing the rule colour down one level fixes every
- * `.pf-rule divide-y` list on the page. Children only paint a border where a
- * width is also set, so this cannot introduce a rule of its own.
- */
+/* Tailwind's `divide-*` sets a border width on children but leaves the colour at
+   `currentColor`, which would draw full-strength rules instead of hairlines. */
 .pf-rule > * {
   border-color: var(--pf-rule);
 }
@@ -173,10 +139,7 @@ body {
 
 /* ---------------------------------------------------------------- links */
 
-/*
- * With no accent colour, links darken and their underline goes solid on hover.
- * That is the whole interaction vocabulary.
- */
+/* No accent colour: links darken and the underline goes solid on hover. */
 .pf-link {
   color: inherit;
   text-decoration: underline;
@@ -215,9 +178,7 @@ body {
   border-radius: 2px;
 }
 
-/* Full-width table rows. A tint on hover; the arrow fades in.
-   Applied to every row in every section, linked or not, so the whole record
-   is the target rather than just its title. */
+/* Full-width rows, linked or not: a tint on hover, the arrow fades in. */
 .pf-row {
   transition: background-color 140ms ease;
   border-radius: 3px;
@@ -238,7 +199,7 @@ body {
   }
 }
 
-/* Touch and keyboard users never get the hover, so the arrow is always there. */
+/* No hover on touch, so the arrow is always shown. */
 @media (hover: none), (pointer: coarse) {
   .pf-row-arrow {
     opacity: 1;
@@ -251,11 +212,8 @@ body {
 
 /* --------------------------------------------------------------- pieces */
 
-/*
- * Several source logos are dark-on-transparent (Next.js, Express), so in dark
- * mode the mark sits on a soft light backdrop to stay legible. Marks are
- * decorative — the name is always adjacent as text.
- */
+/* Several source logos are dark-on-transparent, so dark mode gives them a light
+   backdrop. */
 .pf-mark {
   background-color: transparent;
 }
@@ -272,14 +230,8 @@ body {
 
 /* ------------------------------------------------------------------ rail */
 
-/*
- * The rail. A quiet list — muted ink, a hover tint, no marker or rule — so it
- * stays subordinate to the content beside it.
- *
- * The current item reuses that same hover tint and ink made persistent, rather
- * than introducing a border or a heavier weight: without some current state
- * nothing says which section you are looking at.
- */
+/* The rail. Quiet by default; the current item is the hover tint made
+   persistent. */
 .pf-tab {
   color: var(--pf-muted);
   text-decoration: none;
@@ -289,15 +241,8 @@ body {
   border-radius: 3px;
 }
 
-/*
- * The horizontal strip below `lg`. The scrollbar is hidden — it would sit under
- * the items in a bar this short — so the fades at the overflowing edges are what
- * say the strip scrolls, and the current item is centred by script so a neighbour
- * is always in view.
- *
- * `data-fade` is maintained by `rail.tsx`, which marks only the edges that have
- * content past them: no fade at the start when already at the start.
- */
+/* The horizontal strip below `lg`. The scrollbar is hidden, so the edge fades are
+   what say it scrolls. `data-fade` is set by `rail.tsx`. */
 .pf-rail {
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -325,11 +270,7 @@ body {
   );
 }
 
-/*
- * Drag to scroll, for pointers that cannot swipe. Touch is left alone — it pans
- * the container natively — so the affordance only shows on a fine pointer, and
- * only when there is somewhere to drag to.
- */
+/* Drag to scroll, for pointers that cannot swipe. Touch pans natively. */
 @media (hover: hover) and (pointer: fine) {
   .pf-rail[data-scrollable="true"] {
     cursor: grab;
@@ -340,20 +281,17 @@ body {
   }
 }
 
-/* A drag would otherwise select the labels it passes over. */
+/* Stops a drag selecting the labels it passes over. */
 .pf-rail[data-dragging="true"] {
   user-select: none;
 }
 
-/* Mid-drag the strip must track the pointer exactly, not ease toward it. */
+/* Mid-drag the strip must track the pointer exactly. */
 .pf-rail[data-dragging="true"] .pf-tab {
   transition: none;
 }
 
-/*
- * The vertical rail has no overflow to signal. `rail.tsx` clears the attributes
- * these rules hang off, so there is nothing to undo at the breakpoint.
- */
+/* The vertical rail clears these attributes in `rail.tsx`. */
 
 @media (hover: hover) and (pointer: fine) {
   .pf-tab:hover {
@@ -374,10 +312,7 @@ body {
   background-color: var(--pf-hover);
 }
 
-/*
- * Panels are swapped, not scrolled to, so a very short fade-in confirms the
- * change without animating layout.
- */
+/* A short fade on navigation, confirming the change without animating layout. */
 .pf-panel-enter {
   animation: pf-fade 180ms ease-out;
 }
@@ -393,13 +328,8 @@ body {
 
 /* ----------------------------------------------------------------- chips */
 
-/*
- * A company named in the About summary, and the panel it opens.
- *
- * The chip sits in running prose, so it inherits the type and is sized in `em`:
- * it has to read as a raised word in a sentence, not as a button parked in a
- * paragraph. The resting tint is the one the rail and rows already use.
- */
+/* A company chip in the About summary. Sized in `em` so it reads as a raised
+   word in a sentence rather than a button in a paragraph. */
 .pf-chip-wrap {
   position: relative;
   display: inline-block;
@@ -427,12 +357,8 @@ body {
     color 150ms ease;
 }
 
-/*
- * The logo in the chip. Sized in `em` so it tracks the prose rather than being
- * pinned to a pixel size, and given its own pale plate: several of these logos are
- * dark marks on transparency, which would disappear against the inverted chip when
- * it is open.
- */
+/* Pale plate behind the logo: several are dark marks on transparency, which
+   would vanish against the inverted open chip. */
 .pf-chip-mark {
   flex: none;
   display: inline-flex;
@@ -476,21 +402,9 @@ body {
 }
 
 /*
- * The panel.
- *
- * `absolute`, so it is out of flow and opening one cannot move the paragraph it
- * sits in or anything below it — no layout shift, which is the constraint the
- * whole component is built around. It is always in the DOM; `inert` and the two
- * properties below are what hide it, so opening and closing animate
- * symmetrically and the content stays in the HTML for search and crawlers.
- *
- * `visibility` is transitioned with a delay rather than switched, so the panel
- * stays hittable and visible for the length of the close animation and then stops
- * being either. Without it a closed panel would still swallow clicks.
- *
- * `--pf-chip-shift` is a negative offset set by `company-chip.tsx` when the chip
- * sits far enough right that the panel would hang off the screen. `min()` caps the
- * width on a narrow viewport; the shift is what keeps it in view.
+ * `absolute`, so opening shifts nothing. `visibility` is transitioned with a
+ * delay rather than switched, or a closed panel would still swallow clicks.
+ * `--pf-chip-shift` is set by `company-chip.tsx` to keep it on screen.
  */
 .pf-chip-panel {
   position: absolute;
@@ -531,20 +445,15 @@ body {
   transform: translateY(0) scale(1);
 }
 
-/*
- * The panel's surface, separate from the positioned element so the border and
- * shadow are not themselves being scaled by the transform.
- */
+/* Separate from the positioned element, so the transform does not scale the
+   border and shadow. */
 .pf-chip-panel-inner {
   display: block;
   padding: 0.8rem 0.9rem 0.85rem;
   background-color: var(--pf-bg);
   border: 1px solid var(--pf-rule);
   border-radius: 8px;
-  /*
-   * The only shadow on the site. Everything else is flat and separated by rules,
-   * but this one floats over text and has to lift off it to stay legible.
-   */
+  /* The only shadow on the site: this one floats over text. */
   box-shadow:
     0 1px 2px color-mix(in srgb, var(--pf-ink) 5%, transparent),
     0 8px 24px -6px color-mix(in srgb, var(--pf-ink) 14%, transparent);
@@ -558,10 +467,7 @@ body {
   color: var(--pf-faint);
 }
 
-/*
- * The one filled control on the page — the newsletter submit. Inverted rather
- * than coloured, which keeps the monochrome rule intact.
- */
+/* The one filled control: inverted rather than coloured. */
 .pf-button {
   background-color: var(--pf-ink);
   color: var(--pf-bg);
@@ -603,11 +509,8 @@ body {
     transition: none;
   }
 
-  /*
-   * The panel still needs `visibility` to change, or a closed one keeps taking
-   * clicks — so the movement goes and the fade is cut to almost nothing, rather
-   * than dropping the transition altogether.
-   */
+  /* `visibility` must still change or a closed panel keeps taking clicks, so the
+     movement goes and the fade is cut to nothing. */
   .pf-chip-panel,
   .pf-chip-panel[data-open="true"],
   .pf-chip-panel[data-above="true"] {

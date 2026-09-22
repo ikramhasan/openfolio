@@ -2,12 +2,7 @@ import { formatTags, sortedProjects } from "./data";
 import { Mark } from "./mark";
 import { TableHead, TableLinkRow, TableList } from "./table";
 
-/**
- * Every project gets an identical row — mark and name, description, tags.
- *
- * The left column holds an ordinal rather than a year: the source data has no
- * project dates, and numbering the list is more honest than inventing one.
- */
+/** Projects as rows. The left column is an ordinal: the source has no dates. */
 export function Projects() {
   return (
     <div>

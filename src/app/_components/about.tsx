@@ -3,30 +3,11 @@ import { currentRole, sortedExperience, yearsSince } from "./data";
 import { Strip } from "./strip";
 
 /**
- * The About panel — the section the site opens on, and the only one written as
- * prose rather than as a table.
+ * The About panel: the photo strip, then a short prose summary with the
+ * companies as clickable chips.
  *
- * Everything else on the site is a ledger: dated rows, one record each. This is
- * the one place that says what those rows add up to, so it is a short summary
- * with the companies raised as chips. Opening a chip gives the role behind the
- * name without leaving the sentence — see `company-chip.tsx`, which keeps the
- * detail out of flow so nothing moves.
- *
- * The photography leads. The masthead above is only a portrait, a name and a line
- * of bio, so the strip is what gives the panel a top edge; the summary reads
- * better as a caption to it than as a second block of text directly beneath the
- * bio it elaborates on.
- *
- * Every claim here is drawn from `data/portfolio.json` rather than written
- * freehand: the span of experience is computed from the earliest role, the
- * figures (a million events a day, eight million users, 250 students) are the
- * source bullets' own, and the roles are named in source order. Sentences that
- * do not derive from the data would go stale the moment the JSON changed.
- *
- * No links and no "Now" row. The footer already carries the same six social
- * links, the resume and the booking URL on every page — they are the same entries
- * from the same JSON — and the current role is already the first thing the
- * summary says. Repeating either here only made the panel longer.
+ * The figures and dates come from `data/portfolio.json` rather than being
+ * written out, so the copy does not go stale when the JSON changes.
  */
 
 const roles = sortedExperience;
@@ -34,17 +15,9 @@ const [current, transmedia, ictDivision, techshoi] = roles;
 
 export function About() {
   return (
-    /*
-     * One measure for the whole panel, set here rather than on each child.
-     * `ch` resolves against the element's own font-size, so the same
-     * `max-w-[54ch]` on the strip and on the prose produced two different widths
-     * and the photographs overhung the text by 34px. Declaring it once, on a
-     * parent neither of them sets type on, keeps the column honest.
-     *
-     * 30rem is the measure the prose already had — about 54 characters at body
-     * size, which is the comfortable range. The photographs come in to meet it
-     * rather than the text stretching out to meet them.
-     */
+    // One measure for the panel, set here rather than on each child: `ch` resolves
+    // against each element's own font-size, so the same `max-w` on the strip and
+    // the prose gave two different widths.
     <div className="max-w-[30rem]">
       <Strip />
 

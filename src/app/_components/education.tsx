@@ -10,13 +10,7 @@ import {
 
 const education = sections.education;
 
-/**
- * Qualifications as rows. Where the institution has a URL the whole row is the
- * link, matching every other section.
- *
- * The dates live only in the left column. These ranges carry no months at source
- * ("2019 - 2022"), so the column shows the two years.
- */
+/** Qualifications as rows. Source ranges carry no months, so years only. */
 export function Education() {
   return (
     <div>
@@ -34,7 +28,7 @@ export function Education() {
                 <Mark src={item.logo} />
                 <span className="pf-muted">{item.institution}</span>
                 {/* Separator grouped with the location so a wrap cannot leave
-                    it dangling at the end of the previous line. */}
+                    it dangling. */}
                 <span className="whitespace-nowrap">
                   <span aria-hidden="true">· </span>
                   {item.location}

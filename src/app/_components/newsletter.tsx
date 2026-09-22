@@ -9,25 +9,13 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 type Status = "idle" | "loading" | "success" | "error";
 
-/**
- * The newsletter sign-up, in the footer.
- *
- * This was the Contact section's panel. It sits in the footer now, so it is on
- * every page rather than behind a rail entry of its own — a single form did not
- * earn a section beside Experience and Projects.
- *
- * The "or reach me directly" line that used to close it is gone: the footer's own
- * link row sits immediately below and already carries Email and Book a meeting,
- * from the same source data.
- *
- * NOTE: this project has no backend, so `subscribe` resolves locally. Point it
- * at a real endpoint (e.g. `POST /api/newsletter`) when one exists; the error
- * branch and its copy are already wired for a failing request.
- */
+// NOTE: no backend here, so `subscribe` resolves locally. Point it at a real
+// endpoint when one exists; the error branch is already wired.
 async function subscribe(_email: string): Promise<void> {
   await new Promise((resolve) => setTimeout(resolve, 600));
 }
 
+/** Newsletter sign-up, rendered in the footer on every page. */
 export function Newsletter() {
   const inputId = useId();
   const [value, setValue] = useState("");
@@ -94,18 +82,8 @@ export function Newsletter() {
           </button>
         </div>
 
-        {/*
-          With no accent colour available, the error state is carried by the
-          copy and `aria-invalid` rather than by a red tint. Success reads in
-          full-strength ink.
-
-          It takes no room until there is something to say. It used to reserve a
-          line's height permanently so the links below would not move when a
-          message arrived — but that spent 30px of blank space on every page view
-          to avoid a shift that only happens on submit, and left the footer visibly
-          bottom-heavy: 37px above the form, 66px below it. The message is the
-          reader's own doing, so the small reflow is expected.
-        */}
+        {/* No accent colour on the site, so the error state is carried by the
+            copy and `aria-invalid`. Takes no room until there is a message. */}
         <output
           id={`${inputId}-message`}
           className={`pf-meta block ${message ? "pf-strong mt-2.5" : ""}`}

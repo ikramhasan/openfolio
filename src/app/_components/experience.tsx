@@ -13,17 +13,7 @@ import {
   TableRow,
 } from "./table";
 
-/**
- * Roles as rows. Where the source carries a company URL the whole row is the
- * link — previously only the company name was, which left most of the record
- * inert. Rows without a URL keep the same hover tint so the section reads
- * evenly.
- *
- * The dates live only in the left column. The record used to repeat the full
- * source range beneath the company, which said the same thing twice in two
- * formats. A contract qualifier is the one part of that string that is not a
- * date, so it stays in the record, beside the company it qualifies.
- */
+/** Roles as rows, linked where the source carries a company URL. */
 export function Experience() {
   return (
     <div>
@@ -43,7 +33,7 @@ export function Experience() {
                 <Mark src={item.logo} />
                 <span className="pf-muted">{item.company}</span>
                 {/* Separator grouped with the location so a wrap cannot leave
-                    it dangling at the end of the previous line. */}
+                    it dangling. */}
                 <span className="whitespace-nowrap">
                   <span aria-hidden="true">· </span>
                   {item.location.trim()}

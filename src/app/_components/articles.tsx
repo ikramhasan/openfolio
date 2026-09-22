@@ -7,13 +7,7 @@ import {
 } from "./data";
 import { DateCell, TableHead, TableLinkRow, TableList } from "./table";
 
-/**
- * Posts as rows.
- *
- * One date, in the left column only. The metadata line under each title used to
- * restate the month and year the column already carried, so it is down to the
- * read time.
- */
+/** Posts as rows, newest first. */
 export function Articles() {
   return (
     <div>

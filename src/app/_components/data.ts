@@ -1,19 +1,11 @@
 import portfolioJson from "../../../data/portfolio.json";
 
 /**
- * Typed view over `data/portfolio.json`.
+ * Typed view over `data/portfolio.json`, cast once here because the raw JSON
+ * infers awkward union types.
  *
- * The raw JSON infers awkward union types (several collections hold objects with
- * optional keys), so the shape is declared explicitly and the import is cast
- * once, here.
- *
- * ADDING A SECTION (e.g. "tools", "travels"):
- *   1. Add the section to `data/portfolio.json` under `sections`, and its id to
- *      `sectionOrder`.
- *   2. Declare its shape in `Portfolio["sections"]` below.
- *   3. Write the component, then register it in `sections.tsx`.
- * Nothing in `page.tsx` needs to change — the page renders whatever the registry
- * resolves. See `sections.tsx` for the ordering rules.
+ * Adding a section: add it to the JSON under `sections` plus `sectionOrder`,
+ * declare its shape below, then register the component in `sections.tsx`.
  */
 
 export type SocialLink = {
@@ -154,12 +146,8 @@ export const sections = portfolio.sections;
 /** Source order of the page's sections, including `intro`. */
 export const sectionOrder = portfolio.sectionOrder;
 
-/**
- * Titles keyed by section id, read structurally rather than through the typed
- * `sections` map. This is what lets the registry in `sections.tsx` resolve a
- * heading for a section that exists in the JSON but has not been added to the
- * `Portfolio` type yet.
- */
+// Read structurally, so the registry can resolve a heading for a section not yet
+// added to the `Portfolio` type.
 export const sectionTitles: Record<string, string> = Object.fromEntries(
   Object.entries(portfolio.sections as Record<string, { title?: string }>).map(
     ([id, section]) => [id, section?.title ?? id],
@@ -178,15 +166,11 @@ export const sortedVideos = [...sections.youtubeVideos.items].sort(
   (a, b) => a.order - b.order,
 );
 
-/**
- * Projects in authored order. Every project gets the same table row — the ledger
- * is the concept, so a featured band would break it.
- */
 export const sortedProjects = [...sections.projects.items].sort(
   (a, b) => a.order - b.order,
 );
 
-/** Articles newest-first. The source order interleaves a pinned post. */
+/** Newest first; the source order interleaves a pinned post. */
 export const sortedArticles = [...sections.articles.items].sort(
   (a, b) =>
     new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
@@ -200,7 +184,6 @@ export const footerLinks = [...portfolio.footer.socialLinks].sort(
   (a, b) => a.order - b.order,
 );
 
-/** The most recent role, used as the intro's standfirst line. */
 export const currentRole = sortedExperience[0];
 
 const bookingAction = [
@@ -212,17 +195,13 @@ export const bookingUrl = bookingAction?.calendar
   ? `https://cal.com/${bookingAction.calendar.username}/${bookingAction.calendar.namespace}`
   : null;
 
-/** Resume link, rendered only when the source data actually carries a URL. */
 export const resumeUrl =
   [...sections.intro.actions, ...portfolio.footer.actions].find(
     (action) => action.label === "View Resume" && action.url,
   )?.url ?? null;
 
-/**
- * The publication root. The source `viewAll.url` is a relative `/blogs` path
- * on the old site, which does not exist in this project, so the link is
- * derived from the articles' own absolute URLs instead.
- */
+// The source `viewAll.url` is a relative path from the old site, so the blog root
+// is derived from the articles' own absolute URLs.
 export const blogUrl = (() => {
   const sample = sections.articles.items[0]?.url;
   if (!sample) return null;
@@ -258,7 +237,10 @@ export function formatViews(views: number): string {
  *
  * Source date ranges are written long-hand and inconsistently
  * ("October, 2022 - Present", "2019 - 2022"), so the first four-digit run is
- * taken as the start year. Falls back to the raw string if there is no year.
+/**
+ * The start year of a source range. These are written long-hand and
+ * inconsistently ("October, 2022 - Present", "2019 - 2022"), so the first
+ * four-digit run wins.
  */
 export function startYear(value: string): string {
   return value.match(/\d{4}/)?.[0] ?? value.trim();
@@ -269,42 +251,23 @@ export function cleanBullet(detail: string): string {
   return detail.replace(/^\s*-\s*/, "").trim();
 }
 
-/**
- * Whole years from a date range's start year to now, for the About summary.
- *
- * Rounded down to a year, since that is how a span of experience is spoken
- * about, and computed rather than written down so the sentence does not go stale.
- */
+/** Computed rather than written down, so the About summary cannot go stale. */
 export function yearsSince(dateRange: string): number {
   const start = Number(startYear(dateRange));
   if (!Number.isFinite(start)) return 0;
   return Math.max(1, new Date().getUTCFullYear() - start);
 }
 
-/**
- * A company name cut to what a chip can carry inline.
- *
- * One source name is really two joined by a pipe ("ICT Division | Govt. of
- * Bangladesh"), which makes a chip twice the width of any other and dominates the
- * sentence it sits in. The panel still shows the full name, so nothing is lost.
- */
+// "ICT Division | Govt. of Bangladesh" makes a chip twice the width of any other;
+// the panel still shows the full name.
 export function shortCompany(company: string): string {
   return company.split("|")[0].trim();
 }
 
 /**
- * A source date range as two short endpoints — `["Feb 22", "Sep 22"]`.
- *
- * Source ranges are long-hand and inconsistently punctuated ("October, 2022 -
- * Present", "September, 2021 – February, 2022 (Contractual)", "2019 - 2022"), and
- * were being printed in full inside the record while the left column showed only
- * the start year — the same date twice, in two different formats. This is the one
- * form both ends of a row can share.
- *
- * A range with no months keeps its years ("2019" – "2022"). An ongoing range ends
- * in "Now", which is shorter than "Present" and does not wrap. Any trailing
- * qualifier like "(Contract)" is dropped here: it belongs beside the role, not in
- * a date column, and `rangeQualifier` returns it separately.
+ * A source range as two short endpoints — `["Feb 22", "Sep 22"]`. Ranges with no
+ * months keep their years; ongoing ones end in "Now". A trailing "(Contract)" is
+ * left to `rangeQualifier`.
  */
 export function dateEndpoints(dateRange: string): [string, string | null] {
   const ongoing = /present|current|now/i.test(dateRange);
@@ -332,29 +295,18 @@ export function dateEndpoints(dateRange: string): [string, string | null] {
   return [start, end === start ? null : end];
 }
 
-/** A trailing "(Contract)" or "(Contractual)", which qualifies the role. */
+/** A trailing "(Contract)", which qualifies the role rather than the dates. */
 export function rangeQualifier(dateRange: string): string | null {
   return dateRange.match(/\(([^)]+)\)/)?.[1] ?? null;
 }
 
-/** An ISO date as one short endpoint, for sections holding a single date. */
+/** An ISO date as one short endpoint. */
 export function shortDate(iso: string): string {
   const date = new Date(iso);
   return `${MONTHS[date.getUTCMonth()]} ${String(date.getUTCFullYear()).slice(2)}`;
 }
 
-/**
- * A date range cut down to its years, for places too small for the source string.
- *
- * Source ranges are long-hand and inconsistent ("October, 2022 - Present",
- * "September, 2021 – February, 2022 (Contractual)"), which is fine in a table row
- * and far too long inside a chip panel. This keeps the years, collapses a range
- * that starts and ends in the same year to one, and keeps a trailing note like
- * "(Contract)" because it qualifies the role rather than decorating it.
- *
- * Falls back to the original string if no year can be found, on the principle
- * that showing the raw value beats showing nothing.
- */
+/** A range as years only, for the chip panels. Keeps a trailing "(Contract)". */
 export function compactRange(dateRange: string): string {
   const years = dateRange.match(/\d{4}/g);
   if (!years) return dateRange.trim();

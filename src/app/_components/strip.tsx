@@ -6,20 +6,9 @@ const images = sections.intro.headingImages;
 const [lead, ...rest] = images;
 
 /**
- * Workshop photography: one lead frame, the remainder in a row beneath it.
+ * Workshop photography: one lead frame, the other two in a row beneath it.
  *
- * Three equal frames in a single row made each one a thin letterbox — too short
- * to read as a photograph, and together they ran the full width of the panel
- * while the prose beside them stops at 54ch, so the block overhung the column it
- * belonged to. The lead frame now carries the width and the height, and the rest
- * sit under it at half scale.
- *
- * Full colour, and kept to a block — in a ledger, photographs are evidence, not
- * the subject. The first frame keeps the source `alt` so the strip is still
- * described to a screen reader.
- *
- * No width of its own and no outer spacing: the caller sets the measure this
- * shares with the prose, and places it.
+ * No width of its own — the caller sets the measure it shares with the prose.
  */
 export function Strip() {
   return (
