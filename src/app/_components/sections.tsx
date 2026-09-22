@@ -53,12 +53,12 @@ export type SectionEntry = {
 };
 
 /**
- * Sections in the JSON that no longer have a tab of their own, so the dev-time
- * warning below does not flag them as unregistered.
+ * Sections in the JSON that have no section of their own, so the dev-time warning
+ * below does not flag them as unregistered.
  *
- * `intro` was never a tab. `skills` is rendered inside the About panel instead:
- * it is three rows, and a tab of its own would be the shortest panel on the page
- * by a wide margin.
+ * `intro` is the masthead. `skills` is no longer rendered at all: three
+ * self-assessed percentages said less about the work than the summary in the
+ * About panel does, so the data is left in place and unused.
  */
 const STANDALONE_IDS = new Set(["intro", "skills"]);
 

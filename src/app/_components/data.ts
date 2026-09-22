@@ -43,6 +43,7 @@ export type Portfolio = {
       actions: Action[];
     };
     skills: {
+      /** Retained in the type because the JSON still carries it; unused in the UI. */
       title: string;
       items: {
         icon: string;
@@ -165,10 +166,6 @@ export const sectionTitles: Record<string, string> = Object.fromEntries(
   ),
 );
 
-export const sortedSkills = [...sections.skills.items].sort(
-  (a, b) => a.order - b.order,
-);
-
 export const sortedExperience = [...sections.experience.items].sort(
   (a, b) => a.order - b.order,
 );
@@ -280,6 +277,59 @@ export function startYear(value: string): string {
 /** Source bullets are stored with a literal "- " prefix. */
 export function cleanBullet(detail: string): string {
   return detail.replace(/^\s*-\s*/, "").trim();
+}
+
+/**
+ * Whole years from a date range's start year to now, for the About summary.
+ *
+ * Rounded down to a year, since that is how a span of experience is spoken
+ * about, and computed rather than written down so the sentence does not go stale.
+ */
+export function yearsSince(dateRange: string): number {
+  const start = Number(startYear(dateRange));
+  if (!Number.isFinite(start)) return 0;
+  return Math.max(1, new Date().getUTCFullYear() - start);
+}
+
+/**
+ * A company name cut to what a chip can carry inline.
+ *
+ * One source name is really two joined by a pipe ("ICT Division | Govt. of
+ * Bangladesh"), which makes a chip twice the width of any other and dominates the
+ * sentence it sits in. The panel still shows the full name, so nothing is lost.
+ */
+export function shortCompany(company: string): string {
+  return company.split("|")[0].trim();
+}
+
+/**
+ * A date range cut down to its years, for places too small for the source string.
+ *
+ * Source ranges are long-hand and inconsistent ("October, 2022 - Present",
+ * "September, 2021 – February, 2022 (Contractual)"), which is fine in a table row
+ * and far too long inside a chip panel. This keeps the years, collapses a range
+ * that starts and ends in the same year to one, and keeps a trailing note like
+ * "(Contract)" because it qualifies the role rather than decorating it.
+ *
+ * Falls back to the original string if no year can be found, on the principle
+ * that showing the raw value beats showing nothing.
+ */
+export function compactRange(dateRange: string): string {
+  const years = dateRange.match(/\d{4}/g);
+  if (!years) return dateRange.trim();
+
+  const note = dateRange.match(/\(([^)]+)\)/)?.[1];
+  const ongoing = /present|current/i.test(dateRange);
+
+  const first = years[0];
+  const last = years[years.length - 1];
+  const span = ongoing
+    ? `${first} – Present`
+    : first === last
+      ? first
+      : `${first} – ${last}`;
+
+  return note ? `${span} · ${note}` : span;
 }
 
 /** Tags are cased inconsistently at source ("UNMAINTAINED", "Unmaintained"). */

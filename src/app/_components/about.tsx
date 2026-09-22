@@ -1,86 +1,66 @@
-import { bookingUrl, currentRole, resumeUrl, socialLinks } from "./data";
-import { Skills } from "./skills";
+import { CompanyChip } from "./company-chip";
+import { currentRole, sortedExperience, yearsSince } from "./data";
 import { Strip } from "./strip";
 
 /**
- * The About panel — the section the site opens on.
+ * The About panel — the section the site opens on, and the only one written as
+ * prose rather than as a table.
  *
- * It gathers everything that is *about* the person rather than a record of their
- * work: the current role, the links, the workshop photography, and the skills
- * list. Keeping them here rather than in the masthead lets the persistent header
- * above the sections stay down to a portrait, a name and a line of bio.
+ * Everything else on the site is a ledger: dated rows, one record each. This is
+ * the one place that says what those rows add up to, so it is a short summary
+ * with the companies raised as chips. Opening a chip gives the role behind the
+ * name without leaving the sentence — see `company-chip.tsx`, which keeps the
+ * detail out of flow so nothing moves.
  *
- * Skills lives here rather than as its own section because it is three rows — a
- * route of its own would be the shortest panel on the site by a wide margin, and
- * it answers the same question the rest of this panel does. The component is
- * reused as-is, so the table matches every other one on the site.
+ * The photography leads. The masthead above is only a portrait, a name and a line
+ * of bio, so the strip is what gives the panel a top edge; the summary reads
+ * better as a caption to it than as a second block of text directly beneath the
+ * bio it elaborates on.
+ *
+ * Every claim here is drawn from `data/portfolio.json` rather than written
+ * freehand: the span of experience is computed from the earliest role, the
+ * figures (a million events a day, eight million users, 250 students) are the
+ * source bullets' own, and the roles are named in source order. Sentences that
+ * do not derive from the data would go stale the moment the JSON changed.
+ *
+ * No links and no "Now" row. The footer already carries the same six social
+ * links, the resume and the booking URL on every page — they are the same entries
+ * from the same JSON — and the current role is already the first thing the
+ * summary says. Repeating either here only made the panel longer.
  */
+
+const roles = sortedExperience;
+const [current, transmedia, ictDivision, techshoi] = roles;
+
 export function About() {
   return (
     <div>
-      <dl className="grid gap-x-6 gap-y-3 sm:grid-cols-[4.5rem_minmax(0,1fr)]">
-        <dt className="pf-column pt-1">Now</dt>
-        <dd className="pf-body pf-strong">
-          {currentRole.title}, {currentRole.company}
-          <span className="pf-faint"> · {currentRole.location.trim()}</span>
-        </dd>
+      <Strip />
 
-        <dt className="pf-column pt-1">Links</dt>
-        <dd>
-          <ul className="pf-meta flex flex-wrap gap-x-4 gap-y-1.5">
-            {socialLinks.map((link) => (
-              <li key={link.site}>
-                <a
-                  href={link.url}
-                  className="pf-link-quiet"
-                  {...(link.site === "email"
-                    ? {}
-                    : { target: "_blank", rel: "noreferrer" })}
-                >
-                  {link.title}
-                </a>
-              </li>
-            ))}
-            {resumeUrl ? (
-              <li>
-                <a
-                  href={resumeUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="pf-link-quiet"
-                >
-                  Resume
-                </a>
-              </li>
-            ) : null}
-            {bookingUrl ? (
-              <li>
-                <a
-                  href={bookingUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="pf-link-quiet"
-                >
-                  Book a meeting
-                </a>
-              </li>
-            ) : null}
-          </ul>
-        </dd>
-      </dl>
+      <div className="pf-body mt-8 max-w-[54ch] space-y-4">
+        <p>
+          A <span className="pf-strong">{currentRole.title}</span> of{" "}
+          {yearsSince(roles[roles.length - 1].dateRange)} years, currently at{" "}
+          <CompanyChip role={current} />, where the work runs from server-side
+          analytics that handles about a million events a day to retrieval
+          augmented generation and agentic frameworks in production.
+        </p>
 
-      <div className="mt-8">
-        <Strip />
-      </div>
+        <p>
+          Before that, <CompanyChip role={transmedia} /> — mobile apps and
+          utilities in front of roughly eight million people a month — and a
+          contract with <CompanyChip role={ictDivision} />, teaching app
+          development to more than 250 students, a good few of whom shipped
+          something of their own afterwards. The first few years were at{" "}
+          <CompanyChip role={techshoi} />, building cross-platform apps for
+          clients from scratch.
+        </p>
 
-      {/* The panel heading above says "About", so the skills table needs a label
-          of its own or it arrives as an unexplained list of numbers. */}
-      <div className="pf-rule mt-8 border-t pt-7">
-        <h3 className="pf-column">Skills</h3>
-
-        <div className="mt-4">
-          <Skills />
-        </div>
+        <p className="pf-muted">
+          Mostly Flutter and Next.js, increasingly Rust. The portfolio beside
+          this is the long version: shipped products, technical studies, writing
+          and talks.
+        </p>
       </div>
     </div>
   );

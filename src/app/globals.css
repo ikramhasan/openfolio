@@ -391,6 +391,165 @@ body {
   }
 }
 
+/* ----------------------------------------------------------------- chips */
+
+/*
+ * A company named in the About summary, and the panel it opens.
+ *
+ * The chip sits in running prose, so it inherits the type and is sized in `em`:
+ * it has to read as a raised word in a sentence, not as a button parked in a
+ * paragraph. The resting tint is the one the rail and rows already use.
+ */
+.pf-chip-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.pf-chip {
+  font: inherit;
+  font-weight: 530;
+  letter-spacing: -0.008em;
+  color: var(--pf-ink);
+  background-color: var(--pf-hover);
+  border: 1px solid var(--pf-rule);
+  border-radius: 5px;
+  padding: 0.05em 0.45em 0.05em 0.34em;
+  cursor: pointer;
+  white-space: nowrap;
+  /* Keeps the logo and the name on one baseline inside running text. */
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  vertical-align: -0.16em;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease;
+}
+
+/*
+ * The logo in the chip. Sized in `em` so it tracks the prose rather than being
+ * pinned to a pixel size, and given its own pale plate: several of these logos are
+ * dark marks on transparency, which would disappear against the inverted chip when
+ * it is open.
+ */
+.pf-chip-mark {
+  flex: none;
+  display: inline-flex;
+  width: 1.05em;
+  height: 1.05em;
+  padding: 0.1em;
+  border-radius: 3px;
+  background-color: #f4f4f2;
+  overflow: hidden;
+}
+
+/* The larger mark at the head of the panel. */
+.pf-chip-panel-mark {
+  flex: none;
+  display: inline-flex;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0.2rem;
+  border-radius: 5px;
+  background-color: #f4f4f2;
+  border: 1px solid var(--pf-rule);
+  overflow: hidden;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pf-chip:hover {
+    border-color: color-mix(in srgb, var(--pf-ink) 32%, transparent);
+  }
+}
+
+.pf-chip:focus-visible {
+  outline: 2px solid var(--pf-ink);
+  outline-offset: 2px;
+}
+
+/* Open, the chip inverts — it is the one thing on the page that is "on". */
+.pf-chip[data-open="true"] {
+  background-color: var(--pf-ink);
+  border-color: var(--pf-ink);
+  color: var(--pf-bg);
+}
+
+/*
+ * The panel.
+ *
+ * `absolute`, so it is out of flow and opening one cannot move the paragraph it
+ * sits in or anything below it — no layout shift, which is the constraint the
+ * whole component is built around. It is always in the DOM; `inert` and the two
+ * properties below are what hide it, so opening and closing animate
+ * symmetrically and the content stays in the HTML for search and crawlers.
+ *
+ * `visibility` is transitioned with a delay rather than switched, so the panel
+ * stays hittable and visible for the length of the close animation and then stops
+ * being either. Without it a closed panel would still swallow clicks.
+ *
+ * `--pf-chip-shift` is a negative offset set by `company-chip.tsx` when the chip
+ * sits far enough right that the panel would hang off the screen. `min()` caps the
+ * width on a narrow viewport; the shift is what keeps it in view.
+ */
+.pf-chip-panel {
+  position: absolute;
+  top: calc(100% + 0.55rem);
+  left: var(--pf-chip-shift, 0px);
+  z-index: 30;
+  display: block;
+  width: min(17rem, calc(100vw - 3rem));
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-0.25rem) scale(0.985);
+  transform-origin: top left;
+  transition:
+    opacity 170ms ease,
+    transform 190ms cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0s linear 190ms;
+}
+
+.pf-chip-panel[data-open="true"] {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+  transition:
+    opacity 170ms ease,
+    transform 190ms cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0s;
+}
+
+/* Flipped above the chip when the viewport leaves no room beneath it. */
+.pf-chip-panel[data-above="true"] {
+  top: auto;
+  bottom: calc(100% + 0.55rem);
+  transform-origin: bottom left;
+  transform: translateY(0.25rem) scale(0.985);
+}
+
+.pf-chip-panel[data-above="true"][data-open="true"] {
+  transform: translateY(0) scale(1);
+}
+
+/*
+ * The panel's surface, separate from the positioned element so the border and
+ * shadow are not themselves being scaled by the transform.
+ */
+.pf-chip-panel-inner {
+  display: block;
+  padding: 0.8rem 0.9rem 0.85rem;
+  background-color: var(--pf-bg);
+  border: 1px solid var(--pf-rule);
+  border-radius: 8px;
+  /*
+   * The only shadow on the site. Everything else is flat and separated by rules,
+   * but this one floats over text and has to lift off it to stay legible.
+   */
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--pf-ink) 5%, transparent),
+    0 8px 24px -6px color-mix(in srgb, var(--pf-ink) 14%, transparent);
+}
+
 .pf-input {
   color: var(--pf-ink);
 }
@@ -447,8 +606,23 @@ body {
 
   .pf-row,
   .pf-row-arrow,
-  .pf-tab {
+  .pf-tab,
+  .pf-chip {
     transition: none;
+  }
+
+  /*
+   * The panel still needs `visibility` to change, or a closed one keeps taking
+   * clicks — so the movement goes and the fade is cut to almost nothing, rather
+   * than dropping the transition altogether.
+   */
+  .pf-chip-panel,
+  .pf-chip-panel[data-open="true"],
+  .pf-chip-panel[data-above="true"] {
+    transform: none;
+    transition:
+      opacity 1ms linear,
+      visibility 0s;
   }
 
   .pf-panel-enter {
