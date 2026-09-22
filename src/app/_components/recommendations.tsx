@@ -1,7 +1,5 @@
 import Image from "next/image";
-import { sections } from "./data";
-
-const recommendations = sections.recommendations;
+import { getRecommendations } from "./content";
 
 /**
  * Quoted records, attributed beneath and linking to the source.
@@ -9,10 +7,12 @@ const recommendations = sections.recommendations;
  * Not cards: the testimonials differ hugely in length, so boxes would leave one
  * padded with empty space.
  */
-export function Recommendations() {
+export async function Recommendations() {
+  const { items } = await getRecommendations();
+
   return (
     <ul className="pf-rule divide-y">
-      {recommendations.items.map((item) => (
+      {items.map((item) => (
         <li key={item.title}>
           <a
             href={item.url}
@@ -25,14 +25,16 @@ export function Recommendations() {
             </span>
 
             <span className="mt-4 flex items-center gap-2.5">
-              <Image
-                src={item.author.image}
-                alt=""
-                width={64}
-                height={64}
-                sizes="28px"
-                className="pf-rule size-7 shrink-0 rounded-full border object-cover"
-              />
+              {item.author.image ? (
+                <Image
+                  src={item.author.image}
+                  alt=""
+                  width={64}
+                  height={64}
+                  sizes="28px"
+                  className="pf-rule size-7 shrink-0 rounded-full border object-cover"
+                />
+              ) : null}
               <span className="pf-meta">
                 <span className="pf-strong">{item.author.name}</span>
                 {" — "}

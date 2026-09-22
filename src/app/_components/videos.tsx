@@ -1,17 +1,20 @@
 import Image from "next/image";
-import { sortedVideos } from "./data";
+import { getVideos } from "./content";
+import { byOrder } from "./data";
 
 /**
- * Videos, as stills at card width rather than a grid — the source holds one item.
+ * Videos, as stills at card width rather than a grid — there is one record.
  *
  * The anchor is capped at the card's width so the hover tint hugs the still. The
  * extra `1.5rem` is the `-mx-3 px-3` bleed, keeping its left edge aligned with the
  * rows in other sections.
  */
-export function Videos() {
+export async function Videos() {
+  const { items } = await getVideos();
+
   return (
     <ul className="pf-rule divide-y">
-      {sortedVideos.map((video) => (
+      {byOrder(items).map((video) => (
         <li key={video.url}>
           <a
             href={video.url}
@@ -20,13 +23,15 @@ export function Videos() {
             className="pf-row -mx-3 block max-w-[calc(36rem+1.5rem)] px-3 py-4"
           >
             <span className="pf-frame pf-rule relative block aspect-video overflow-hidden border">
-              <Image
-                src={video.thumbnail}
-                alt=""
-                fill
-                sizes="(min-width: 768px) 576px, 100vw"
-                className="object-cover"
-              />
+              {video.thumbnail ? (
+                <Image
+                  src={video.thumbnail}
+                  alt=""
+                  fill
+                  sizes="(min-width: 768px) 576px, 100vw"
+                  className="object-cover"
+                />
+              ) : null}
             </span>
 
             <span className="mt-3 flex items-baseline gap-2">

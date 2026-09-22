@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { portfolio, sections } from "./_components/data";
+import { getIntro, getSite } from "./_components/content";
+import { siteUrl } from "./_components/site-url";
 import "./globals.css";
 
 // Inter's alternate glyphs (`cv05`, `cv08`, `ss03`) are enabled in `globals.css`.
@@ -10,17 +11,43 @@ const inter = Inter({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: {
-    template: `%s | ${sections.intro.title}`,
-    default: portfolio.site.title,
-  },
-  description: portfolio.site.description,
-};
+/**
+ * Absolute URLs for canonical links and social cards. Set `NEXT_PUBLIC_SITE_URL`
+ * on the host; the localhost fallback only matters in development, where nothing
+ * consumes them.
+ */
+
+export async function generateMetadata(): Promise<Metadata> {
+  const [site, intro] = await Promise.all([getSite(), getIntro()]);
+
+  return {
+    metadataBase: new URL(siteUrl),
+    title: {
+      template: `%s | ${intro.title}`,
+      default: site.title,
+    },
+    description: site.description,
+    alternates: { canonical: "/" },
+    openGraph: {
+      type: "profile",
+      siteName: site.title,
+      title: site.title,
+      description: site.description,
+      url: "/",
+      ...(intro.profileImage ? { images: [intro.profileImage] } : {}),
+    },
+    twitter: {
+      card: "summary",
+      title: site.title,
+      description: site.description,
+    },
+  };
+}
 
 /**
  * The document shell. The portfolio's own chrome — rail, masthead, footer — lives
- * in `(site)/layout.tsx`, so `/admin` can supply its own without inheriting it.
+ * in `(site)/layout.tsx`, so `/admin` and `/signin` can supply their own without
+ * inheriting it.
  */
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (

@@ -1,203 +1,63 @@
-import portfolioJson from "../../../data/portfolio.json";
+import type { Action, ArticlesSection, SocialLink } from "./types";
 
 /**
- * Typed view over `data/portfolio.json`, cast once here because the raw JSON
- * infers awkward union types.
+ * Sorting and formatting over the content, with no content of its own. The reads
+ * live in `content.ts`; the shapes in `types.ts`.
  *
- * Adding a section: add it to the JSON under `sections` plus `sectionOrder`,
- * declare its shape below, then register the component in `sections.tsx`.
+ * Source date ranges were written long-hand and inconsistently ("October, 2022 -
+ * Present", "2019 - 2022"), and the editor keeps them that way, so the parsing
+ * here stays deliberately forgiving.
  */
 
-export type SocialLink = {
-  order: number;
-  site: string;
-  title: string;
-  url: string;
-};
+export type Link = { label: string; url: string };
 
-export type Action = {
-  label: string;
-  url?: string | null;
-  type?: string;
-  calendar?: { namespace: string; username: string };
-};
+/** Records that carry their own sort field. */
+export function byOrder<T extends { order: number }>(items: T[]): T[] {
+  return [...items].sort((a, b) => a.order - b.order);
+}
 
-/** Every section's heading row. `note` and `navLabel` are optional at source. */
-export type SectionHeader = {
-  title: string;
-  /** One-line gloss under the panel heading. */
-  note?: string;
-  /** Shorter wording for the rail. Falls back to the title. */
-  navLabel?: string;
-};
+export function sortedLinks(links: SocialLink[]): SocialLink[] {
+  return [...links].sort((a, b) => a.order - b.order);
+}
 
-type ListSection<Item> = SectionHeader & { items: Item[] };
+/** Newest first; the stored order interleaves a pinned post. */
+export function sortedArticles(
+  items: ArticlesSection["items"],
+): ArticlesSection["items"] {
+  return [...items].sort(
+    (a, b) =>
+      new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
+  );
+}
 
-export type Portfolio = {
-  site: { title: string; description: string };
-  sectionOrder: string[];
-  sections: {
-    intro: SectionHeader & {
-      bio: string;
-      profileImage: string;
-      headingImages: { url: string; alt: string }[];
-      socialLinks: SocialLink[];
-      actions: Action[];
-    };
-    /** Heading only: the panel's body is composed from the other sections. */
-    about: SectionHeader;
-    /** Retained because the JSON still carries it; unused in the UI. */
-    skills: ListSection<{
-      icon: string;
-      level: number;
-      order: number;
-      title: string;
-      url: string;
-    }>;
-    education: ListSection<{
-      dateRange: string;
-      description: string | null;
-      institution: string;
-      location: string;
-      logo: string;
-      title: string;
-      url: string | null;
-    }>;
-    experience: ListSection<{
-      company: string;
-      dateRange: string;
-      details: string[];
-      location: string;
-      logo: string;
-      order: number;
-      title: string;
-      url: string | null;
-    }>;
-    youtubeVideos: ListSection<{
-      order: number;
-      thumbnail: string;
-      title: string;
-      url: string;
-    }>;
-    articles: ListSection<{
-      title: string;
-      /** Addresses the post's own page, in the admin and later on the site. */
-      slug: string;
-      url: string;
-      coverImage: string;
-      publishedAt: string;
-      readTimeMinutes: number;
-      views: number;
-      pinned?: boolean;
-      excerpt: string | null;
-    }> & { viewAll: { label: string; url: string } };
-    projects: ListSection<{
-      description: string;
-      link: string;
-      logo: string;
-      order: number;
-      tags: string[];
-      title: string;
-    }>;
-    awards: ListSection<{
-      date: string;
-      description: string;
-      logo: string;
-      order: number;
-      organization: string;
-      title: string;
-      url: string | null;
-    }>;
-    recommendations: ListSection<{
-      author: { bio: string; image: string; name: string };
-      body: string;
-      title: string;
-      url: string;
-    }>;
-    connect: SectionHeader & {
-      newsletter: {
-        inputLabel: string;
-        placeholder: string;
-        submitLabel: string;
-        loadingLabel: string;
-        messages: { invalidEmail: string; success: string; error: string };
-      };
-    };
-  };
-  footer: {
-    signature: { type: string; owner: string; image: string };
-    socialLinks: SocialLink[];
-    actions: Action[];
-    copyright: string;
-  };
-};
-
-export const portfolio = portfolioJson as unknown as Portfolio;
-
-export const sections = portfolio.sections;
-
-/** Source order of the page's sections, including `intro`. */
-export const sectionOrder = portfolio.sectionOrder;
-
-// Read structurally, so the registry can resolve a heading for a section not yet
-// added to the `Portfolio` type.
-export const sectionMeta: Record<string, SectionHeader | undefined> =
-  portfolio.sections;
-
-export const sortedExperience = [...sections.experience.items].sort(
-  (a, b) => a.order - b.order,
-);
-
-export const sortedAwards = [...sections.awards.items].sort(
-  (a, b) => a.order - b.order,
-);
-
-export const sortedVideos = [...sections.youtubeVideos.items].sort(
-  (a, b) => a.order - b.order,
-);
-
-export const sortedProjects = [...sections.projects.items].sort(
-  (a, b) => a.order - b.order,
-);
-
-/** Newest first; the source order interleaves a pinned post. */
-export const sortedArticles = [...sections.articles.items].sort(
-  (a, b) =>
-    new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
-);
-
-export const footerLinks = [...portfolio.footer.socialLinks].sort(
-  (a, b) => a.order - b.order,
-);
-
-export const currentRole = sortedExperience[0];
-
-type Link = { label: string; url: string };
-
-// A `calendar` action addresses Cal.com by user and event rather than by URL.
+// A `calendar` action addresses Cal.com by user and event rather than by URL. The
+// editor's blank record leaves both empty, so an unfilled one is not a link.
 function actionLink(action: Action): Link | null {
-  if (action.calendar) {
-    const { username, namespace } = action.calendar;
+  const calendar = action.calendar;
+
+  if (calendar?.username && calendar.namespace) {
     return {
       label: action.label,
-      url: `https://cal.com/${username}/${namespace}`,
+      url: `https://cal.com/${calendar.username}/${calendar.namespace}`,
     };
   }
 
   return action.url ? { label: action.label, url: action.url } : null;
 }
 
-export const footerActions = portfolio.footer.actions
-  .map(actionLink)
-  .filter((link): link is Link => link !== null);
+export function actionLinks(actions: Action[]): Link[] {
+  return actions.map(actionLink).filter((link): link is Link => link !== null);
+}
 
-// The source `viewAll.url` is a relative path from the old site, so an unusable
-// one falls back to the origin of the articles' own absolute URLs.
-export const blogUrl = (() => {
-  const authored = sections.articles.viewAll.url;
+/**
+ * Where "View all" points. The stored value is a relative path from the old site,
+ * so an unusable one falls back to the origin of the posts' own absolute URLs.
+ */
+export function blogUrl(section: ArticlesSection): string | null {
+  const authored = section.viewAll.url;
   if (/^https?:\/\//.test(authored)) return authored;
 
-  const sample = sections.articles.items[0]?.url;
+  const sample = section.items[0]?.url;
   if (!sample) return null;
 
   try {
@@ -205,7 +65,7 @@ export const blogUrl = (() => {
   } catch {
     return null;
   }
-})();
+}
 
 const MONTHS = [
   "Jan",
@@ -227,21 +87,12 @@ export function formatViews(views: number): string {
   return views >= 1000 ? `${(views / 1000).toFixed(1)}k` : String(views);
 }
 
-/**
- * The year that anchors an entry.
- *
- * Source date ranges are written long-hand and inconsistently
- * ("October, 2022 - Present", "2019 - 2022"), so the first four-digit run is
-/**
- * The start year of a source range. These are written long-hand and
- * inconsistently ("October, 2022 - Present", "2019 - 2022"), so the first
- * four-digit run wins.
- */
+/** The start year of a range. The first four-digit run wins. */
 export function startYear(value: string): string {
   return value.match(/\d{4}/)?.[0] ?? value.trim();
 }
 
-/** Source bullets are stored with a literal "- " prefix. */
+/** Stored bullets keep a literal "- " prefix. */
 export function cleanBullet(detail: string): string {
   return detail.replace(/^\s*-\s*/, "").trim();
 }
@@ -260,9 +111,9 @@ export function shortCompany(company: string): string {
 }
 
 /**
- * A source range as two short endpoints — `["Feb 22", "Sep 22"]`. Ranges with no
- * months keep their years; ongoing ones end in "Now". A trailing "(Contract)" is
- * left to `rangeQualifier`.
+ * A range as two short endpoints — `["Feb 22", "Sep 22"]`. Ranges with no months
+ * keep their years; ongoing ones end in "Now". A trailing "(Contract)" is left to
+ * `rangeQualifier`.
  */
 export function dateEndpoints(dateRange: string): [string, string | null] {
   const ongoing = /present|current|now/i.test(dateRange);

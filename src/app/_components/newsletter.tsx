@@ -1,22 +1,26 @@
 "use client";
 
 import { useId, useState } from "react";
-import { sections } from "./data";
-
-const newsletter = sections.connect.newsletter;
+import type { NewsletterCopy } from "./types";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 type Status = "idle" | "loading" | "success" | "error";
 
-// NOTE: no backend here, so `subscribe` resolves locally. Point it at a real
-// endpoint when one exists; the error branch is already wired.
-async function subscribe(_email: string): Promise<void> {
-  await new Promise((resolve) => setTimeout(resolve, 600));
-}
-
-/** Newsletter sign-up, rendered in the footer on every page. */
-export function Newsletter() {
+/**
+ * Newsletter sign-up, rendered in the footer on every page.
+ *
+ * Both the copy and the action arrive as props: the footer is a cached server
+ * component, and passing a server function through one is the way to give a client
+ * form something to call without making the footer dynamic.
+ */
+export function Newsletter({
+  copy,
+  subscribe,
+}: {
+  copy: NewsletterCopy;
+  subscribe: (email: string) => Promise<boolean>;
+}) {
   const inputId = useId();
   const [value, setValue] = useState("");
   const [status, setStatus] = useState<Status>("idle");
@@ -27,7 +31,7 @@ export function Newsletter() {
 
     if (!EMAIL_PATTERN.test(value.trim())) {
       setStatus("error");
-      setMessage(newsletter.messages.invalidEmail);
+      setMessage(copy.messages.invalidEmail);
       return;
     }
 
@@ -35,13 +39,20 @@ export function Newsletter() {
     setMessage(null);
 
     try {
-      await subscribe(value.trim());
+      const ok = await subscribe(value.trim());
+
+      if (!ok) {
+        setStatus("error");
+        setMessage(copy.messages.error);
+        return;
+      }
+
       setStatus("success");
-      setMessage(newsletter.messages.success);
+      setMessage(copy.messages.success);
       setValue("");
     } catch {
       setStatus("error");
-      setMessage(newsletter.messages.error);
+      setMessage(copy.messages.error);
     }
   }
 
@@ -50,7 +61,7 @@ export function Newsletter() {
   return (
     <div className="max-w-lg">
       <label htmlFor={inputId} className="pf-body block">
-        {newsletter.inputLabel}
+        {copy.inputLabel}
       </label>
 
       <form onSubmit={handleSubmit} noValidate className="mt-3.5">
@@ -68,7 +79,7 @@ export function Newsletter() {
                 setMessage(null);
               }
             }}
-            placeholder={newsletter.placeholder}
+            placeholder={copy.placeholder}
             aria-invalid={status === "error"}
             aria-describedby={message ? `${inputId}-message` : undefined}
             className="pf-input pf-rule min-w-0 flex-1 rounded-md border bg-transparent px-3 py-2 text-[0.875rem] focus:outline-none"
@@ -78,7 +89,7 @@ export function Newsletter() {
             disabled={isLoading}
             className="pf-button shrink-0 rounded-md px-4 py-2 text-[0.8125rem] font-medium disabled:opacity-60"
           >
-            {isLoading ? newsletter.loadingLabel : newsletter.submitLabel}
+            {isLoading ? copy.loadingLabel : copy.submitLabel}
           </button>
         </div>
 

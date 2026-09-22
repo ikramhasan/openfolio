@@ -1,20 +1,17 @@
-import {
-  blogUrl,
-  formatViews,
-  sections,
-  shortDate,
-  sortedArticles,
-} from "./data";
+import { getArticles } from "./content";
+import { blogUrl, formatViews, shortDate, sortedArticles } from "./data";
 import { DateCell, TableHead, TableLinkRow, TableList } from "./table";
 
 /** Posts as rows, newest first. */
-export function Articles() {
+export async function Articles() {
+  const { items } = await getArticles();
+
   return (
     <div>
       <TableHead left="Date" middle="Article" right="Views" />
 
       <TableList>
-        {sortedArticles.map((article) => (
+        {sortedArticles(items).map((article) => (
           <TableLinkRow
             key={article.url}
             left={<DateCell from={shortDate(article.publishedAt)} />}
@@ -40,17 +37,20 @@ export function Articles() {
 }
 
 /** "View all" link, set on the section heading row. */
-export function ArticlesAside() {
-  if (!blogUrl) return null;
+export async function ArticlesAside() {
+  const section = await getArticles();
+  const href = blogUrl(section);
+
+  if (!href) return null;
 
   return (
     <a
-      href={blogUrl}
+      href={href}
       target="_blank"
       rel="noreferrer"
       className="pf-link-quiet pf-meta shrink-0"
     >
-      {sections.articles.viewAll.label} ↗
+      {section.viewAll.label} ↗
     </a>
   );
 }

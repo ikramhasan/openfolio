@@ -1,9 +1,5 @@
-import {
-  cleanBullet,
-  dateEndpoints,
-  rangeQualifier,
-  sortedExperience,
-} from "./data";
+import { getExperience } from "./content";
+import { byOrder, cleanBullet, dateEndpoints, rangeQualifier } from "./data";
 import { Mark } from "./mark";
 import {
   DateCell,
@@ -13,14 +9,16 @@ import {
   TableRow,
 } from "./table";
 
-/** Roles as rows, linked where the source carries a company URL. */
-export function Experience() {
+/** Roles as rows, linked where the record carries a company URL. */
+export async function Experience() {
+  const { items } = await getExperience();
+
   return (
     <div>
       <TableHead left="Dates" middle="Role" />
 
       <TableList>
-        {sortedExperience.map((item) => {
+        {byOrder(items).map((item) => {
           const key = `${item.company}-${item.title}`;
           const [from, to] = dateEndpoints(item.dateRange);
           const qualifier = rangeQualifier(item.dateRange);

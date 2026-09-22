@@ -2,24 +2,30 @@ import type { ReactNode } from "react";
 import { About } from "./about";
 import { Articles, ArticlesAside } from "./articles";
 import { Awards } from "./awards";
-import { sectionMeta, sectionOrder } from "./data";
+import { type CacheKey, getNav, tagFor } from "./content";
 import { Education } from "./education";
 import { Experience } from "./experience";
 import { Projects } from "./projects";
 import { Recommendations } from "./recommendations";
+import type { Nav } from "./types";
 import { Videos } from "./videos";
 
 /**
  * The section registry. Each entry becomes a rail item and a route.
  *
- * Adding a section: write the component, add an entry to `REGISTRY`. Ordering
- * comes from `sectionOrder` in the JSON, except `lead: true` which pins to the
- * front. Anything registered but unsequenced is appended. Headings, subtitles and
- * rail labels come from the JSON, not from here.
+ * Adding a section: write the component, add an entry to `REGISTRY`, and list the
+ * sections it reads in `reads`. Ordering comes from the stored `sectionOrder`,
+ * except `lead: true` which pins to the front. Anything registered but unsequenced
+ * is appended. Headings, subtitles and rail labels are stored content, not written
+ * here.
+ *
+ * `reads` is what makes a save invalidate the right routes: the page tags its own
+ * cache entry with these, so editing Experience refreshes `/experience` and the
+ * About panel that quotes it, and nothing else.
  */
 
 export type SectionEntry = {
-  /** Matches the key under `sections` in `data/portfolio.json`. */
+  /** Matches the section key in the stored content. */
   id: string;
   /** URL segment, where the id reads badly. Ignored for the lead section. */
   slug?: string;
@@ -28,86 +34,135 @@ export type SectionEntry = {
   aside?: ReactNode;
   /** Pins ahead of the data-ordered entries. */
   lead?: boolean;
+  /** Cache keys this section's body reaches, directly or through a child. */
+  reads: CacheKey[];
 };
 
-// In the JSON but deliberately not rendered as sections: `intro` is the masthead,
-// `skills` was dropped, `connect` moved to the footer.
+// Stored as sections but not rendered as one: `intro` is the masthead, `skills`
+// was dropped, `connect` moved to the footer.
 const STANDALONE_IDS = new Set(["intro", "skills", "connect"]);
 
 const REGISTRY: SectionEntry[] = [
-  { id: "about", lead: true, body: <About /> },
-  { id: "experience", body: <Experience /> },
-  { id: "projects", body: <Projects /> },
-  { id: "articles", body: <Articles />, aside: <ArticlesAside /> },
-  { id: "youtubeVideos", slug: "videos", body: <Videos /> },
-  { id: "education", body: <Education /> },
-  { id: "awards", body: <Awards /> },
-  { id: "recommendations", slug: "references", body: <Recommendations /> },
+  {
+    id: "about",
+    lead: true,
+    body: <About />,
+    // The prose is composed from the roles, and the photo strip from the intro.
+    reads: ["about", "experience", "intro"],
+  },
+  { id: "experience", body: <Experience />, reads: ["experience"] },
+  { id: "projects", body: <Projects />, reads: ["projects"] },
+  {
+    id: "articles",
+    body: <Articles />,
+    aside: <ArticlesAside />,
+    reads: ["articles"],
+  },
+  {
+    id: "youtubeVideos",
+    slug: "videos",
+    body: <Videos />,
+    reads: ["youtubeVideos"],
+  },
+  { id: "education", body: <Education />, reads: ["education"] },
+  { id: "awards", body: <Awards />, reads: ["awards"] },
+  {
+    id: "recommendations",
+    slug: "references",
+    body: <Recommendations />,
+    reads: ["recommendations"],
+  },
 ];
 
 const byId = new Map(REGISTRY.map((entry) => [entry.id, entry]));
 
-export const pageSections: SectionEntry[] = (() => {
+export type RoutedSection = SectionEntry & {
+  path: string;
+  /** Answers for `/` rather than a path of its own. */
+  home: boolean;
+  title: string;
+  note?: string;
+  navLabel: string;
+  /** Rail numbering, "01" upward. */
+  index: string;
+  /** Every tag the route's own cache entry depends on. */
+  tags: string[];
+};
+
+function segmentsOf(entry: SectionEntry, home: boolean): string[] {
+  return home ? [] : [entry.slug ?? entry.id];
+}
+
+function route(entry: SectionEntry, nav: Nav, position: number): RoutedSection {
+  const heading = nav.byKey[entry.id];
+  const title = heading?.title ?? entry.id;
+  const home = position === 0;
+
+  return {
+    ...entry,
+    path: `/${segmentsOf(entry, home).join("/")}`,
+    home,
+    title,
+    ...(heading?.note ? { note: heading.note } : {}),
+    navLabel: heading?.navLabel || title,
+    index: String(position + 1).padStart(2, "0"),
+    tags: [tagFor("nav"), ...entry.reads.map(tagFor)],
+  };
+}
+
+/**
+ * The sections the site routes to, in order. Not cached itself — it holds React
+ * elements — but the nav read inside it is.
+ */
+export async function routedSections(): Promise<RoutedSection[]> {
+  const nav = await getNav();
+
   const lead = REGISTRY.filter((entry) => entry.lead);
 
-  const ordered = sectionOrder
+  const ordered = nav.order
     .map((id) => byId.get(id))
     .filter((entry): entry is SectionEntry => Boolean(entry) && !entry?.lead);
 
   const seen = new Set([...lead, ...ordered].map((entry) => entry.id));
   const unsequenced = REGISTRY.filter((entry) => !seen.has(entry.id));
 
-  return [...lead, ...ordered, ...unsequenced];
-})();
+  const sequence = [...lead, ...ordered, ...unsequenced];
 
-export function sectionTitle(entry: SectionEntry): string {
-  return sectionMeta[entry.id]?.title ?? entry.id;
+  if (process.env.NODE_ENV !== "production") {
+    warnOnGaps(nav, sequence);
+  }
+
+  return sequence.map((entry, position) => route(entry, nav, position));
 }
 
-export function sectionNote(entry: SectionEntry): string | undefined {
-  return sectionMeta[entry.id]?.note || undefined;
+export async function sectionForPath(
+  path: string,
+): Promise<RoutedSection | undefined> {
+  return (await routedSections()).find((entry) => entry.path === path);
 }
 
-// The first section answers for `/` rather than a path of its own, so promoting a
-// different one moves the home page with it.
-const homeId = pageSections[0].id;
-
-export function isHome(entry: SectionEntry): boolean {
-  return entry.id === homeId;
+export async function navItems() {
+  return (await routedSections()).map((entry) => ({
+    href: entry.path,
+    label: entry.navLabel,
+    index: entry.index,
+  }));
 }
 
-export function sectionSegments(entry: SectionEntry): string[] {
-  return isHome(entry) ? [] : [entry.slug ?? entry.id];
-}
-
-export function sectionPath(entry: SectionEntry): string {
-  return `/${sectionSegments(entry).join("/")}`;
-}
-
-export const sectionByPath = new Map(
-  pageSections.map((entry) => [sectionPath(entry), entry]),
-);
-
-export const navItems = pageSections.map((entry, index) => ({
-  href: sectionPath(entry),
-  label: sectionMeta[entry.id]?.navLabel || sectionTitle(entry),
-  index: String(index + 1).padStart(2, "0"),
-}));
-
-// Last in the file deliberately: these call helpers that close over `homeId`, so
-// running them earlier would read it before initialisation.
-if (process.env.NODE_ENV !== "production") {
-  const missing = sectionOrder.filter(
+function warnOnGaps(nav: Nav, sequence: SectionEntry[]): void {
+  const missing = nav.order.filter(
     (id) => !byId.has(id) && !STANDALONE_IDS.has(id),
   );
 
   if (missing.length > 0) {
     console.warn(
-      `Section(s) present in portfolio.json but not registered in _components/sections.tsx: ${missing.join(", ")}. They will not render.`,
+      `Section(s) in the stored content but not registered in _components/sections.tsx: ${missing.join(", ")}. They will not render.`,
     );
   }
 
-  const paths = pageSections.map((entry) => sectionPath(entry));
+  const paths = sequence.map((entry, position) =>
+    segmentsOf(entry, position === 0).join("/"),
+  );
   const duplicates = paths.filter((path, i) => paths.indexOf(path) !== i);
 
   if (duplicates.length > 0) {

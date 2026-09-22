@@ -4,20 +4,12 @@ import { useDraft } from "../_lib/draft";
 
 /** The only place a change leaves the editor. */
 
-const MESSAGE = {
-  idle: "",
-  saving: "Saving…",
-  saved:
-    "Saved to the draft. Nothing is written yet — the repository has no backend.",
-  failed: "Could not save. Nothing was lost; try again.",
-} as const;
-
 // Shared by both dock buttons, so the pair differs only in fill.
 const SHAPE = "rounded-md px-4 py-2 text-[0.8125rem] font-medium";
 
 export function SaveDock() {
-  const { dirty, saveState, save, discard } = useDraft();
-  const message = MESSAGE[saveState];
+  const { dirty, saveState, saveMessage, save, discard } = useDraft();
+  const message = saveState === "saving" ? "Saving…" : saveMessage;
 
   if (!dirty && !message) return null;
 

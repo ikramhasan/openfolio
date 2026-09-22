@@ -8,13 +8,16 @@ import {
   useMemo,
   useState,
 } from "react";
-import type { Portfolio } from "../../_components/data";
+import type { Portfolio } from "../../_components/types";
+import type { SaveResult } from "./actions";
 import { getList, getPath, move, renumber, setList, setPath } from "./paths";
-import { repository } from "./repository";
 
 /**
  * The working copy: one portfolio value, plus the last saved one to compare it
  * against.
+ *
+ * The save is handed in as a server function rather than imported, so this file
+ * stays the client-side store and knows nothing about where content lives.
  */
 
 type SaveState = "idle" | "saving" | "saved" | "failed";
@@ -26,6 +29,12 @@ type Draft = {
   portfolio: Portfolio;
   dirty: boolean;
   saveState: SaveState;
+  /** What the last save did, or why it did not. */
+  saveMessage: string | null;
+  /** Preview URLs for `storage:<id>` image references. */
+  previewFor: (token: string) => string;
+  /** Records an upload so its preview resolves before the next save. */
+  registerUpload: (token: string, url: string) => void;
   read: (path: string) => unknown;
   readList: (path: string) => unknown[];
   setField: (path: string, value: unknown) => void;
@@ -47,21 +56,36 @@ function ordered(list: unknown[], options?: ListOptions): unknown[] {
   return options?.orderKey ? renumber(list, options.orderKey) : list;
 }
 
+function describe(result: SaveResult): string {
+  if (!result.ok) return result.error;
+
+  return result.changed.length === 0
+    ? "Nothing to save — the content already matched."
+    : `Saved. Refreshed ${result.changed.join(", ")}.`;
+}
+
 export function DraftProvider({
   initial,
+  storageUrls,
+  save: persist,
   children,
 }: {
   initial: Portfolio;
+  storageUrls: Record<string, string>;
+  save: (portfolio: Portfolio) => Promise<SaveResult>;
   children: ReactNode;
 }) {
   const [saved, setSaved] = useState(initial);
   const [draft, setDraft] = useState(initial);
   const [saveState, setSaveState] = useState<SaveState>("idle");
+  const [saveMessage, setSaveMessage] = useState<string | null>(null);
+  const [previews, setPreviews] = useState(storageUrls);
 
   const edit = useCallback((change: (current: Portfolio) => Portfolio) => {
     // An edit mid-save must not return the dock to idle: that would re-enable
     // Save and let a second write overtake the first.
     setSaveState((state) => (state === "saving" ? state : "idle"));
+    setSaveMessage(null);
     setDraft(change);
   }, []);
 
@@ -80,6 +104,12 @@ export function DraftProvider({
       portfolio: draft,
       dirty: draft !== saved,
       saveState,
+      saveMessage,
+
+      previewFor: (token) => previews[token] ?? "",
+      registerUpload: (token, url) => {
+        setPreviews((current) => ({ ...current, [token]: url }));
+      },
 
       read: (path) => getPath(draft, path),
       readList: (path) => getList(draft, path),
@@ -106,24 +136,36 @@ export function DraftProvider({
 
       save: () => {
         setSaveState("saving");
+        setSaveMessage(null);
 
         // The draft can change while this is in flight; comparing against what was
         // actually sent leaves those later edits dirty.
-        repository.save(draft).then(
-          () => {
+        persist(draft).then(
+          (result) => {
+            setSaveMessage(describe(result));
+
+            if (!result.ok) {
+              setSaveState("failed");
+              return;
+            }
+
             setSaved(draft);
             setSaveState("saved");
           },
-          () => setSaveState("failed"),
+          () => {
+            setSaveState("failed");
+            setSaveMessage("Could not reach the server. Try again.");
+          },
         );
       },
 
       discard: () => {
         setDraft(saved);
         setSaveState("idle");
+        setSaveMessage(null);
       },
     };
-  }, [draft, saved, saveState, edit]);
+  }, [draft, saved, saveState, saveMessage, previews, edit, persist]);
 
   return (
     <DraftContext.Provider value={value}>{children}</DraftContext.Provider>

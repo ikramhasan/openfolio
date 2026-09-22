@@ -1,24 +1,27 @@
-import { type Portfolio, portfolio } from "../../_components/data";
+import "server-only";
+
+import { api } from "@convex/_generated/api";
+import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
+import { fetchQuery } from "convex/nextjs";
+import type { Portfolio } from "../../_components/types";
 
 /**
- * The seam between the editor and storage — the only place that knows where the
- * content comes from.
+ * The editor's read. Writes are in `actions.ts`, because they are called from the
+ * client and have to be server functions; this one the layout awaits directly.
  *
- * There is no backend yet: `load` hands back the bundled JSON and `save` resolves
- * without writing. Replacing the two implementations is the whole wiring job;
- * `load` is already awaited on the server (`admin/layout.tsx`) and `save` is
- * called from the client, so a real one needs a server action or a route handler.
+ * The token comes from the request's cookies and is handed to Convex, which checks
+ * it: `api.admin.load` throws for anyone who is not the admin. Read as a signed-in
+ * request, image fields come back as `storage:<id>` references rather than resolved
+ * URLs, so saving a record whose photograph was not touched cannot turn a stored
+ * file into a URL that expires. `storageUrls` carries the previews for them.
  */
 
-export type PortfolioRepository = {
-  load(): Promise<Portfolio>;
-  save(next: Portfolio): Promise<void>;
+export type Draft = {
+  portfolio: Portfolio;
+  storageUrls: Record<string, string>;
 };
 
-export const repository: PortfolioRepository = {
-  async load() {
-    return portfolio;
-  },
-
-  async save(_next) {},
-};
+export async function load(): Promise<Draft> {
+  const token = await convexAuthNextjsToken();
+  return fetchQuery(api.admin.load, {}, { token });
+}

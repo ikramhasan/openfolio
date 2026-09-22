@@ -1,21 +1,29 @@
-import { footerActions, footerLinks, portfolio } from "./data";
+import { subscribeToNewsletter } from "../_actions/newsletter";
+import { getConnect, getFooter } from "./content";
+import { actionLinks, sortedLinks } from "./data";
 import { Newsletter } from "./newsletter";
 import { Signature } from "./signature";
 
-const footer = portfolio.footer;
-
 /** The footer: signature, newsletter sign-up, links, copyright. */
-export function Footer() {
+export async function Footer() {
+  const footer = await getFooter();
+  const { newsletter } = await getConnect();
+
+  const links = sortedLinks(footer.socialLinks);
+  const actions = actionLinks(footer.actions);
+
   return (
     <footer className="pf-rule mt-16 border-t pt-9 pb-14">
-      <Signature />
+      <Signature signature={footer.signature} />
 
-      <Newsletter />
+      {/* The action is passed in rather than imported by the client component, so
+          the form works from a cached, prerendered footer. */}
+      <Newsletter copy={newsletter} subscribe={subscribeToNewsletter} />
 
       {/* `mt-9` matches the `pt-9` above, so the form sits evenly between the
           top rule and the links. */}
       <ul className="pf-meta mt-9 flex flex-wrap gap-x-5 gap-y-3">
-        {footerLinks.map((link) => (
+        {links.map((link) => (
           <li key={link.site}>
             <a
               href={link.url}
@@ -29,7 +37,7 @@ export function Footer() {
           </li>
         ))}
 
-        {footerActions.map((action) => (
+        {actions.map((action) => (
           <li key={action.url}>
             <a
               href={action.url}

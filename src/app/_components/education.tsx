@@ -1,4 +1,5 @@
-import { dateEndpoints, sections } from "./data";
+import { getEducation } from "./content";
+import { dateEndpoints } from "./data";
 import { Mark } from "./mark";
 import {
   DateCell,
@@ -8,16 +9,16 @@ import {
   TableRow,
 } from "./table";
 
-const education = sections.education;
+/** Qualifications as rows. Stored ranges carry no months, so years only. */
+export async function Education() {
+  const { items } = await getEducation();
 
-/** Qualifications as rows. Source ranges carry no months, so years only. */
-export function Education() {
   return (
     <div>
       <TableHead left="Dates" middle="Qualification" />
 
       <TableList>
-        {education.items.map((item) => {
+        {items.map((item) => {
           const [from, to] = dateEndpoints(item.dateRange);
 
           const body = (

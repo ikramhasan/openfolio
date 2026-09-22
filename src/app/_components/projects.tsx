@@ -1,15 +1,18 @@
-import { formatTags, sortedProjects } from "./data";
+import { getProjects } from "./content";
+import { byOrder, formatTags } from "./data";
 import { Mark } from "./mark";
 import { TableHead, TableLinkRow, TableList } from "./table";
 
-/** Projects as rows. The left column is an ordinal: the source has no dates. */
-export function Projects() {
+/** Projects as rows. The left column is an ordinal: the records have no dates. */
+export async function Projects() {
+  const { items } = await getProjects();
+
   return (
     <div>
       <TableHead left="No." middle="Project" right="Link" />
 
       <TableList>
-        {sortedProjects.map((project, index) => (
+        {byOrder(items).map((project, index) => (
           <TableLinkRow
             key={project.title}
             left={String(index + 1).padStart(2, "0")}

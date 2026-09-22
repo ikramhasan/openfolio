@@ -1,21 +1,23 @@
 import Image from "next/image";
-import { sections } from "./data";
-
-const intro = sections.intro;
+import { getIntro } from "./content";
 
 /** Portrait, name, bio — the only block that persists across sections. */
-export function Masthead() {
+export async function Masthead() {
+  const intro = await getIntro();
+
   return (
     <header className="pt-8 pb-10 lg:pt-14 lg:pb-10 xl:pt-16">
-      <Image
-        src={intro.profileImage}
-        alt={`Portrait of ${intro.title}`}
-        width={497}
-        height={497}
-        sizes="64px"
-        priority
-        className="pf-portrait size-16 rounded-full object-cover"
-      />
+      {intro.profileImage ? (
+        <Image
+          src={intro.profileImage}
+          alt={`Portrait of ${intro.title}`}
+          width={497}
+          height={497}
+          sizes="64px"
+          priority
+          className="pf-portrait size-16 rounded-full object-cover"
+        />
+      ) : null}
 
       <h1 className="pf-display mt-7 text-balance">{intro.title}</h1>
 

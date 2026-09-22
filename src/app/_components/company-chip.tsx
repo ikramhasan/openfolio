@@ -2,9 +2,8 @@
 
 import Image from "next/image";
 import { useEffect, useId, useRef, useState } from "react";
-import { compactRange, type Portfolio, shortCompany } from "./data";
-
-type Role = Portfolio["sections"]["experience"]["items"][number];
+import { compactRange, shortCompany } from "./data";
+import type { Role } from "./types";
 
 const MIN_ROOM_BELOW = 220;
 const FLIP_MARGIN = 80;
@@ -116,14 +115,16 @@ export function CompanyChip({ role }: { role: Role }) {
         className="pf-chip"
       >
         <span className="pf-chip-mark">
-          <Image
-            src={role.logo}
-            alt=""
-            width={32}
-            height={32}
-            sizes="16px"
-            className="size-full object-contain"
-          />
+          {role.logo ? (
+            <Image
+              src={role.logo}
+              alt=""
+              width={32}
+              height={32}
+              sizes="16px"
+              className="size-full object-contain"
+            />
+          ) : null}
         </span>
         {shortCompany(role.company)}
       </button>
@@ -142,14 +143,16 @@ export function CompanyChip({ role }: { role: Role }) {
         <span className="pf-chip-panel-inner">
           <span className="flex items-start gap-2.5">
             <span className="pf-chip-panel-mark">
-              <Image
-                src={role.logo}
-                alt=""
-                width={64}
-                height={64}
-                sizes="28px"
-                className="size-full object-contain"
-              />
+              {role.logo ? (
+                <Image
+                  src={role.logo}
+                  alt=""
+                  width={64}
+                  height={64}
+                  sizes="28px"
+                  className="size-full object-contain"
+                />
+              ) : null}
             </span>
 
             <span className="block min-w-0">

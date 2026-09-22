@@ -1,6 +1,7 @@
 "use client";
 
-import { useId } from "react";
+import { useId, useRef, useState } from "react";
+import { createUploadUrl } from "../_lib/actions";
 import { useDraft } from "../_lib/draft";
 import type { Field, FieldKind } from "../_lib/schema";
 
@@ -76,7 +77,7 @@ export function FieldInput({ path, field }: { path: string; field: Field }) {
       </label>
 
       <div className="mt-1.5 flex items-start gap-2">
-        {field.kind === "image" ? <Thumbnail src={text} /> : null}
+        {field.kind === "image" ? <Thumbnail token={text} /> : null}
 
         {multiline ? (
           <textarea
@@ -102,6 +103,10 @@ export function FieldInput({ path, field }: { path: string; field: Field }) {
         )}
       </div>
 
+      {field.kind === "image" ? (
+        <Upload path={path} label={field.label} />
+      ) : null}
+
       {field.hint ? (
         <p id={describedBy} className="pf-meta pf-faint mt-1.5">
           {field.hint}
@@ -112,10 +117,94 @@ export function FieldInput({ path, field }: { path: string; field: Field }) {
 }
 
 /**
- * A plain `<img>`: the source is whatever host the author pastes, and
- * `next/image` only serves the ones allowed in `next.config.ts`.
+ * An uploader beside the text input, so an image can be either a file on the
+ * deployment or a URL on someone else's CDN.
+ *
+ * The bytes go straight from the browser to Convex, which hands back a storage id.
+ * What lands in the draft is `storage:<id>`, not the URL that id currently resolves
+ * to: those are minted on read and must not be stored.
  */
-function Thumbnail({ src }: { src: string }) {
+const MAX_BYTES = 8 * 1024 * 1024;
+
+function Upload({ path, label }: { path: string; label: string }) {
+  const draft = useDraft();
+  const input = useRef<HTMLInputElement>(null);
+  const [state, setState] = useState<"idle" | "busy">("idle");
+  const [error, setError] = useState<string | null>(null);
+
+  async function upload(file: File) {
+    setError(null);
+
+    if (!file.type.startsWith("image/")) {
+      setError("That is not an image.");
+      return;
+    }
+
+    if (file.size > MAX_BYTES) {
+      setError("Too large — 8 MB is the limit.");
+      return;
+    }
+
+    setState("busy");
+
+    try {
+      const url = await createUploadUrl();
+      if (!url) throw new Error("no upload url");
+
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": file.type },
+        body: file,
+      });
+
+      if (!response.ok) throw new Error(`upload failed: ${response.status}`);
+
+      const { storageId } = (await response.json()) as { storageId: string };
+      const token = `storage:${storageId}`;
+
+      draft.registerUpload(token, URL.createObjectURL(file));
+      draft.setField(path, token);
+    } catch {
+      setError("Upload failed. Try again.");
+    } finally {
+      setState("idle");
+      if (input.current) input.current.value = "";
+    }
+  }
+
+  return (
+    <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1">
+      <input
+        ref={input}
+        type="file"
+        accept="image/*"
+        aria-label={`Upload ${label.toLowerCase()}`}
+        disabled={state === "busy"}
+        onChange={(event) => {
+          const file = event.target.files?.[0];
+          if (file) void upload(file);
+        }}
+        className="pf-meta pf-faint min-w-0 max-w-full"
+      />
+
+      {state === "busy" ? (
+        <output className="pf-meta pf-muted">Uploading…</output>
+      ) : null}
+
+      {error ? <output className="pf-meta pf-strong">{error}</output> : null}
+    </div>
+  );
+}
+
+/**
+ * A plain `<img>`: the source is whatever host the author pastes, and `next/image`
+ * only serves the ones allowed in `next.config.ts`. A `storage:<id>` reference is
+ * resolved through the preview map the draft carries.
+ */
+function Thumbnail({ token }: { token: string }) {
+  const draft = useDraft();
+  const src = token.startsWith("storage:") ? draft.previewFor(token) : token;
+
   return (
     <span className="pf-frame pf-thumb">
       {src ? (

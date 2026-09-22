@@ -1,4 +1,5 @@
-import { shortDate, sortedAwards } from "./data";
+import { getAwards } from "./content";
+import { byOrder, shortDate } from "./data";
 import {
   DateCell,
   TableHead,
@@ -8,13 +9,15 @@ import {
 } from "./table";
 
 /** Awards as rows. One date each, so the left column is a single line. */
-export function Awards() {
+export async function Awards() {
+  const { items } = await getAwards();
+
   return (
     <div>
       <TableHead left="Date" middle="Award" />
 
       <TableList>
-        {sortedAwards.map((award) => {
+        {byOrder(items).map((award) => {
           const body = (
             <>
               <span className="pf-title block">{award.title}</span>
