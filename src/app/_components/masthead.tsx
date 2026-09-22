@@ -11,10 +11,13 @@ const intro = sections.intro;
  * sit here and reads as *content* (the current role, the links, the photo strip)
  * moved into the About panel, so navigating to a section does not leave a growing
  * header pinned above the section you actually asked for.
+ *
+ * The top padding is tighter below `lg`, where the rail is a sticky strip
+ * directly above this rather than a column beside it.
  */
 export function Masthead() {
   return (
-    <header className="pt-14 pb-10 sm:pt-16">
+    <header className="pt-8 pb-10 lg:pt-14 lg:pb-10 xl:pt-16">
       <Image
         src={intro.profileImage}
         alt={`Portrait of ${intro.title}`}

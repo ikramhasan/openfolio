@@ -46,12 +46,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="flex min-h-full flex-col">
         <div
           id="top"
-          className="mx-auto grid w-full max-w-6xl flex-1 gap-x-16 px-6 sm:px-10 lg:grid-cols-[200px_minmax(0,1fr)]"
+          className="mx-auto grid w-full max-w-6xl flex-1 grid-cols-[minmax(0,1fr)] gap-x-16 px-6 sm:px-10 lg:grid-cols-[200px_minmax(0,1fr)]"
         >
           {/*
-            Sticky from `lg`. Below that the rail stays put as a plain vertical
-            list above the content: it is the only way to reach a section, so it
-            can never be hidden.
+            The rail is the only way to reach a section, so it is never hidden
+            behind a menu button. It is a sticky vertical index from `lg` and a
+            sticky horizontal strip below that — see `_components/rail.tsx`.
           */}
           <Rail items={navItems} name={sections.intro.title} />
 

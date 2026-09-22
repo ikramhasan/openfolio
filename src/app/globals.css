@@ -8,8 +8,9 @@
  * hue. Imagery is never desaturated — logos, portraits and stills are always in
  * full colour, and the only hover affordance is the row tint.
  *
- * The layout is a sticky index rail on the left and one section at a time on the
- * right, switched as tabs. Structurally each panel is a table: a set of rows on
+ * The layout is a sticky index rail and one section at a time beside it — the
+ * rail vertical and to the left from `lg`, and a sticky horizontal strip above
+ * the content below that. Structurally each panel is a table: a set of rows on
  * a shared grid (year · content · link), with tiny column headers stating what
  * the columns are. Every row is a hover-tinted target across its full width,
  * whether or not it leads anywhere.
@@ -20,10 +21,10 @@
 /*
  * Reserve the scrollbar's width whether or not the page needs one.
  *
- * Only one panel shows at a time, and the short ones (Education, Contact) do not
- * fill the viewport while the long ones do. Without this the scrollbar appears
- * and disappears as you move between tabs, and the centred layout shifts
- * sideways by its width each time.
+ * Only one section shows at a time, and the short ones (Education, Contact) do
+ * not fill the viewport while the long ones do. Without this the scrollbar
+ * appears and disappears as you move between sections, and the centred layout
+ * shifts sideways by its width each time.
  *
  * Browsers without `scrollbar-gutter` ignore this and keep the shift; browsers
  * with overlay scrollbars (macOS by default) never had it to begin with.
@@ -269,20 +270,17 @@ body {
   background-color: var(--pf-hover);
 }
 
-/* ------------------------------------------------------------------ tabs */
+/* ------------------------------------------------------------------ rail */
 
 /*
  * The rail. A quiet list — muted ink, a hover tint, no marker or rule — so it
  * stays subordinate to the content beside it.
  *
- * The current tab reuses that same hover tint and ink made persistent, rather
+ * The current item reuses that same hover tint and ink made persistent, rather
  * than introducing a border or a heavier weight: without some current state
  * nothing says which section you are looking at.
  */
 .pf-tab {
-  /* A `<button>` needs these reset to sit like the plain link this looks like. */
-  width: 100%;
-  text-align: left;
   color: var(--pf-muted);
   text-decoration: none;
   transition:
@@ -290,6 +288,72 @@ body {
     background-color 140ms ease;
   border-radius: 3px;
 }
+
+/*
+ * The horizontal strip below `lg`. The scrollbar is hidden — it would sit under
+ * the items in a bar this short — so the fades at the overflowing edges are what
+ * say the strip scrolls, and the current item is centred by script so a neighbour
+ * is always in view.
+ *
+ * `data-fade` is maintained by `rail.tsx`, which marks only the edges that have
+ * content past them: no fade at the start when already at the start.
+ */
+.pf-rail {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  overscroll-behavior-x: contain;
+}
+
+.pf-rail::-webkit-scrollbar {
+  display: none;
+}
+
+.pf-rail[data-fade="right"] {
+  mask-image: linear-gradient(to right, #000 calc(100% - 2.5rem), transparent);
+}
+
+.pf-rail[data-fade="left"] {
+  mask-image: linear-gradient(to left, #000 calc(100% - 2.5rem), transparent);
+}
+
+.pf-rail[data-fade="both"] {
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 2.5rem calc(100% - 2.5rem),
+    transparent
+  );
+}
+
+/*
+ * Drag to scroll, for pointers that cannot swipe. Touch is left alone — it pans
+ * the container natively — so the affordance only shows on a fine pointer, and
+ * only when there is somewhere to drag to.
+ */
+@media (hover: hover) and (pointer: fine) {
+  .pf-rail[data-scrollable="true"] {
+    cursor: grab;
+  }
+
+  .pf-rail[data-dragging="true"] {
+    cursor: grabbing;
+  }
+}
+
+/* A drag would otherwise select the labels it passes over. */
+.pf-rail[data-dragging="true"] {
+  user-select: none;
+}
+
+/* Mid-drag the strip must track the pointer exactly, not ease toward it. */
+.pf-rail[data-dragging="true"] .pf-tab {
+  transition: none;
+}
+
+/*
+ * The vertical rail has no overflow to signal. `rail.tsx` clears the attributes
+ * these rules hang off, so there is nothing to undo at the breakpoint.
+ */
 
 @media (hover: hover) and (pointer: fine) {
   .pf-tab:hover {
