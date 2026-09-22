@@ -486,9 +486,33 @@ export const ADMIN_GROUPS: AdminGroup[] = [
     ],
   },
   {
+    id: "contact",
+    label: "Contact",
+    title: "Contact",
+    note: "The row of links at the foot of every page: the networks first, then the actions.",
+    blocks: [
+      {
+        kind: "records",
+        label: "Links",
+        path: "footer.socialLinks",
+        addLabel: "Add link",
+        orderKey: "order",
+        record: LINK_RECORD,
+      },
+      {
+        kind: "records",
+        label: "Actions",
+        path: "footer.actions",
+        addLabel: "Add action",
+        record: ACTION_RECORD,
+      },
+    ],
+  },
+  {
     id: "footer",
     label: "Footer",
     title: "Footer",
+    note: "The signature and the small print beneath it.",
     blocks: [
       {
         kind: "fields",
@@ -516,21 +540,6 @@ export const ADMIN_GROUPS: AdminGroup[] = [
         fields: [
           { key: "copyright", label: "Copyright", kind: "text", wide: true },
         ],
-      },
-      {
-        kind: "records",
-        label: "Links",
-        path: "footer.socialLinks",
-        addLabel: "Add link",
-        orderKey: "order",
-        record: LINK_RECORD,
-      },
-      {
-        kind: "records",
-        label: "Actions",
-        path: "footer.actions",
-        addLabel: "Add action",
-        record: ACTION_RECORD,
       },
     ],
   },

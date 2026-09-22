@@ -71,8 +71,8 @@ registry logs a warning.
 
 `/admin` edits everything the portfolio reads, in the portfolio's own furniture —
 the same rail, panel and ink. One group per rail item: profile, one per section,
-the footer, and the section order. Lists reorder by dragging a handle or by
-lifting a row with the space bar and moving it with the arrows.
+contact, the footer, and the section order. Lists reorder by dragging a handle or
+by lifting a row with the space bar and moving it with the arrows.
 
 ```
 admin/layout.tsx          Loads the content, provides the draft, holds the save dock.
