@@ -5,6 +5,7 @@ import { Awards } from "./awards";
 import { type CacheKey, getNav, tagFor } from "./content";
 import { Education } from "./education";
 import { Experience } from "./experience";
+import { Music } from "./music";
 import { Projects } from "./projects";
 import { Recommendations } from "./recommendations";
 import { Tools } from "./tools";
@@ -54,6 +55,7 @@ const REGISTRY: SectionEntry[] = [
   { id: "experience", body: <Experience />, reads: ["experience"] },
   { id: "projects", body: <Projects />, reads: ["projects"] },
   { id: "tools", body: <Tools />, reads: ["tools"] },
+  { id: "music", body: <Music />, reads: ["music"] },
   {
     id: "articles",
     body: <Articles />,

@@ -9,7 +9,9 @@ import type { ReactNode } from "react";
  * carry `.pf-row` so the hover tint spans every record, linkable or not.
  */
 
-const GRID =
+/** The three columns every section's rows share. Exported for the rows that are
+ *  not built from the primitives below — Music's, which are buttons. */
+export const ROW_GRID =
   "grid grid-cols-[4.25rem_minmax(0,1fr)] gap-x-4 sm:grid-cols-[5.5rem_minmax(0,1fr)_6.5rem] sm:gap-x-6";
 
 // Endpoints stacked on two lines: on one line the column would take a third of
@@ -41,7 +43,7 @@ export function TableHead({
   return (
     <div
       aria-hidden="true"
-      className={`pf-rule ${GRID} hidden border-b pb-2 sm:grid`}
+      className={`pf-rule ${ROW_GRID} hidden border-b pb-2 sm:grid`}
     >
       <span className="pf-column">{left}</span>
       <span className="pf-column">{middle}</span>
@@ -66,7 +68,7 @@ export function TableRow({
 }) {
   return (
     <li>
-      <div className={`pf-row ${GRID} -mx-3 px-3 py-4`}>
+      <div className={`pf-row ${ROW_GRID} -mx-3 px-3 py-4`}>
         <div className="min-w-0">{left}</div>
 
         <div className="min-w-0">{children}</div>
@@ -111,7 +113,7 @@ export function TableLinkRow({
       <Row
         href={href}
         {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
-        className={`pf-row ${GRID} -mx-3 px-3 py-4`}
+        className={`pf-row ${ROW_GRID} -mx-3 px-3 py-4`}
       >
         <span className="block min-w-0">{left}</span>
 

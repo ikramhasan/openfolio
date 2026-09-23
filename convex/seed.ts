@@ -108,6 +108,9 @@ type Json = {
         icon: string;
       }[];
     };
+    music: JsonHeader & {
+      items: { order: number; url: string; title: string; artist: string }[];
+    };
     awards: JsonHeader & {
       items: {
         date: string;
@@ -275,6 +278,15 @@ function toWire(): Wire {
           category: item.category,
           url: item.url,
           icon: item.icon,
+        })),
+      },
+      music: {
+        ...header(s.music),
+        items: ordered(s.music.items).map((item, order) => ({
+          order,
+          url: item.url,
+          title: item.title,
+          artist: item.artist,
         })),
       },
       awards: {

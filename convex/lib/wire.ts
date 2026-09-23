@@ -77,6 +77,15 @@ export const wireTool = v.object({
   icon: wireImage,
 });
 
+export const wireTrack = v.object({
+  order: v.number(),
+  /** What the player plays. Everything shown comes from it.  */
+  url: v.string(),
+  /** Not rendered: the editor's row label, and the frame's accessible name. */
+  title: v.string(),
+  artist: v.string(),
+});
+
 export const wireAward = v.object({
   order: v.number(),
   title: v.string(),
@@ -159,6 +168,11 @@ export const wireToolsSection = v.object({
   items: v.array(wireTool),
 });
 
+export const wireMusicSection = v.object({
+  ...header,
+  items: v.array(wireTrack),
+});
+
 export const wireAwardsSection = v.object({
   ...header,
   items: v.array(wireAward),
@@ -203,6 +217,7 @@ export const wirePortfolio = v.object({
     articles: wireArticlesSection,
     projects: wireProjectsSection,
     tools: wireToolsSection,
+    music: wireMusicSection,
     awards: wireAwardsSection,
     recommendations: wireRecommendationsSection,
     connect: wireConnectSection,
@@ -221,6 +236,7 @@ export const SECTION_KEYS = [
   "articles",
   "projects",
   "tools",
+  "music",
   "awards",
   "recommendations",
   "connect",

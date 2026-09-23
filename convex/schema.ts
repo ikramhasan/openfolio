@@ -208,6 +208,22 @@ export default defineSchema({
     icon: v.optional(imageRef),
   }).index("order", ["order"]),
 
+  /**
+   * Records the author listens to. The Spotify link is the whole record: the site
+   * renders Spotify's own player from it, which supplies the title and artist.
+   *
+   * `title` and `artist` are not rendered — the player shows them — but they are how
+   * a row is told apart in the editor, and they name the frame for a screen reader.
+   * Optional, so a row stored without them is still valid; the projection fills a
+   * blank.
+   */
+  music: defineTable({
+    order: v.number(),
+    url: v.string(),
+    title: v.optional(v.string()),
+    artist: v.optional(v.string()),
+  }).index("order", ["order"]),
+
   awards: defineTable({
     order: v.number(),
     title: v.string(),

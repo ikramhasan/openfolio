@@ -26,6 +26,7 @@
     "articles",
     "projects",
     "tools",
+    "music",
     "awards",
     "recommendations"
   ],
@@ -441,6 +442,11 @@
     "tools": {
       "title": "Tools I use",
       "note": "The software the work actually gets done in.",
+      "items": []
+    },
+    "music": {
+      "title": "On repeat",
+      "note": "Thirty seconds each here; the whole thing on Spotify.",
       "items": []
     },
     "awards": {

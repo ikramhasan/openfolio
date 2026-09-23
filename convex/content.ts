@@ -10,6 +10,7 @@ import {
   wireExperienceSection,
   wireFooter,
   wireIntro,
+  wireMusicSection,
   wireProjectsSection,
   wireRecommendationsSection,
   wireSite,
@@ -114,6 +115,15 @@ export const tools = query({
   handler: async (ctx) => ({
     ...(await project.header(ctx, "tools")),
     items: await project.tools(ctx, project.renderForSite(ctx)),
+  }),
+});
+
+export const music = query({
+  args: {},
+  returns: wireMusicSection,
+  handler: async (ctx) => ({
+    ...(await project.header(ctx, "music")),
+    items: await project.music(ctx),
   }),
 });
 

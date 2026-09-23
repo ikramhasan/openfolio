@@ -315,6 +315,19 @@ export async function writeSection(
       );
       return;
 
+    case "music":
+      await replaceList(
+        ctx,
+        "music",
+        next.sections.music.items.map((item, order) => ({
+          order,
+          url: item.url,
+          title: item.title,
+          artist: item.artist,
+        })),
+      );
+      return;
+
     case "awards":
       await replaceList(
         ctx,

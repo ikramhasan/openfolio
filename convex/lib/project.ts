@@ -195,6 +195,17 @@ export async function tools(ctx: QueryCtx, image: RenderImage) {
   );
 }
 
+export async function music(ctx: QueryCtx) {
+  const rows = await ctx.db.query("music").withIndex("order").collect();
+
+  return rows.map((row) => ({
+    order: row.order,
+    url: row.url,
+    title: row.title ?? "",
+    artist: row.artist ?? "",
+  }));
+}
+
 export async function awards(ctx: QueryCtx, image: RenderImage) {
   const rows = await ctx.db.query("awards").withIndex("order").collect();
 
@@ -338,6 +349,10 @@ export async function portfolio(ctx: QueryCtx, image: RenderImage) {
       tools: {
         ...(await sectionWith("tools")),
         items: await tools(ctx, image),
+      },
+      music: {
+        ...(await sectionWith("music")),
+        items: await music(ctx),
       },
       awards: {
         ...(await sectionWith("awards")),

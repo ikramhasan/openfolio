@@ -96,6 +96,7 @@ src/app/_components/
   table.tsx             Shared row/grid primitives every section is built from.
   masthead.tsx          Portrait, name, bio. Persists across tabs.
   tools.tsx             The tools, grouped under their category.
+  music.tsx             The tracks; `music-list.tsx` is their transport.
   about.tsx             Current role, links, photo strip, skills.
   prose-body.tsx        A stored body as markup, with no client JavaScript.
   <section>.tsx         One file per section.
@@ -313,6 +314,46 @@ title — or the slug field, for a post: the editor opens empty at the new addre
 the body stays under the old one, orphaned. Rename before writing, not after. And an
 untitled record has nothing to address yet, which the record list says rather than
 linking nowhere.
+
+## Music
+
+The Music section is Spotify's own player, once per record. Nothing is streamed from
+here, there is no API key and there is no JavaScript: each track is a plain iframe
+that plays thirty seconds to a visitor who is not signed in to Spotify and the whole
+track to one who is.
+
+It has to be the embed. The Web API's `preview_url` — a 30-second MP3 a player of our
+own could have used — returns `null` for applications created after November 2024,
+and the embed is what Spotify offers instead. Their widget terms settle how it looks:
+the widget must be shown "in the form made available by Spotify, without alteration",
+and not obfuscated, so the player is theirs and visible rather than driven from
+controls of ours.
+
+`spotifyEmbed` in `_components/data.ts` turns a share link into the embed's own URL —
+dropping `si`, a locale segment, an `embed` segment it may already carry — and
+answers `null` for anything that is not a Spotify link, so a mistyped record is left
+out rather than rendered as a broken frame. `theme=0` asks for their dark variant;
+the default takes its colour from the artwork, which no page here could live with.
+
+Two things in `music.tsx` are load-bearing:
+
+- The embed paints an opaque white backdrop of its own and draws a 12px-radius card
+  on top of it, so everything outside that curve is white. `color-scheme` and a
+  background on the iframe were both measured to make no difference to it. Clipping
+  can only be rid of it by rounding the frame to 12px or more — twice what anything
+  else here uses — so the four corners are covered instead, in the card's own
+  `#1f1f1f`, and the frame keeps `rounded-md` like every other framed thing.
+- `loading="lazy"` matters more here than elsewhere: there is one third-party frame
+  per record, so without it a visit to `/music` fetches the lot.
+
+The player supplies the title, the artist and the artwork, so the section renders
+nothing of its own around it. The stored title and artist are still carried, though:
+they are how a row is told apart in the editor, where a list of Spotify URLs is
+unreadable, and they name the frame for a screen reader, which cannot see into the
+document it holds.
+
+Note that these players set Spotify's cookies on visitors, which their terms expect a
+privacy policy to disclose. There isn't one on the site yet.
 
 ## Security
 

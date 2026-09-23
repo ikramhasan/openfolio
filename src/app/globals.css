@@ -395,6 +395,13 @@ html[data-theme="dark"] body {
   }
 }
 
+/* Covers the embed's own white backdrop where it shows around Spotify's card.
+   Spotify's grey rather than one of the ink ramp's values: it has to match their
+   card, which is the same in both themes. */
+.pf-embed-corner {
+  background-color: #1f1f1f;
+}
+
 /* ----------------------------------------------------------------- chips */
 
 /* A company chip in the About summary. Sized in `em` so it reads as a raised

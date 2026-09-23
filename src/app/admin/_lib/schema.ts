@@ -359,6 +359,37 @@ export const ADMIN_GROUPS: AdminGroup[] = [
     ],
   },
   {
+    id: "music",
+    label: "Music",
+    title: "Music",
+    note: "One Spotify player per link, which supplies the title, artist and artwork on the site — the two fields here are just so you can tell the rows apart. Thirty seconds for a visitor who is not signed in, the whole track for one who is.",
+    blocks: [
+      heading("music"),
+      {
+        kind: "records",
+        label: "Tracks",
+        path: "sections.music.items",
+        addLabel: "Add track",
+        orderKey: "order",
+        record: {
+          summaryKey: "title",
+          fields: [
+            { key: "title", label: "Track", kind: "text" },
+            { key: "artist", label: "Artist", kind: "text" },
+            {
+              key: "url",
+              label: "Spotify link",
+              kind: "url",
+              wide: true,
+              hint: "Share → Copy link, from the track, album or playlist. A link anywhere else cannot be played.",
+            },
+          ],
+          blank: { order: 0, title: "", artist: "", url: "" },
+        },
+      },
+    ],
+  },
+  {
     id: "articles",
     label: "Articles",
     title: "Articles",

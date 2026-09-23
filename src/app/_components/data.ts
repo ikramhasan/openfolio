@@ -182,6 +182,45 @@ export function formatTags(tags: string[]): string {
   return tags.map((tag) => tag.toLowerCase()).join(", ");
 }
 
+/**
+ * A Spotify link as the player that plays it, or `null` for anything that is not one
+ * — a mistyped record is left out rather than rendered as a broken frame, and a
+ * `javascript:` value never reaches an `src`.
+ *
+ * Share links carry a `si` parameter and sometimes a locale, and may already be embed
+ * links; all that matters is what kind of thing it is and its id.
+ */
+export function spotifyEmbed(
+  url: string,
+): { src: string; height: number; kind: string } | null {
+  try {
+    const { protocol, hostname, pathname } = new URL(url);
+    if (protocol !== "https:") return null;
+    if (hostname !== "spotify.com" && !hostname.endsWith(".spotify.com")) {
+      return null;
+    }
+
+    const [kind, id] = pathname
+      .split("/")
+      .filter(
+        (part) => part !== "" && part !== "embed" && !part.startsWith("intl-"),
+      );
+
+    if (!kind || !id) return null;
+
+    // One thing fits the compact player; a collection needs room for its list.
+    const height = kind === "track" || kind === "episode" ? 80 : 152;
+
+    return {
+      src: `https://open.spotify.com/embed/${kind}/${id}?theme=0`,
+      height,
+      kind,
+    };
+  } catch {
+    return null;
+  }
+}
+
 /** A URL as the site it points at — "figma.com". Unparseable values are left alone. */
 export function hostOf(url: string): string {
   try {

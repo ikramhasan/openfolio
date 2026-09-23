@@ -109,6 +109,13 @@ export async function getTools() {
   return fetchQuery(api.content.tools, {});
 }
 
+export async function getMusic() {
+  "use cache";
+  cacheLife("max");
+  cacheTag(tagFor("music"));
+  return fetchQuery(api.content.music, {});
+}
+
 export async function getAwards() {
   "use cache";
   cacheLife("max");
