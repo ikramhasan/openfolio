@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
-import { Panel } from "../../_components/panel";
-import { GroupEditor } from "../_components/group-editor";
-import { ADMIN_GROUPS, groupByPath, groupSegments } from "../_lib/schema";
+import { Panel } from "../../../_components/panel";
+import { GroupEditor } from "../../_components/group-editor";
+import { ADMIN_GROUPS, groupByPath, groupSegments } from "../../_lib/schema";
 
 /**
  * One group per route, the same shape as the site's sections: `/admin` is the first

@@ -152,6 +152,12 @@ export function shortDate(iso: string): string {
   return `${MONTHS[date.getUTCMonth()]} ${String(date.getUTCFullYear()).slice(2)}`;
 }
 
+/** An ISO date written out, for a page that is about one day rather than a range. */
+export function longDate(iso: string): string {
+  const date = new Date(iso);
+  return `${date.getUTCDate()} ${MONTHS[date.getUTCMonth()]} ${date.getUTCFullYear()}`;
+}
+
 /** A range as years only, for the chip panels. Keeps a trailing "(Contract)". */
 export function compactRange(dateRange: string): string {
   const years = dateRange.match(/\d{4}/g);

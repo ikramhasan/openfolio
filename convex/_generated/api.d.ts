@@ -9,11 +9,13 @@
  */
 
 import type * as admin from "../admin.js";
+import type * as articles from "../articles.js";
 import type * as auth from "../auth.js";
 import type * as content from "../content.js";
 import type * as files from "../files.js";
 import type * as http from "../http.js";
 import type * as lib_authz from "../lib/authz.js";
+import type * as lib_body from "../lib/body.js";
 import type * as lib_images from "../lib/images.js";
 import type * as lib_project from "../lib/project.js";
 import type * as lib_validators from "../lib/validators.js";
@@ -31,11 +33,13 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   admin: typeof admin;
+  articles: typeof articles;
   auth: typeof auth;
   content: typeof content;
   files: typeof files;
   http: typeof http;
   "lib/authz": typeof lib_authz;
+  "lib/body": typeof lib_body;
   "lib/images": typeof lib_images;
   "lib/project": typeof lib_project;
   "lib/validators": typeof lib_validators;

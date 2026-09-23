@@ -253,3 +253,63 @@
     animation: none;
   }
 }
+
+/* ------------------------------------------------- the generated editor */
+
+/*
+ * The Plate editor and the shadcn primitives under it are styled through the tokens
+ * in `globals.css`, so they already wear the site's ink. Three things they cannot
+ * get from a token are set here, once, rather than in ninety components.
+ */
+
+/* Focus: a 2px ink outline, as everything else on the site, in place of shadcn's
+   soft 3px ring. */
+.pf-focus:focus-visible {
+  outline: 2px solid var(--pf-ink);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+/* Elevation for the things that genuinely float — a menu, a floating toolbar. A
+   hairline ring plus two shallow layers, which survive any background; the ramp is
+   pure black and pure white so the ring cannot pick up a tint. */
+.pf-lifted,
+[data-radix-popper-content-wrapper] > * {
+  box-shadow:
+    0 0 0 1px oklch(0 0 0 / 0.06),
+    0 1px 2px -1px oklch(0 0 0 / 0.06),
+    0 4px 12px -2px oklch(0 0 0 / 0.08);
+}
+
+html[data-theme="dark"] .pf-lifted,
+html[data-theme="dark"] [data-radix-popper-content-wrapper] > * {
+  box-shadow:
+    0 0 0 1px oklch(1 0 0 / 0.1),
+    0 4px 16px -2px oklch(0 0 0 / 0.5);
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]) .pf-lifted,
+  html:not([data-theme="light"]) [data-radix-popper-content-wrapper] > * {
+    box-shadow:
+      0 0 0 1px oklch(1 0 0 / 0.1),
+      0 4px 16px -2px oklch(0 0 0 / 0.5);
+  }
+}
+
+/* Selection, in ink rather than in the registry's blue: the drag rectangle and the
+   text selection inside the writing column. */
+.pf-prose ::selection {
+  background-color: color-mix(in srgb, var(--pf-ink) 16%, transparent);
+}
+
+.slate-selection-area {
+  background-color: color-mix(in srgb, var(--pf-ink) 8%, transparent);
+  border-color: color-mix(in srgb, var(--pf-ink) 22%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pf-focus {
+    transition: none;
+  }
+}

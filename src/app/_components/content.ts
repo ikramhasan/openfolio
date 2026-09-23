@@ -75,6 +75,25 @@ export async function getArticles() {
   return fetchQuery(api.content.articles, {});
 }
 
+/**
+ * One post's own page, and the set of posts that have one. Both share the Articles
+ * section's tag: a body saved in the editor refreshes the list and the page it
+ * belongs to, and nothing else.
+ */
+export async function getArticle(slug: string) {
+  "use cache";
+  cacheLife("max");
+  cacheTag(tagFor("articles"));
+  return fetchQuery(api.articles.read, { slug });
+}
+
+export async function getWrittenArticles() {
+  "use cache";
+  cacheLife("max");
+  cacheTag(tagFor("articles"));
+  return fetchQuery(api.articles.written, {});
+}
+
 export async function getProjects() {
   "use cache";
   cacheLife("max");

@@ -1,8 +1,9 @@
 "use server";
 
 import { api } from "@convex/_generated/api";
+import type { Id } from "@convex/_generated/dataModel";
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
-import { fetchMutation } from "convex/nextjs";
+import { fetchMutation, fetchQuery } from "convex/nextjs";
 import { updateTag } from "next/cache";
 import { tagFor } from "../../_components/content";
 import type { Portfolio } from "../../_components/types";
@@ -53,6 +54,46 @@ export async function createUploadUrl(): Promise<string | null> {
     return await fetchMutation(api.files.generateUploadUrl, {}, { token });
   } catch {
     return null;
+  }
+}
+
+/** Where a file just uploaded can be read from, for the editor to display it. */
+export async function storageUrl(storageId: string): Promise<string | null> {
+  const token = await convexAuthNextjsToken();
+  if (!token) return null;
+
+  try {
+    return await fetchQuery(
+      api.files.url,
+      { storageId: storageId as Id<"_storage"> },
+      { token },
+    );
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * One post's body. Its own write rather than part of `save`: the body is not in the
+ * wire payload the draft store holds, and it is large enough that sending it with
+ * every save of every section would be wasteful.
+ */
+export async function saveArticle(
+  slug: string,
+  value: string,
+): Promise<SaveResult> {
+  const token = await convexAuthNextjsToken();
+  if (!token) return { ok: false, error: "Signed out. Sign in and try again." };
+
+  try {
+    await fetchMutation(api.articles.save, { slug, value }, { token });
+
+    // The list, the post's own page and the section route all read `articles`.
+    updateTag(tagFor("articles"));
+
+    return { ok: true, changed: ["articles"] };
+  } catch (error) {
+    return { ok: false, error: message(error) };
   }
 }
 

@@ -151,6 +151,23 @@ export default defineSchema({
     viewAll: v.object({ label: v.string(), url: v.string() }),
   }),
 
+  /**
+   * A post's body, written in the editor at `/admin/articles/<slug>`.
+   *
+   * Its own table rather than a column on `articles`, because a section save
+   * rewrites every row of that table from the wire payload and would drop a field
+   * the payload does not carry. Keyed by slug, which is what addresses the page.
+   *
+   * `value` is the Plate value as JSON text: it nests deeper than Convex objects
+   * allow and nothing queries inside it. Images in it are `storage:<id>` tokens,
+   * resolved on read — see `lib/body.ts`.
+   */
+  articleBodies: defineTable({
+    slug: v.string(),
+    value: v.string(),
+    updatedAt: v.number(),
+  }).index("slug", ["slug"]),
+
   projects: defineTable({
     order: v.number(),
     title: v.string(),

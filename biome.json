@@ -13,7 +13,11 @@
       "!.next",
       "!dist",
       "!build",
-      "!convex/_generated"
+      "!convex/_generated",
+      "!src/components",
+      "!src/hooks",
+      "!src/lib",
+      "!src/app/api/ai"
     ]
   },
   "formatter": {

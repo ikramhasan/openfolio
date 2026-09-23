@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { ReactNode } from "react";
 
 /**
@@ -83,23 +84,31 @@ export function TableRow({
 /**
  * A record whose whole row is the link. Content must not contain its own
  * anchors — nested links are invalid.
+ *
+ * `internal` routes through the app rather than out of it: the arrow turns and the
+ * new tab is dropped, since nothing is being handed to another site.
  */
 export function TableLinkRow({
   left,
   href,
   right,
+  internal,
   children,
 }: {
   left: ReactNode;
   href: string;
   right?: ReactNode;
+  internal?: boolean;
   children: ReactNode;
 }) {
-  const external = !href.startsWith("mailto:") && !href.startsWith("#");
+  const external =
+    !internal && !href.startsWith("mailto:") && !href.startsWith("#");
+
+  const Row = internal ? Link : "a";
 
   return (
     <li>
-      <a
+      <Row
         href={href}
         {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
         className={`pf-row ${GRID} -mx-3 px-3 py-4`}
@@ -111,10 +120,10 @@ export function TableLinkRow({
         <span className="pf-meta pf-figure col-start-2 mt-1.5 flex items-baseline gap-2 sm:col-start-3 sm:mt-0 sm:justify-end">
           {right}
           <span aria-hidden="true" className="pf-row-arrow">
-            ↗
+            {internal ? "→" : "↗"}
           </span>
         </span>
-      </a>
+      </Row>
     </li>
   );
 }

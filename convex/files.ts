@@ -5,8 +5,10 @@ import {
   type MutationCtx,
   mutation,
   type QueryCtx,
+  query,
 } from "./_generated/server";
 import { requireAdmin } from "./lib/authz";
+import { bodyStorageIds } from "./lib/body";
 import { type ImageRef, storageIdsIn } from "./lib/images";
 
 /**
@@ -22,6 +24,20 @@ export const generateUploadUrl = mutation({
   handler: async (ctx) => {
     await requireAdmin(ctx);
     return ctx.storage.generateUploadUrl();
+  },
+});
+
+/**
+ * Where a freshly uploaded file can be read from. Only the editor needs it — the
+ * site's URLs are minted inside the queries that return the content — so it is
+ * behind the same gate as the upload itself.
+ */
+export const url = query({
+  args: { storageId: v.id("_storage") },
+  returns: v.union(v.string(), v.null()),
+  handler: async (ctx, { storageId }) => {
+    await requireAdmin(ctx);
+    return ctx.storage.getUrl(storageId);
   },
 });
 
@@ -66,6 +82,7 @@ async function referencedStorageIds(
   ctx: QueryCtx | MutationCtx,
 ): Promise<Set<Id<"_storage">>> {
   const refs: (ImageRef | undefined)[] = [];
+  const ids: Id<"_storage">[] = [];
 
   const intro = await ctx.db.query("intro").first();
   refs.push(intro?.profileImage);
@@ -98,5 +115,10 @@ async function referencedStorageIds(
     refs.push(row.author.image);
   }
 
-  return new Set(storageIdsIn(refs));
+  // Images inside an article body, which are tokens in the stored JSON.
+  for (const row of await ctx.db.query("articleBodies").collect()) {
+    ids.push(...bodyStorageIds(row.value));
+  }
+
+  return new Set([...storageIdsIn(refs), ...ids]);
 }

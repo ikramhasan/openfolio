@@ -25,3 +25,12 @@ export async function load(): Promise<Draft> {
   const token = await convexAuthNextjsToken();
   return fetchQuery(api.admin.load, {}, { token });
 }
+
+/**
+ * One post's record and body, for the page that writes it. `null` where no post
+ * carries that slug, which the route turns into a 404.
+ */
+export async function loadArticle(slug: string) {
+  const token = await convexAuthNextjsToken();
+  return fetchQuery(api.articles.load, { slug }, { token });
+}
