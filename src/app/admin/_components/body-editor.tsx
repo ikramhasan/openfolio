@@ -1,5 +1,6 @@
 "use client";
 
+import type { WritableSection } from "@convex/lib/writable";
 import Link from "next/link";
 import { normalizeStaticValue, type Value } from "platejs";
 import { Plate, usePlateEditor } from "platejs/react";
@@ -9,10 +10,11 @@ import { EditorKit } from "@/components/editor/editor-kit";
 import "../../prose.css";
 import { Editor, EditorContainer } from "@/components/ui/editor";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { saveArticle } from "../_lib/actions";
+import { saveBody } from "../_lib/actions";
 
 /**
- * One post's body, in Plate, filling the window.
+ * One record's body, in Plate, filling the window. The same page for a post, a role,
+ * a project or an award: only the record it belongs to differs.
  *
  * A writing surface wants height above everything else, so the page carries only what
  * it cannot do without: where you came from, what you are writing, and the save. The
@@ -31,14 +33,22 @@ import { saveArticle } from "../_lib/actions";
 
 type SaveState = "idle" | "saving" | "saved" | "failed";
 
-export function ArticleEditor({
+export function BodyEditor({
+  section,
   slug,
   title,
   body,
+  back,
+  readPath,
 }: {
+  section: WritableSection;
   slug: string;
   title: string;
   body: string;
+  /** The group this record is edited in. */
+  back: { href: string; label: string };
+  /** Where the body will be read, shown under the title. */
+  readPath: string;
 }) {
   const editor = usePlateEditor({
     plugins: EditorKit,
@@ -53,7 +63,7 @@ export function ArticleEditor({
     setState("saving");
     setMessage(null);
 
-    saveArticle(slug, JSON.stringify(editor.children)).then(
+    saveBody(section, slug, JSON.stringify(editor.children)).then(
       (result) => {
         if (!result.ok) {
           setState("failed");
@@ -63,7 +73,7 @@ export function ArticleEditor({
 
         setDirty(false);
         setState("saved");
-        setMessage("Saved. The post is live.");
+        setMessage("Saved. The page is live.");
       },
       () => {
         setState("failed");
@@ -86,11 +96,8 @@ export function ArticleEditor({
       >
         <div className="flex min-h-0 flex-1 flex-col">
           <header className="pf-rule flex shrink-0 flex-wrap items-center gap-x-5 gap-y-2 border-b px-6 py-3 sm:px-8">
-            <Link
-              href="/admin/articles"
-              className="pf-link-quiet pf-meta shrink-0"
-            >
-              ← Articles
+            <Link href={back.href} className="pf-link-quiet pf-meta shrink-0">
+              ← {back.label}
             </Link>
 
             <span className="min-w-0 flex-1">
@@ -98,7 +105,7 @@ export function ArticleEditor({
                 {title || "Untitled"}
               </span>
               <span className="pf-meta pf-faint block truncate">
-                /articles/{slug}
+                {readPath}
               </span>
             </span>
 

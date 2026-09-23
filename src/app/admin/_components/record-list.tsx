@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { type ReactNode, useEffect, useId, useRef, useState } from "react";
+import { slugOf } from "../../_components/writing";
 import { useDraft } from "../_lib/draft";
 import { getPath, move } from "../_lib/paths";
 import type { Block } from "../_lib/schema";
@@ -219,24 +220,24 @@ function Record({
 }
 
 /**
- * The way into a record's own page. A record that has not been given its
- * addressing field yet has no page to open, and says so rather than linking
- * nowhere.
+ * The way into a record's own page. The address comes from the record — its slug
+ * where it keeps one, otherwise its title — so there is nothing to fill in first. An
+ * untitled record has nothing to address yet and says so.
  */
 function PageLink({ block, index }: { block: RecordsBlock; index: number }) {
   const draft = useDraft();
   const page = block.page;
   if (!page) return null;
 
-  const address = String(
-    draft.read(`${block.path}.${index}.${page.key}`) ?? "",
-  ).trim();
+  const item = draft.readList(block.path)[index];
+  const address = slugOf({
+    title: String(getPath(item, "title") ?? ""),
+    slug: String(getPath(item, "slug") ?? ""),
+  });
 
   if (!address) {
     return (
-      <span className="pf-meta pf-faint shrink-0 px-2.5">
-        Needs a {page.key}
-      </span>
+      <span className="pf-meta pf-faint shrink-0 px-2.5">Needs a title</span>
     );
   }
 

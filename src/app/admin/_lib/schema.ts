@@ -7,6 +7,8 @@
  * the server/client boundary as props.
  */
 
+import { WRITE_BASE, type WritableSection } from "../../_components/writing";
+
 export type FieldKind =
   | "text"
   | "textarea"
@@ -38,15 +40,18 @@ export type RecordSchema = {
 };
 
 /**
- * A record too large to edit in a row — an article body — is written on a page of
- * its own, addressed by one of its own fields.
+ * A record too large to edit in a row — a written body — is written on a page of its
+ * own, addressed by what the record derives rather than by a field to fill in.
  */
 export type RecordPage = {
   basePath: string;
-  /** The field that addresses the page. A record without it cannot be opened. */
-  key: string;
   label: string;
 };
+
+/** Where a section's bodies are written. One page, one route per section. */
+function writeRoute(section: WritableSection): RecordPage {
+  return { basePath: `${WRITE_BASE}/${section}`, label: "Write" };
+}
 
 export type Block =
   | { kind: "fields"; label: string; base: string; fields: Field[] }
@@ -216,7 +221,8 @@ export const ADMIN_GROUPS: AdminGroup[] = [
         path: "sections.experience.items",
         addLabel: "Add role",
         orderKey: "order",
-        note: "About names the first four roles in order, so adding or removing one needs an edit to `_components/about.tsx`.",
+        note: "About names the first four roles in order, so adding or removing one needs an edit to `_components/about.tsx`. Write gives a role a page of its own, at its title.",
+        page: writeRoute("experience"),
         record: {
           summaryKey: "title",
           fields: [
@@ -265,6 +271,8 @@ export const ADMIN_GROUPS: AdminGroup[] = [
         path: "sections.projects.items",
         addLabel: "Add project",
         orderKey: "order",
+        note: "Write gives a project a page of its own, at its title; the rest link straight out.",
+        page: writeRoute("projects"),
         record: {
           summaryKey: "title",
           fields: [
@@ -318,8 +326,8 @@ export const ADMIN_GROUPS: AdminGroup[] = [
         path: "sections.articles.items",
         addLabel: "Add post",
         sortable: false,
-        note: "Shown newest first, from the publish date — there is nothing to drag. The body is written on each post's own page.",
-        page: { basePath: "/admin/articles", key: "slug", label: "Write" },
+        note: "Shown newest first, from the publish date — there is nothing to drag. Write gives a post a page here rather than a link out.",
+        page: writeRoute("articles"),
         record: {
           summaryKey: "title",
           fields: [
@@ -329,7 +337,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
               label: "Slug",
               kind: "text",
               wide: true,
-              hint: "Addresses the post's own page. Changing it breaks the old link.",
+              hint: "The post's own page. Left empty it follows the title.",
             },
             { key: "url", label: "URL", kind: "url", wide: true },
             { key: "publishedAt", label: "Published", kind: "date" },
@@ -436,6 +444,8 @@ export const ADMIN_GROUPS: AdminGroup[] = [
         path: "sections.awards.items",
         addLabel: "Add award",
         orderKey: "order",
+        note: "Write gives an award a page of its own, at its title; the rest link straight out.",
+        page: writeRoute("awards"),
         record: {
           summaryKey: "title",
           fields: [

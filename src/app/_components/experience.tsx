@@ -1,4 +1,4 @@
-import { getExperience } from "./content";
+import { getExperience, getWritten } from "./content";
 import { byOrder, cleanBullet, dateEndpoints, rangeQualifier } from "./data";
 import { Mark } from "./mark";
 import {
@@ -8,10 +8,19 @@ import {
   TableList,
   TableRow,
 } from "./table";
+import { readPath, slugOf } from "./writing";
 
-/** Roles as rows, linked where the record carries a company URL. */
+/**
+ * Roles as rows. A role written here goes to its own page, before the company URL
+ * the record carries.
+ */
 export async function Experience() {
-  const { items } = await getExperience();
+  const [{ items }, written] = await Promise.all([
+    getExperience(),
+    getWritten("experience"),
+  ]);
+
+  const native = new Set(written);
 
   return (
     <div>
@@ -22,6 +31,9 @@ export async function Experience() {
           const key = `${item.company}-${item.title}`;
           const [from, to] = dateEndpoints(item.dateRange);
           const qualifier = rangeQualifier(item.dateRange);
+          const slug = slugOf(item);
+          const here = native.has(slug);
+          const href = here ? readPath("experience", slug) : item.url;
 
           const body = (
             <>
@@ -60,11 +72,12 @@ export async function Experience() {
             </>
           );
 
-          return item.url ? (
+          return href ? (
             <TableLinkRow
               key={key}
               left={<DateCell from={from} to={to} />}
-              href={item.url}
+              href={href}
+              internal={here}
             >
               {body}
             </TableLinkRow>

@@ -1,6 +1,7 @@
-import { getArticles, getWrittenArticles } from "./content";
+import { getArticles, getWritten } from "./content";
 import { blogUrl, formatViews, shortDate, sortedArticles } from "./data";
 import { DateCell, TableHead, TableLinkRow, TableList } from "./table";
+import { readPath, slugOf } from "./writing";
 
 /**
  * Posts as rows, newest first. A post written here goes to its own page; the
@@ -9,7 +10,7 @@ import { DateCell, TableHead, TableLinkRow, TableList } from "./table";
 export async function Articles() {
   const [{ items }, written] = await Promise.all([
     getArticles(),
-    getWrittenArticles(),
+    getWritten("articles"),
   ]);
 
   const native = new Set(written);
@@ -20,13 +21,14 @@ export async function Articles() {
 
       <TableList>
         {sortedArticles(items).map((article) => {
-          const here = native.has(article.slug);
+          const slug = slugOf(article);
+          const here = native.has(slug);
 
           return (
             <TableLinkRow
-              key={article.slug || article.url}
+              key={slug || article.url}
               left={<DateCell from={shortDate(article.publishedAt)} />}
-              href={here ? `/articles/${article.slug}` : article.url}
+              href={here ? readPath("articles", slug) : article.url}
               internal={here}
               right={<span>{formatViews(article.views)}</span>}
             >

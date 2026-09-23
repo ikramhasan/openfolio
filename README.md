@@ -46,7 +46,7 @@ on the deployment, and after that first sign-up there is no second one.
 convex/
   schema.ts             One table per section, plus the auth tables.
   content.ts            Public reads: one query per cached section.
-  articles.ts           One post's body: the public read and the editor's write.
+  bodies.ts             One record's body: the public read and the editor's write.
   admin.ts              The editor's read, and the save that diffs it.
   auth.ts               Password sign-in, and the single-user lockout.
   files.ts              Upload URLs, and the sweep for orphaned files.
@@ -59,7 +59,8 @@ convex/
     project.ts          Rows to that shape.
     write.ts            That shape back to rows.
     images.ts           Storage references, and what they become.
-    body.ts             The same, for the images inside an article body.
+    body.ts             The same, for the images inside a written body.
+    writable.ts         Which sections can be written here, and what addresses one.
     authz.ts            requireAdmin.
 
 data/portfolio.json     The content as it was before the database. Seed only.
@@ -68,7 +69,7 @@ src/proxy.ts            Proxies /api/auth; turns /admin and /api/ai away when si
 src/app/layout.tsx      Document shell, font, metadata, the pre-paint theme script.
 src/app/globals.css     The site's stylesheet. Classes are prefixed `pf-`.
 src/app/prose.css       The reading column: what a stored body looks like.
-src/app/sitemap.ts      One entry per section route, plus one per written post.
+src/app/sitemap.ts      One entry per section route, plus one per written record.
 src/app/robots.ts       Keeps /admin, /signin and /api out of the index.
 src/app/api/revalidate/ Publishes content changed outside the editor.
 src/app/api/ai/         The editor's AI routes. Behind the session.
@@ -76,21 +77,26 @@ src/app/signin/         Claim the account, or sign in.
 src/app/(site)/
   layout.tsx            The portfolio's chrome: rail, masthead, footer.
   [[...section]]/       One route per section; `/` is the lead one.
-  articles/[slug]/      One post written here, rendered without the editor.
+  articles/[slug]/      One record written here, rendered without the editor.
+  projects/[slug]/      The same, for a project.
+  experience/[slug]/    The same, for a role.
+  awards/[slug]/        The same, for an award.
 src/app/admin/          The editor. See "Admin" below.
 src/app/_actions/       Server functions the client calls.
 src/app/_components/
   content.ts            The cached reads. One loader and one tag per section.
   types.ts              The content's shapes, read off the Convex queries.
   data.ts               Sorting and formatting. No content of its own.
+  writing.ts            Where a written record is read, and where it is written.
   sections.tsx          The section registry — order, routes, bodies, tags.
   rail.tsx              Client: the section index, drag-to-scroll, edge fades.
   theme-toggle.tsx      Client: Auto / Light / Dark, at the foot of the rail.
   panel.tsx             The frame around one section.
+  written.tsx           The frame around one written record.
   table.tsx             Shared row/grid primitives every section is built from.
   masthead.tsx          Portrait, name, bio. Persists across tabs.
   about.tsx             Current role, links, photo strip, skills.
-  article-body.tsx      A stored body as markup, with no client JavaScript.
+  prose-body.tsx        A stored body as markup, with no client JavaScript.
   <section>.tsx         One file per section.
 src/components/         Generated: the Plate editor, from `shadcn add @plate/editor-ai`.
 src/hooks/              Generated, except `use-upload-file.ts` — see "Writing".
@@ -156,6 +162,11 @@ curl -X POST http://localhost:3000/api/revalidate \
 4. To make it editable, add a group to `ADMIN_GROUPS` in `admin/_lib/schema.ts`.
 5. If it has an image column, add it to `referencedStorageIds` in `convex/files.ts`,
    or the sweep will delete its files.
+6. To let its records be written here rather than only linked out to: add a body
+   table to the schema, name it in `WRITABLE_SECTIONS` and `BODY_TABLES`
+   (`convex/lib/writable.ts`), add its route to `READ_BASE` in
+   `_components/writing.ts`, give its records block a `page: writeRoute(<key>)`, and
+   add a `[slug]` page under `(site)/<section>/`.
 
 The rail, the numbering and the panel follow automatically. The route does not
 change. In development, a section in the stored order but missing from the registry
@@ -174,7 +185,8 @@ admin/layout.tsx          Guards the route. Nothing visual: the two kinds of pag
                           under it do not share their furniture.
 admin/(content)/          The groups: the rail, the header, the draft, the dock.
   [[...group]]/           One route per group, resolved from the schema.
-admin/articles/[slug]/    One post's body, filling the window. See "Writing".
+admin/write/              One record's body, filling the window. See "Writing".
+  [section]/[slug]/       The same page for all four writable sections.
 admin/admin.css           The editor's own classes, also `pf-` prefixed.
 admin/_lib/
   schema.ts               What is editable, as data: groups, blocks, fields.
@@ -187,26 +199,45 @@ admin/_components/        Field inputs, the sortable list, the record list, the 
 
 ## Writing
 
-A post is a row in Articles either way; what makes it native is a body. **Write** on
-a row opens `/admin/articles/<slug>`, which is Plate — the editor from
-`shadcn add @plate/editor-ai` — given the whole window. It sits outside the
-`(content)` group, so it carries none of the groups' furniture and does not load a
-draft of the portfolio to write one post: a header with where you came from, what you
-are writing and the save, then the column. The site's list then
-links to `/articles/<slug>` for the posts that have a body and out to `url` for the
-rest, so the imported posts keep working and nothing had to be migrated.
+A record can be a link out or a page here. **Write** on a row in Experience,
+Projects, Articles or Awards opens `/admin/write/<section>/<slug>`, which is Plate —
+the editor from `shadcn add @plate/editor-ai` — given the whole window. It sits
+outside the `(content)` group, so it carries none of the groups' furniture and does
+not load a draft of the portfolio to write one page: a header with where you came
+from, what you are writing and the save, then the column. The site's list then links
+to `/<section>/<slug>` for the records that have a body, out to the record's own URL
+for the rest, and nowhere at all for a record with neither — so the imported rows
+keep working and nothing had to be migrated.
 
-The body is a table of its own, `articleBodies`, keyed by slug and holding the Plate
-value as JSON text. Not a column on `articles`: a section save rewrites every row of
-that table from the wire payload, which does not carry a body and would drop it. It
-also keeps `admin.save` the size it was — the whole document goes over the wire on
-every save of every section, and an article does not belong in that.
+Nothing has to be filled in first: the record addresses its own page. Articles keep a
+slug of their own, because theirs were published elsewhere before this site existed
+and those links have to keep matching; every other section derives one from the title
+(`slugOf`, in `convex/lib/writable.ts`), which is what the lists already key their
+rows by. Two records in a section with the same title would therefore address one
+page, and a record with no title yet has no address — the record list says so rather
+than linking nowhere.
 
-Saving calls `api.articles.save` and revalidates `portfolio:articles`, the tag the
-list, the section route and the post's own page all carry. The public page renders
+The body is a table of its own per section — `experienceBodies`, `projectBodies`,
+`articleBodies`, `awardBodies`, named together in `convex/lib/writable.ts` — keyed by
+slug and holding the Plate value as JSON text. Not a column on the record: a section
+save rewrites every row of that table from the wire payload, which does not carry a
+body and would drop it. It also keeps `admin.save` the size it was — the whole
+document goes over the wire on every save of every section, and a body does not
+belong in that. One table per section rather than one keyed by both, because that is
+how the rest of the portfolio is stored, and because generalising `articleBodies` by
+renaming it would have orphaned every post already written.
+
+Saving calls `api.bodies.save` and revalidates `portfolio:<section>`, the tag the
+list, the section route and the record's own page all carry. The public page renders
 the stored value with `BaseEditorKit` on the server (`_components/prose-body.tsx`),
 so a reader downloads markup rather than an editor — bar one island, the copy button
 on a code block, which needs a clipboard the server has not got. It costs 3 KB.
+
+What sits around the prose is `_components/written.tsx`: the title, then whatever the
+record already says about itself — an excerpt, a date and a read time for a post, a
+company and its bullets for a role, tags and a link for a project — then the body.
+Those fields come from the section's existing query rather than a read of their own,
+so a written record costs one more cache entry, not two.
 
 What that body looks like is `app/prose.css`, and every static node component was
 rewritten against it: the registry ships a generic editor theme — blue links, yellow
@@ -219,8 +250,9 @@ later inherits it by adding one class. Code is the exception that carries hue, i
 across forty lines. Those values are the editor's own, so a block reads the same
 while it is being written and after it is published.
 
-The column is `.pf-prose` rather than anything named for articles, because a section
-given a written body later renders through the same `_components/prose-body.tsx`.
+The column is `.pf-prose` rather than anything named for articles, because all four
+sections render through the same `_components/prose-body.tsx`, and a fifth given a
+body later would too.
 
 Two things in there are load-bearing and easy to "fix" into bugs. `BlockListStatic`
 wraps ordered and todo lists only: for those, Plate leaves the block without a marker
@@ -235,10 +267,11 @@ mints a path that does not contain the id, so a URL cannot be read backwards. Th
 uploader writes the id onto the node beside the URL and `convex/lib/body.ts` makes
 the token from that, but only while the node's URL still resolves to that exact file,
 so replacing an uploaded image with one from a CDN is not undone by the next save.
-`files.ts` reads bodies before it sweeps, so an image in a post is not garbage.
+`files.ts` reads every section's bodies before it sweeps, so an image in one is not
+garbage.
 
-The editor wears the same column. `admin/articles/<slug>` puts `pf-prose` on the
-editable itself, and every node component — the editor's and its static pair — reads
+The editor wears the same column. `admin/write/<section>/<slug>` puts `pf-prose` on
+the editable itself, and every node component — the editor's and its static pair — reads
 from `app/prose.css`, so a heading, a quote or a code block is one decision rendered
 twice rather than two that drift. The chrome could not come from there: the toolbars,
 the menus and the shadcn primitives under them get the site's ink through the tokens
@@ -264,10 +297,11 @@ it those features answer 401 and the rest of the editor is unaffected. The regis
 settings dialog, which existed to hold a gateway key and pick from a list of gateway
 models, is gone with it.
 
-Two sharp edges. Renaming a slug leaves the body under the old one: the editor opens
-empty and the old row is orphaned, so rename before writing, not after. And a post
-with no `slug` has no page to open — the record list says so instead of linking
-nowhere.
+Two sharp edges. Renaming a record moves its page, because the address follows the
+title — or the slug field, for a post: the editor opens empty at the new address and
+the body stays under the old one, orphaned. Rename before writing, not after. And an
+untitled record has nothing to address yet, which the record list says rather than
+linking nowhere.
 
 ## Security
 
@@ -285,7 +319,7 @@ account so it can be claimed again. It touches no content.
 The gate that matters is in Convex, not in Next.js. `requireAdmin` in
 `convex/lib/authz.ts` takes the identity from the request's token — never from an
 argument — re-reads the admin flag from the database, and runs first in
-`admin.load`, `admin.save`, `articles.load`, `articles.save` and
+`admin.load`, `admin.save`, `bodies.load`, `bodies.save` and
 `files.generateUploadUrl`. `src/proxy.ts` and the redirect in `admin/layout.tsx` only
 save a round trip; deleting them would cost a redirect, not the authorisation. The
 exception is `/api/ai`, which is a Next.js route holding the Gemini key rather

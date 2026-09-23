@@ -1,6 +1,7 @@
 import "server-only";
 
 import { api } from "@convex/_generated/api";
+import type { WritableSection } from "@convex/lib/writable";
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
 import { fetchQuery } from "convex/nextjs";
 import type { Portfolio } from "../../_components/types";
@@ -27,10 +28,10 @@ export async function load(): Promise<Draft> {
 }
 
 /**
- * One post's record and body, for the page that writes it. `null` where no post
- * carries that slug, which the route turns into a 404.
+ * One record's title and body, for the page that writes it. `null` where no record
+ * in that section carries that slug, which the route turns into a 404.
  */
-export async function loadArticle(slug: string) {
+export async function loadBody(section: WritableSection, slug: string) {
   const token = await convexAuthNextjsToken();
-  return fetchQuery(api.articles.load, { slug }, { token });
+  return fetchQuery(api.bodies.load, { section, slug }, { token });
 }

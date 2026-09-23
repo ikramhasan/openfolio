@@ -1,17 +1,23 @@
 import type { MetadataRoute } from "next";
-import { getWrittenArticles } from "./_components/content";
+import { getWritten } from "./_components/content";
 import { routedSections } from "./_components/sections";
 import { siteUrl } from "./_components/site-url";
+import { readPath, WRITABLE_SECTIONS } from "./_components/writing";
 
 /**
- * One entry per section route, then one per post written here. The section set comes
- * from the stored order; posts that are only a link out belong to the site they were
- * published on, not to this one.
+ * One entry per section route, then one per record written here. The section set
+ * comes from the stored order; a record that is only a link out belongs to the site
+ * it points at, not to this one.
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [sections, written] = await Promise.all([
     routedSections(),
-    getWrittenArticles(),
+    Promise.all(
+      WRITABLE_SECTIONS.map(async (section) => ({
+        section,
+        slugs: await getWritten(section),
+      })),
+    ),
   ]);
 
   return [
@@ -20,10 +26,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly" as const,
       priority: entry.home ? 1 : 0.7,
     })),
-    ...written.map((slug) => ({
-      url: `${siteUrl}/articles/${slug}`,
-      changeFrequency: "monthly" as const,
-      priority: 0.5,
-    })),
+    ...written.flatMap(({ section, slugs }) =>
+      slugs.map((slug) => ({
+        url: `${siteUrl}${readPath(section, slug)}`,
+        changeFrequency: "monthly" as const,
+        priority: 0.5,
+      })),
+    ),
   ];
 }

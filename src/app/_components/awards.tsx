@@ -1,4 +1,4 @@
-import { getAwards } from "./content";
+import { getAwards, getWritten } from "./content";
 import { byOrder, shortDate } from "./data";
 import {
   DateCell,
@@ -7,10 +7,21 @@ import {
   TableList,
   TableRow,
 } from "./table";
+import { readPath, slugOf } from "./writing";
 
-/** Awards as rows. One date each, so the left column is a single line. */
+/**
+ * Awards as rows. One date each, so the left column is a single line.
+ *
+ * An award written here goes to its own page, before whatever the record links out
+ * to; one with neither is a row that does not move.
+ */
 export async function Awards() {
-  const { items } = await getAwards();
+  const [{ items }, written] = await Promise.all([
+    getAwards(),
+    getWritten("awards"),
+  ]);
+
+  const native = new Set(written);
 
   return (
     <div>
@@ -18,6 +29,10 @@ export async function Awards() {
 
       <TableList>
         {byOrder(items).map((award) => {
+          const slug = slugOf(award);
+          const here = native.has(slug);
+          const href = here ? readPath("awards", slug) : award.url;
+
           const body = (
             <>
               <span className="pf-title block">{award.title}</span>
@@ -30,11 +45,12 @@ export async function Awards() {
             </>
           );
 
-          return award.url ? (
+          return href ? (
             <TableLinkRow
               key={award.title}
               left={<DateCell from={shortDate(award.date)} />}
-              href={award.url}
+              href={href}
+              internal={here}
             >
               {body}
             </TableLinkRow>

@@ -2,6 +2,7 @@
 
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
+import type { WritableSection } from "@convex/lib/writable";
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
 import { fetchMutation, fetchQuery } from "convex/nextjs";
 import { updateTag } from "next/cache";
@@ -74,11 +75,12 @@ export async function storageUrl(storageId: string): Promise<string | null> {
 }
 
 /**
- * One post's body. Its own write rather than part of `save`: the body is not in the
- * wire payload the draft store holds, and it is large enough that sending it with
- * every save of every section would be wasteful.
+ * One record's body. Its own write rather than part of `save`: the body is not in
+ * the wire payload the draft store holds, and it is large enough that sending it
+ * with every save of every section would be wasteful.
  */
-export async function saveArticle(
+export async function saveBody(
+  section: WritableSection,
   slug: string,
   value: string,
 ): Promise<SaveResult> {
@@ -86,12 +88,12 @@ export async function saveArticle(
   if (!token) return { ok: false, error: "Signed out. Sign in and try again." };
 
   try {
-    await fetchMutation(api.articles.save, { slug, value }, { token });
+    await fetchMutation(api.bodies.save, { section, slug, value }, { token });
 
-    // The list, the post's own page and the section route all read `articles`.
-    updateTag(tagFor("articles"));
+    // The list, the record's own page and the section route all read this tag.
+    updateTag(tagFor(section));
 
-    return { ok: true, changed: ["articles"] };
+    return { ok: true, changed: [section] };
   } catch (error) {
     return { ok: false, error: message(error) };
   }

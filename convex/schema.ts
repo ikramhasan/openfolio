@@ -152,17 +152,36 @@ export default defineSchema({
   }),
 
   /**
-   * A post's body, written in the editor at `/admin/articles/<slug>`.
+   * A record's body, written in the editor at `/admin/write/<section>/<slug>`.
    *
-   * Its own table rather than a column on `articles`, because a section save
-   * rewrites every row of that table from the wire payload and would drop a field
-   * the payload does not carry. Keyed by slug, which is what addresses the page.
+   * One table per section, as everything else here is, and its own table rather
+   * than a column on the record: a section save rewrites every row of that table
+   * from the wire payload and would drop a field the payload does not carry. Keyed
+   * by slug, which is what addresses the page.
    *
    * `value` is the Plate value as JSON text: it nests deeper than Convex objects
    * allow and nothing queries inside it. Images in it are `storage:<id>` tokens,
-   * resolved on read — see `lib/body.ts`.
+   * resolved on read — see `lib/body.ts`. `lib/writable.ts` names the four.
    */
   articleBodies: defineTable({
+    slug: v.string(),
+    value: v.string(),
+    updatedAt: v.number(),
+  }).index("slug", ["slug"]),
+
+  experienceBodies: defineTable({
+    slug: v.string(),
+    value: v.string(),
+    updatedAt: v.number(),
+  }).index("slug", ["slug"]),
+
+  projectBodies: defineTable({
+    slug: v.string(),
+    value: v.string(),
+    updatedAt: v.number(),
+  }).index("slug", ["slug"]),
+
+  awardBodies: defineTable({
     slug: v.string(),
     value: v.string(),
     updatedAt: v.number(),

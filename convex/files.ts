@@ -10,6 +10,7 @@ import {
 import { requireAdmin } from "./lib/authz";
 import { bodyStorageIds } from "./lib/body";
 import { type ImageRef, storageIdsIn } from "./lib/images";
+import { BODY_TABLES } from "./lib/writable";
 
 /**
  * Uploads and the sweep that follows them.
@@ -115,9 +116,11 @@ async function referencedStorageIds(
     refs.push(row.author.image);
   }
 
-  // Images inside an article body, which are tokens in the stored JSON.
-  for (const row of await ctx.db.query("articleBodies").collect()) {
-    ids.push(...bodyStorageIds(row.value));
+  // Images inside a written body, which are tokens in the stored JSON.
+  for (const table of Object.values(BODY_TABLES)) {
+    for (const row of await ctx.db.query(table).collect()) {
+      ids.push(...bodyStorageIds(row.value));
+    }
   }
 
   return new Set([...storageIdsIn(refs), ...ids]);

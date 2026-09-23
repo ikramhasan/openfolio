@@ -2,6 +2,7 @@ import "server-only";
 
 import { api } from "@convex/_generated/api";
 import { CACHE_KEYS, type CacheKey } from "@convex/lib/wire";
+import type { WritableSection } from "@convex/lib/writable";
 import { fetchQuery } from "convex/nextjs";
 import { cacheLife, cacheTag } from "next/cache";
 
@@ -76,22 +77,22 @@ export async function getArticles() {
 }
 
 /**
- * One post's own page, and the set of posts that have one. Both share the Articles
- * section's tag: a body saved in the editor refreshes the list and the page it
- * belongs to, and nothing else.
+ * A record's written body, and the slugs in a section that have one. Both carry the
+ * section's own tag: a body saved in the editor refreshes the list, the section's
+ * route and the page the record has of its own, and nothing else.
  */
-export async function getArticle(slug: string) {
+export async function getBody(section: WritableSection, slug: string) {
   "use cache";
   cacheLife("max");
-  cacheTag(tagFor("articles"));
-  return fetchQuery(api.articles.read, { slug });
+  cacheTag(tagFor(section));
+  return fetchQuery(api.bodies.read, { section, slug });
 }
 
-export async function getWrittenArticles() {
+export async function getWritten(section: WritableSection) {
   "use cache";
   cacheLife("max");
-  cacheTag(tagFor("articles"));
-  return fetchQuery(api.articles.written, {});
+  cacheTag(tagFor(section));
+  return fetchQuery(api.bodies.written, { section });
 }
 
 export async function getProjects() {
