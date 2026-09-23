@@ -31,11 +31,6 @@ import {
   getGeneratePrompt,
 } from './prompt';
 
-/**
- * The one model the editor speaks to, named here rather than chosen by the client:
- * the key is the deployment's, so what it may be spent on is not the browser's to
- * decide. `google()` reads `GOOGLE_GENERATIVE_AI_API_KEY` itself.
- */
 const MODEL = 'gemini-3.8-flash';
 
 export async function POST(req: NextRequest) {
@@ -97,7 +92,6 @@ export async function POST(req: NextRequest) {
         const result = streamText({
           experimental_transform: markdownJoinerTransform(),
           model,
-          // Not used
           prompt: '',
           tools,
           prepareStep: async (step) => {
@@ -114,7 +108,6 @@ export async function POST(req: NextRequest) {
                 messages: messagesRaw,
               });
 
-              // Table editing uses the table tool
               if (editType === 'table') {
                 return {
                   ...step,

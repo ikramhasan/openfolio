@@ -12,28 +12,16 @@ import type { Portfolio } from "../../_components/types";
 import type { SaveResult } from "./actions";
 import { getList, getPath, move, renumber, setList, setPath } from "./paths";
 
-/**
- * The working copy: one portfolio value, plus the last saved one to compare it
- * against.
- *
- * The save is handed in as a server function rather than imported, so this file
- * stays the client-side store and knows nothing about where content lives.
- */
-
 type SaveState = "idle" | "saving" | "saved" | "failed";
 
-/** Lists whose records carry their own sort field are renumbered after a change. */
 type ListOptions = { orderKey?: string };
 
 type Draft = {
   portfolio: Portfolio;
   dirty: boolean;
   saveState: SaveState;
-  /** What the last save did, or why it did not. */
   saveMessage: string | null;
-  /** Preview URLs for `storage:<id>` image references. */
   previewFor: (token: string) => string;
-  /** Records an upload so its preview resolves before the next save. */
   registerUpload: (token: string, url: string) => void;
   read: (path: string) => unknown;
   readList: (path: string) => unknown[];
@@ -82,8 +70,6 @@ export function DraftProvider({
   const [previews, setPreviews] = useState(storageUrls);
 
   const edit = useCallback((change: (current: Portfolio) => Portfolio) => {
-    // An edit mid-save must not return the dock to idle: that would re-enable
-    // Save and let a second write overtake the first.
     setSaveState((state) => (state === "saving" ? state : "idle"));
     setSaveMessage(null);
     setDraft(change);
@@ -138,8 +124,6 @@ export function DraftProvider({
         setSaveState("saving");
         setSaveMessage(null);
 
-        // The draft can change while this is in flight; comparing against what was
-        // actually sent leaves those later edits dirty.
         persist(draft).then(
           (result) => {
             setSaveMessage(describe(result));

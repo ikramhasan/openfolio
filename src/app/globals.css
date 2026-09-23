@@ -3,8 +3,6 @@
 
 @plugin "tailwind-scrollbar-hide";
 
-/* The editor's generated components style dark mode with `dark:`; this project
-   carries the choice on `<html data-theme>` and falls back to the system. */
 @custom-variant dark {
   &:where([data-theme="dark"], [data-theme="dark"] *) {
     @slot;
@@ -16,30 +14,18 @@
   }
 }
 
-/*
- * A monochrome ledger: one neutral ink ramp, emphasis by weight and position
- * rather than hue. Imagery stays in full colour. Classes are prefixed `pf-`.
- */
-
-/* Short sections do not fill the viewport while long ones do; without this the
-   scrollbar comes and goes and the centred layout shifts sideways. */
 html {
   scrollbar-gutter: stable;
-  /* Also makes native scrollbars and form controls follow the theme. */
   color-scheme: light dark;
   scroll-behavior: smooth;
 }
 
-/* Below `lg` the rail pins itself to the top of the viewport, so an anchor target
-   — a heading reached from a body's table of contents — would land under it. */
 @media (width < 64rem) {
   html {
     scroll-padding-top: 3.5rem;
   }
 }
 
-/* `data-theme` is an explicit choice and is absent while following the system.
-   `layout.tsx` sets it before the first paint. */
 html[data-theme="light"] {
   color-scheme: light;
 }
@@ -56,8 +42,6 @@ body {
   --pf-rule: #e4e4e7;
   --pf-hover: #f4f4f5;
   --pf-mark-bg: transparent;
-  /* Pure black/white, never a tinted neutral — a tint picks up the surface behind
-     it and reads as dirt on the image edge. */
   --pf-edge: oklch(0 0 0 / 0.1);
 
   background-color: var(--pf-bg);
@@ -74,11 +58,6 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/*
- * The dark ramp, spelled twice because one declaration block cannot be shared
- * across a media query boundary. Keeping the media query means the system
- * default still works without JS.
- */
 @media (prefers-color-scheme: dark) {
   html:not([data-theme="light"]) body {
     --pf-bg: #09090b;
@@ -103,9 +82,6 @@ html[data-theme="dark"] body {
   --pf-edge: oklch(1 0 0 / 0.1);
 }
 
-/* ----------------------------------------------------------------- type */
-
-/* The name. Weight is the only way to raise it, with no colour or serif. */
 .pf-display {
   font-size: clamp(2.25rem, 5.5vw, 3.25rem);
   line-height: 1.04;
@@ -121,7 +97,6 @@ html[data-theme="dark"] body {
   color: var(--pf-muted);
 }
 
-/* Section headings: body size, raised by weight. */
 .pf-section-title {
   font-size: 1rem;
   line-height: 1.4;
@@ -130,7 +105,6 @@ html[data-theme="dark"] body {
   text-wrap: balance;
 }
 
-/* Column headers and the rail index: labels structure, not prose. */
 .pf-column {
   font-size: 0.6875rem;
   line-height: 1.4;
@@ -156,8 +130,6 @@ html[data-theme="dark"] body {
   text-wrap: pretty;
 }
 
-/* Dates, locations, read times — content, not decoration, so `muted` rather than
-   `faint`: at 13px this needs the full 4.5:1. */
 .pf-meta {
   font-size: 0.8125rem;
   line-height: 1.5;
@@ -166,7 +138,6 @@ html[data-theme="dark"] body {
   font-variant-numeric: tabular-nums;
 }
 
-/* Anything aligning down a column: dates, counts. */
 .pf-figure {
   font-variant-numeric: tabular-nums;
   letter-spacing: 0;
@@ -188,8 +159,6 @@ html[data-theme="dark"] body {
   border-color: var(--pf-rule);
 }
 
-/* Tailwind's `divide-*` sets a border width on children but leaves the colour at
-   `currentColor`, which would draw full-strength rules instead of hairlines. */
 .pf-rule > * {
   border-color: var(--pf-rule);
 }
@@ -201,9 +170,6 @@ html[data-theme="dark"] body {
   color: var(--pf-ink);
 }
 
-/* ---------------------------------------------------------------- links */
-
-/* No accent colour: links darken and the underline goes solid on hover. */
 .pf-link {
   color: inherit;
   text-decoration: underline;
@@ -226,8 +192,6 @@ html[data-theme="dark"] body {
   transition: color 150ms ease;
 }
 
-/* 16px of text is too small a target. The extension is vertical-only and sized to
-   the row gap below, so two links never overlap. */
 .pf-link-quiet::after {
   content: "";
   position: absolute;
@@ -252,7 +216,6 @@ html[data-theme="dark"] body {
   border-radius: 2px;
 }
 
-/* Full-width rows, linked or not: a tint on hover, the arrow fades in. */
 .pf-row {
   transition: background-color 140ms ease;
   border-radius: 3px;
@@ -273,7 +236,6 @@ html[data-theme="dark"] body {
   }
 }
 
-/* No hover on touch, so the arrow is always shown. */
 @media (hover: none), (pointer: coarse) {
   .pf-row-arrow {
     opacity: 1;
@@ -284,10 +246,6 @@ html[data-theme="dark"] body {
   opacity: 1;
 }
 
-/* --------------------------------------------------------------- pieces */
-
-/* Several source logos are dark-on-transparent, so the dark ramp puts a light
-   plate behind them. */
 .pf-mark {
   background-color: var(--pf-mark-bg);
 }
@@ -302,16 +260,9 @@ html[data-theme="dark"] body {
   outline-offset: -1px;
 }
 
-/* ------------------------------------------------------------------ rail */
-
-/* The rail. Quiet by default; the current item is the hover tint made
-   persistent. */
 .pf-tab {
   color: var(--pf-muted);
   text-decoration: none;
-  /* The hit area is the padding, not a pseudo-element: the strip is an
-     `overflow-x` scroller, which clips vertically too, so a ::after extension
-     would be cut off. The bar's own padding is reduced to compensate. */
   padding-block: 0.625rem;
   transition:
     color 150ms ease,
@@ -319,8 +270,6 @@ html[data-theme="dark"] body {
   border-radius: 3px;
 }
 
-/* The horizontal strip below `lg`. The scrollbar is hidden, so the edge fades are
-   what say it scrolls. `data-fade` is set by `rail.tsx`. */
 .pf-rail {
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -348,7 +297,6 @@ html[data-theme="dark"] body {
   );
 }
 
-/* Drag to scroll, for pointers that cannot swipe. Touch pans natively. */
 @media (hover: hover) and (pointer: fine) {
   .pf-rail[data-scrollable="true"] {
     cursor: grab;
@@ -359,17 +307,13 @@ html[data-theme="dark"] body {
   }
 }
 
-/* Stops a drag selecting the labels it passes over. */
 .pf-rail[data-dragging="true"] {
   user-select: none;
 }
 
-/* Mid-drag the strip must track the pointer exactly. */
 .pf-rail[data-dragging="true"] .pf-tab {
   transition: none;
 }
-
-/* The vertical rail clears these attributes in `rail.tsx`. */
 
 @media (hover: hover) and (pointer: fine) {
   .pf-tab:hover {
@@ -384,13 +328,11 @@ html[data-theme="dark"] body {
   border-radius: 2px;
 }
 
-/* The current section, in the rail's own hover vocabulary. */
 .pf-tab[data-active="true"] {
   color: var(--pf-ink);
   background-color: var(--pf-hover);
 }
 
-/* A short fade on navigation, confirming the change without animating layout. */
 .pf-panel-enter {
   animation: pf-fade 180ms ease-out;
 }
@@ -404,17 +346,10 @@ html[data-theme="dark"] body {
   }
 }
 
-/* Covers the embed's own white backdrop where it shows around Spotify's card.
-   Spotify's grey rather than one of the ink ramp's values: it has to match their
-   card, which is the same in both themes. */
 .pf-embed-corner {
   background-color: #1f1f1f;
 }
 
-/* ----------------------------------------------------------------- chips */
-
-/* A company chip in the About summary. Sized in `em` so it reads as a raised
-   word in a sentence rather than a button in a paragraph. */
 .pf-chip-wrap {
   position: relative;
   display: inline-block;
@@ -431,7 +366,6 @@ html[data-theme="dark"] body {
   padding: 0.05em 0.45em 0.05em 0.34em;
   cursor: pointer;
   white-space: nowrap;
-  /* Keeps the logo and the name on one baseline inside running text. */
   display: inline-flex;
   align-items: center;
   gap: 0.3em;
@@ -447,8 +381,6 @@ html[data-theme="dark"] body {
   transform: scale(0.96);
 }
 
-/* Pale plate behind the logo: several are dark marks on transparency, which
-   would vanish against the inverted open chip. */
 .pf-chip-mark {
   flex: none;
   display: inline-flex;
@@ -460,7 +392,6 @@ html[data-theme="dark"] body {
   overflow: hidden;
 }
 
-/* The larger mark at the head of the panel. */
 .pf-chip-panel-mark {
   flex: none;
   display: inline-flex;
@@ -484,18 +415,12 @@ html[data-theme="dark"] body {
   outline-offset: 2px;
 }
 
-/* Open, the chip inverts — it is the one thing on the page that is "on". */
 .pf-chip[data-open="true"] {
   background-color: var(--pf-ink);
   border-color: var(--pf-ink);
   color: var(--pf-bg);
 }
 
-/*
- * `absolute`, so opening shifts nothing. `visibility` is transitioned with a
- * delay rather than switched, or a closed panel would still swallow clicks.
- * `--pf-chip-shift` is set by `company-chip.tsx` to keep it on screen.
- */
 .pf-chip-panel {
   position: absolute;
   top: calc(100% + 0.55rem);
@@ -523,7 +448,6 @@ html[data-theme="dark"] body {
     visibility 0s;
 }
 
-/* Flipped above the chip when the viewport leaves no room beneath it. */
 .pf-chip-panel[data-above="true"] {
   top: auto;
   bottom: calc(100% + 0.55rem);
@@ -535,22 +459,17 @@ html[data-theme="dark"] body {
   transform: translateY(0) scale(1);
 }
 
-/* Separate from the positioned element, so the transform does not scale the
-   border and shadow. */
 .pf-chip-panel-inner {
   display: block;
   padding: 0.8rem 0.9rem 0.85rem;
   background-color: var(--pf-bg);
   border: 1px solid var(--pf-rule);
   border-radius: 8px;
-  /* The only shadow on the site: this one floats over text. */
   box-shadow:
     0 1px 2px color-mix(in srgb, var(--pf-ink) 5%, transparent),
     0 8px 24px -6px color-mix(in srgb, var(--pf-ink) 14%, transparent);
 }
 
-/* A mask rather than an `<img>`, so it takes the ink colour; Safari still needs
-   the `-webkit-` form. `--pf-signature-image` comes from the data. */
 .pf-signature {
   --pf-signature-image: url("/signature.svg");
   width: 11.5rem;
@@ -560,15 +479,12 @@ html[data-theme="dark"] body {
   mask: var(--pf-signature-image) no-repeat center / contain;
 }
 
-/* Forced colours repaints backgrounds, which would erase the mask entirely. */
 @media (forced-colors: active) {
   .pf-signature {
     forced-color-adjust: none;
     background-color: CanvasText;
   }
 }
-
-/* ----------------------------------------------------------- theme control */
 
 .pf-theme {
   gap: 0.0625rem;
@@ -590,8 +506,6 @@ html[data-theme="dark"] body {
     background-color 140ms ease;
 }
 
-/* The input keeps the keyboard behaviour and the semantics; the label is what is
-   seen, so the native control is taken out of the paint rather than restyled. */
 .pf-theme-input {
   position: absolute;
   appearance: none;
@@ -602,7 +516,6 @@ html[data-theme="dark"] body {
   pointer-events: none;
 }
 
-/* The ring has to be forwarded to the label, the input having no box to draw on. */
 .pf-theme-option:has(.pf-theme-input:focus-visible) {
   outline: 2px solid var(--pf-ink);
   outline-offset: 2px;
@@ -623,7 +536,6 @@ html[data-theme="dark"] body {
     background-color 140ms ease;
 }
 
-/* 30px is under the 44px target, and the bar is too shallow to grow. */
 .pf-theme-button::after {
   content: "";
   position: absolute;
@@ -637,9 +549,6 @@ html[data-theme="dark"] body {
   }
 }
 
-/* Current state comes from <html>, not React: the attribute is set before the
-   first paint, so the control starts right instead of correcting itself after
-   hydration. */
 html:not([data-theme]) .pf-theme-option[data-value="system"],
 html[data-theme="light"] .pf-theme-option[data-value="light"],
 html[data-theme="dark"] .pf-theme-option[data-value="dark"] {
@@ -665,8 +574,6 @@ html[data-theme="dark"] .pf-theme-icon[data-value="dark"] {
   color: var(--pf-faint);
 }
 
-/* Submit feedback. Rare enough to animate, and a transition rather than keyframes
-   so a second submit retargets instead of restarting. */
 .pf-status {
   opacity: 0;
   transform: translateY(-0.25rem);
@@ -680,8 +587,6 @@ html[data-theme="dark"] .pf-theme-icon[data-value="dark"] {
   transform: translateY(0);
 }
 
-/* The one filled control: inverted rather than coloured. The transparent border
-   keeps its box identical to an outlined button of the same padding. */
 .pf-button {
   background-color: var(--pf-ink);
   color: var(--pf-bg);
@@ -737,8 +642,6 @@ html[data-theme="dark"] .pf-theme-icon[data-value="dark"] {
     transform: none;
   }
 
-  /* `visibility` must still change or a closed panel keeps taking clicks, so the
-     movement goes and the fade is cut to nothing. */
   .pf-chip-panel,
   .pf-chip-panel[data-open="true"],
   .pf-chip-panel[data-above="true"] {
@@ -752,12 +655,6 @@ html[data-theme="dark"] .pf-theme-icon[data-value="dark"] {
     animation: none;
   }
 }
-/*
- * The tokens the generated editor components are written against, derived from
- * the ink ramp above rather than given values of their own — both blocks sit on
- * `body`, so these follow `data-theme` and the media query without a second
- * copy. `--brand` and `--destructive` are the only hues the editor needs.
- */
 body {
   --background: var(--pf-bg);
   --foreground: var(--pf-ink);

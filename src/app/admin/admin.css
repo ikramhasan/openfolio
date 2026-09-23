@@ -1,10 +1,3 @@
-/*
- * The editor's own pieces. Everything else — the ink ramp, the rail, the panel,
- * the rows — comes from `globals.css`. Classes are prefixed `pf-`, as there.
- */
-
-/* ---------------------------------------------------------------- inputs */
-
 .pf-field {
   width: 100%;
   padding: 0.4375rem 0.625rem;
@@ -31,7 +24,6 @@
   }
 }
 
-/* Squared off against the field beside it: 6px radius less the 1px border. */
 .pf-thumb {
   flex: none;
   display: block;
@@ -44,10 +36,6 @@
   outline-offset: -1px;
 }
 
-/* --------------------------------------------------------------- buttons */
-
-/* The unfilled counterpart to `.pf-button`: an outline, for the actions that sit
-   inside a list rather than closing the page. */
 .pf-button-quiet {
   font-size: 0.75rem;
   line-height: 1.3;
@@ -80,8 +68,6 @@
   outline-offset: 2px;
 }
 
-/* `.pf-button`'s twin, for the one place the two sit side by side: same box, same
-   type, so only the fill tells them apart. */
 .pf-button-outline {
   color: var(--pf-muted);
   background-color: transparent;
@@ -110,10 +96,6 @@
   outline-offset: 2px;
 }
 
-/* --------------------------------------------------------------- records */
-
-/* The lifted row has to sit above its neighbours, and opaque, or the rows it
-   passes over show through it. */
 .pf-sortable {
   position: relative;
 }
@@ -134,7 +116,6 @@
   }
 }
 
-/* The whole summary is the target, so it has to fill the row. */
 .pf-record-toggle {
   display: flex;
   flex: 1;
@@ -177,8 +158,6 @@
   }
 }
 
-/* ---------------------------------------------------------------- handle */
-
 .pf-handle {
   position: relative;
   flex: none;
@@ -197,8 +176,6 @@
   cursor: grabbing;
 }
 
-/* 24px is under the target size and the row is too shallow to grow. Kept narrow
-   enough not to reach the summary button beside it. */
 .pf-handle::after {
   content: "";
   position: absolute;
@@ -211,9 +188,6 @@
   }
 }
 
-/* ------------------------------------------------------------------ dock */
-
-/* Only shown when there is something to save, so it may animate in. */
 .pf-dock {
   position: sticky;
   bottom: 0;
@@ -254,25 +228,12 @@
   }
 }
 
-/* ------------------------------------------------- the generated editor */
-
-/*
- * The Plate editor and the shadcn primitives under it are styled through the tokens
- * in `globals.css`, so they already wear the site's ink. Three things they cannot
- * get from a token are set here, once, rather than in ninety components.
- */
-
-/* Focus: a 2px ink outline, as everything else on the site, in place of shadcn's
-   soft 3px ring. */
 .pf-focus:focus-visible {
   outline: 2px solid var(--pf-ink);
   outline-offset: 2px;
   box-shadow: none;
 }
 
-/* Elevation for the things that genuinely float — a menu, a floating toolbar. A
-   hairline ring plus two shallow layers, which survive any background; the ramp is
-   pure black and pure white so the ring cannot pick up a tint. */
 .pf-lifted,
 [data-radix-popper-content-wrapper] > * {
   box-shadow:
@@ -297,8 +258,6 @@ html[data-theme="dark"] [data-radix-popper-content-wrapper] > * {
   }
 }
 
-/* Selection, in ink rather than in the registry's blue: the drag rectangle and the
-   text selection inside the writing column. */
 .pf-prose ::selection {
   background-color: color-mix(in srgb, var(--pf-ink) 16%, transparent);
 }

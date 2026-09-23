@@ -1,12 +1,6 @@
 import Image from "next/image";
 import { getRecommendations } from "./content";
 
-/**
- * Quoted records, attributed beneath and linking to the source.
- *
- * Not cards: the testimonials differ hugely in length, so boxes would leave one
- * padded with empty space.
- */
 export async function Recommendations() {
   const { items } = await getRecommendations();
 

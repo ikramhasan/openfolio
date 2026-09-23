@@ -7,13 +7,6 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 type Status = "idle" | "loading" | "success" | "error";
 
-/**
- * Newsletter sign-up, rendered in the footer on every page.
- *
- * Both the copy and the action arrive as props: the footer is a cached server
- * component, and passing a server function through one is the way to give a client
- * form something to call without making the footer dynamic.
- */
 export function Newsletter({
   copy,
   subscribe,
@@ -93,8 +86,6 @@ export function Newsletter({
           </button>
         </div>
 
-        {/* No accent colour on the site, so the error state is carried by the
-            copy and `aria-invalid`. Takes no room until there is a message. */}
         <output
           id={`${inputId}-message`}
           data-shown={Boolean(message)}

@@ -1,21 +1,9 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-/**
- * Shared row primitives: a three-column grid of dates, content and right-aligned
- * metadata.
- *
- * Lists rather than `<table>`s — these are records, not a matrix. Both row kinds
- * carry `.pf-row` so the hover tint spans every record, linkable or not.
- */
-
-/** The three columns every section's rows share. Exported for the rows that are
- *  not built from the primitives below — Music's, which are buttons. */
 export const ROW_GRID =
   "grid grid-cols-[4.25rem_minmax(0,1fr)] gap-x-4 sm:grid-cols-[5.5rem_minmax(0,1fr)_6.5rem] sm:gap-x-6";
 
-// Endpoints stacked on two lines: on one line the column would take a third of
-// the row on a phone. A single date is just one line.
 export function DateCell({ from, to }: { from: string; to?: string | null }) {
   return (
     <span className="pf-meta pf-figure block pt-px">
@@ -30,7 +18,6 @@ export function DateCell({ from, to }: { from: string; to?: string | null }) {
   );
 }
 
-/** The column-header row. Hidden below `sm`, where the grid collapses. */
 export function TableHead({
   left,
   middle,
@@ -56,7 +43,6 @@ export function TableList({ children }: { children: ReactNode }) {
   return <ol className="pf-rule divide-y">{children}</ol>;
 }
 
-/** One record with no destination. */
 export function TableRow({
   left,
   right,
@@ -83,13 +69,6 @@ export function TableRow({
   );
 }
 
-/**
- * A record whose whole row is the link. Content must not contain its own
- * anchors — nested links are invalid.
- *
- * `internal` routes through the app rather than out of it: the arrow turns and the
- * new tab is dropped, since nothing is being handed to another site.
- */
 export function TableLinkRow({
   left,
   href,

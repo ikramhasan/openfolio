@@ -226,15 +226,12 @@ export function getEditPrompt(
   if (!isSelecting)
     throw new Error('Edit tool is only available when selecting');
 
-  // Handle selection inside table cell
   if (isSelectionInTable(editor) && !isSingleCellSelection(editor)) {
     return [buildEditTableMultiCellPrompt(editor, messages), 'table'];
   }
-  // Handle multi-block selection
   if (isMultiBlocks(editor)) {
     return [buildEditMultiBlockPrompt(editor, messages), 'multi-block'];
   }
 
-  // Handle single block with selection
   return [buildEditSelectionPrompt(editor, messages), 'selection'];
 }

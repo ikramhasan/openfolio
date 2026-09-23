@@ -3,13 +3,6 @@ import type { MutationCtx } from "../_generated/server";
 import { type ImageRef, parseImage } from "./images";
 import { SECTION_KEYS, type SectionKey, type wirePortfolio } from "./wire";
 
-/**
- * Writing the wire payload back into the section tables.
- *
- * Nothing here checks authorisation — `admin.save`, its only caller, does. Adding a
- * writer that skips that is the one way to open a hole in this file.
- */
-
 export type Wire = typeof wirePortfolio.type;
 
 type SingletonTable =
@@ -20,10 +13,6 @@ type SingletonTable =
   | "articlesMeta"
   | "sectionOrder";
 
-/**
- * Upserts the single row of a one-document table. The schema cannot express the
- * constraint, so this is the only thing that inserts into these tables.
- */
 export async function putSingleton<T extends SingletonTable>(
   ctx: MutationCtx,
   table: T,
@@ -39,16 +28,6 @@ export async function putSingleton<T extends SingletonTable>(
   await ctx.db.insert(table, value as never);
 }
 
-/**
- * Rewrites a list table to exactly `rows`, in order. Existing documents are reused
- * positionally, so editing one record does not churn the ids of every record after
- * it. `order` is assigned from the array index: the array the editor sends *is*
- * the order.
- *
- * The rows are already validated — they came through an argument validator — and
- * the cast is to the table's own document type, which TypeScript cannot narrow
- * from a generic table name.
- */
 async function replaceList<T extends TableNames>(
   ctx: MutationCtx,
   table: T,
@@ -80,8 +59,6 @@ function optionalImage(token: string): ImageRef | undefined {
   return parseImage(token);
 }
 
-// -------------------------------------------------------------------- chrome
-
 export async function writeSite(ctx: MutationCtx, next: Wire): Promise<void> {
   await putSingleton(ctx, "site", {
     title: next.site.title,
@@ -89,7 +66,6 @@ export async function writeSite(ctx: MutationCtx, next: Wire): Promise<void> {
   });
 }
 
-/** Heading copy for every section, plus the rail's order. */
 export async function writeHeaders(
   ctx: MutationCtx,
   next: Wire,
@@ -131,10 +107,6 @@ export async function writeFooter(ctx: MutationCtx, next: Wire): Promise<void> {
   await replaceSocialLinks(ctx, "footer", socialLinks);
 }
 
-/**
- * `socialLinks` is one table for two lists, so a rewrite has to leave the other
- * placement alone: the positional reuse in `replaceList` cannot be used here.
- */
 async function replaceSocialLinks(
   ctx: MutationCtx,
   placement: "intro" | "footer",
@@ -166,8 +138,6 @@ async function replaceSocialLinks(
   }
 }
 
-// ------------------------------------------------------------------ sections
-
 export async function writeSection(
   ctx: MutationCtx,
   key: SectionKey,
@@ -196,7 +166,6 @@ export async function writeSection(
       return;
     }
 
-    // Heading only; `writeHeaders` already stored it.
     case "about":
       return;
 

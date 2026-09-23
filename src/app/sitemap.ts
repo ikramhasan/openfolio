@@ -4,11 +4,6 @@ import { routedSections } from "./_components/sections";
 import { siteUrl } from "./_components/site-url";
 import { readPath, WRITABLE_SECTIONS } from "./_components/writing";
 
-/**
- * One entry per section route, then one per record written here. The section set
- * comes from the stored order; a record that is only a link out belongs to the site
- * it points at, not to this one.
- */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [sections, written] = await Promise.all([
     routedSections(),

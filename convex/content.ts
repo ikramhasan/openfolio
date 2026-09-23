@@ -20,26 +20,12 @@ import {
   wireVideosSection,
 } from "./lib/wire";
 
-/**
- * Everything the public site reads. No arguments, no identity, nothing here that
- * is not already on the page — these are the queries a prerender runs.
- *
- * One query per cache key rather than one for the whole document, so that saving
- * a single section invalidates only the components that read it. The Next.js side
- * tags each of these with `portfolio:<key>`; `admin.save` reports which keys it
- * changed and only those are revalidated.
- *
- * Image fields come back as absolute URLs: Convex storage URLs are minted on read
- * (see `lib/images.ts`), never stored.
- */
-
 export const site = query({
   args: {},
   returns: wireSite,
   handler: (ctx) => project.site(ctx),
 });
 
-/** The rail: which sections exist, in what order, under what wording. */
 export const nav = query({
   args: {},
   returns: v.object({

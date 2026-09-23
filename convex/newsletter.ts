@@ -3,15 +3,6 @@ import { v } from "convex/values";
 import { components } from "./_generated/api";
 import { mutation } from "./_generated/server";
 
-/**
- * The newsletter list — the only table a visitor can write to.
- *
- * Two limits guard it: one per address, so retrying a typo is cheap but a loop is
- * not, and one global, so the table cannot be filled from a script with a fresh
- * address each time. Neither the caller's address nor the outcome distinguishes an
- * already-subscribed address from a new one; the mutation answers the same way
- * either way, so the list cannot be probed for membership.
- */
 const rateLimiter = new RateLimiter(components.rateLimiter, {
   subscribePerEmail: { kind: "fixed window", rate: 3, period: HOUR },
   subscribeGlobal: {

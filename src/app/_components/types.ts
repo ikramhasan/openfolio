@@ -2,12 +2,6 @@ import type { api } from "@convex/_generated/api";
 import type { wirePortfolio } from "@convex/lib/wire";
 import type { FunctionReturnType } from "convex/server";
 
-/**
- * The shapes the site renders, read off the Convex queries that produce them, so
- * a change to a section's schema surfaces here as a type error rather than as a
- * blank panel.
- */
-
 type Returns<Name extends keyof typeof api.content> = FunctionReturnType<
   (typeof api.content)[Name]
 >;
@@ -38,5 +32,4 @@ export type SocialLink = Footer["socialLinks"][number];
 export type Action = Footer["actions"][number];
 export type NewsletterCopy = ConnectSection["newsletter"];
 
-/** The whole document, which only the editor handles. */
 export type Portfolio = typeof wirePortfolio.type;

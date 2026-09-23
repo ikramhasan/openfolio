@@ -12,25 +12,6 @@ import { Editor, EditorContainer } from "@/components/ui/editor";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { saveBody } from "../_lib/actions";
 
-/**
- * One record's body, in Plate, filling the window. The same page for a post, a role,
- * a project or an award: only the record it belongs to differs.
- *
- * A writing surface wants height above everything else, so the page carries only what
- * it cannot do without: where you came from, what you are writing, and the save. The
- * portfolio's rail and its draft of the whole document belong to the content groups,
- * which is why this route sits outside them.
- *
- * Its own working copy rather than the portfolio draft: the body is not part of the
- * wire payload, and this page saves on its own. `dirty` is a flag rather than a
- * comparison, because the alternative is serialising the document on every keystroke
- * to find out.
- *
- * `value` is the editor's initial document only. Plate owns it from then on, and the
- * save reads `editor.children` — passing the state back in would fight the editor for
- * the caret.
- */
-
 type SaveState = "idle" | "saving" | "saved" | "failed";
 
 export function BodyEditor({
@@ -45,9 +26,7 @@ export function BodyEditor({
   slug: string;
   title: string;
   body: string;
-  /** The group this record is edited in. */
   back: { href: string; label: string };
-  /** Where the body will be read, shown under the title. */
   readPath: string;
 }) {
   const editor = usePlateEditor({
@@ -88,8 +67,6 @@ export function BodyEditor({
         editor={editor}
         onChange={() => {
           setDirty(true);
-          // An edit mid-save must not return the bar to idle: that would re-enable
-          // Save and let a second write overtake the first.
           setState((current) => (current === "saving" ? current : "idle"));
           setMessage(null);
         }}
@@ -109,8 +86,6 @@ export function BodyEditor({
               </span>
             </span>
 
-            {/* Whether there is anything to save is what the button's own state says;
-              this is only for what a finished save had to report. */}
             <output className="pf-meta pf-muted shrink-0 text-right">
               {message}
             </output>
@@ -125,14 +100,6 @@ export function BodyEditor({
             </button>
           </header>
 
-          {/*
-            `min-h-0` is what lets the editable take the rest of the window and scroll
-            inside itself rather than growing the page; `pf-prose` is the published
-            column, so what is being written looks like what will be read.
-          */}
-          {/* `h-auto` displaces the container's own `h-full`, which would make it a
-              full viewport tall underneath the header and push the page into a
-              scroll. */}
           <EditorContainer className="h-auto min-h-0 flex-1">
             <Editor
               variant="none"
@@ -147,20 +114,13 @@ export function BodyEditor({
   );
 }
 
-/**
- * A body that is not the JSON this wrote opens as one empty paragraph rather than
- * throwing — an editor that will not load is worse than one that starts blank.
- * `normalizeStaticValue` fills in the ids the block handles and comments key off.
- */
 function initial(body: string): Value {
   try {
     const parsed = JSON.parse(body);
     if (Array.isArray(parsed) && parsed.length > 0) {
       return normalizeStaticValue(parsed as Value);
     }
-  } catch {
-    // Falls through to the empty document.
-  }
+  } catch {}
 
   return normalizeStaticValue([{ type: "p", children: [{ text: "" }] }]);
 }

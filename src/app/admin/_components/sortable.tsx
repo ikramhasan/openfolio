@@ -22,16 +22,6 @@ import {
 import type { CSSProperties, ReactNode } from "react";
 import { useId } from "react";
 
-/**
- * Drag to reorder, with the keyboard as a first-class path: the handle is a real
- * button, so space lifts a row and the arrows move it.
- *
- * Ids have to be stable per row, not per position. The browser leaves `:hover` on
- * whichever element was under the pointer at release, so a row that keeps its DOM
- * node while its contents change would light up the wrong record.
- */
-
-// Below this a press is a click, not a drag — the handle sits beside buttons.
 const DRAG_THRESHOLD = 5;
 
 export function SortableList({
@@ -54,8 +44,6 @@ export function SortableList({
     }),
   );
 
-  // Without this dnd-kit names its `aria-describedby` target from a module-level
-  // counter, which starts again on the client and so never matches the server.
   const contextId = useId();
 
   function handleDragEnd({ active, over }: DragEndEvent) {
@@ -89,7 +77,6 @@ export function SortableRow({
   children,
 }: {
   id: string;
-  /** Named in the handle's accessible label. */
   label: string;
   children: (handle: ReactNode) => ReactNode;
 }) {
@@ -103,7 +90,6 @@ export function SortableRow({
     transition,
   } = useSortable({ id });
 
-  // Only the vertical axis moves, so the full matrix would be noise.
   const style: CSSProperties = {
     transform: transform ? `translate3d(0, ${transform.y}px, 0)` : undefined,
     transition,

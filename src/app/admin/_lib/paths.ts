@@ -1,9 +1,3 @@
-/**
- * Immutable reads and writes by dotted path — `sections.experience.items.2.title`.
- * A path and a value is also what a patch endpoint takes, so the store never has
- * to know what it is editing.
- */
-
 type Branch = Record<string, unknown>;
 
 export function getPath(source: unknown, path: string): unknown {
@@ -13,7 +7,6 @@ export function getPath(source: unknown, path: string): unknown {
   }, source);
 }
 
-// A numeric key means the missing level is a list, not an object.
 function copy(node: unknown, key: string): Branch | unknown[] {
   if (Array.isArray(node)) return [...node];
   if (node !== null && typeof node === "object") return { ...(node as Branch) };
@@ -58,10 +51,6 @@ export function move<V>(list: V[], from: number, to: number): V[] {
   return next;
 }
 
-/**
- * Rewrites a list's own sort field to match its position, for the sections whose
- * records carry one. Positions are 1-based, as at source.
- */
 export function renumber(list: unknown[], orderKey: string): unknown[] {
   return list.map((item, index) =>
     item !== null && typeof item === "object"

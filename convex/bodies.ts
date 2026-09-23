@@ -15,20 +15,6 @@ import {
   writableSection,
 } from "./lib/writable";
 
-/**
- * One record's body, for the sections that can be written here rather than only
- * linked out to — posts, roles, projects, awards.
- *
- * The record itself belongs to its section and is edited with the rest of it; this
- * is only the prose. The site's list links to the record's own page where there is
- * a body and out to its `url` where there is not, so nothing had to be migrated to
- * make a section writable.
- *
- * `read` is public and has no notion of a draft: a body that exists is published.
- * Everything that writes begins with `requireAdmin`, which takes the identity from
- * the request's token and re-reads the admin flag.
- */
-
 async function bodyFor(
   ctx: QueryCtx | MutationCtx,
   section: WritableSection,
@@ -42,16 +28,6 @@ async function bodyFor(
     .first();
 }
 
-/**
- * The record the body belongs to, found by the address it derives rather than by an
- * indexed column: only Articles stores a slug, and the rest have one because of what
- * they are called. A section key is also its record table's name, and a section is
- * tens of rows, so reading it is bounded by design.
- *
- * Two records in a section with the same title would address one page; the site's
- * lists already key their rows by title, so that is an assumption this made before
- * bodies existed.
- */
 async function recordFor(
   ctx: QueryCtx,
   section: WritableSection,
@@ -63,12 +39,6 @@ async function recordFor(
   return rows.find((row) => slugOf(row) === slug) ?? null;
 }
 
-/**
- * A record's body as the site renders it, or `null` where nothing was written under
- * that slug — which is what the route turns into a 404. The record's own fields come
- * from the section's query, so the page's heading and its prose share one cache
- * entry each rather than duplicating the record here.
- */
 export const read = query({
   args: { section: writableSection, slug: v.string() },
   returns: v.union(v.null(), v.string()),
@@ -78,10 +48,6 @@ export const read = query({
   },
 });
 
-/**
- * The slugs with a body, for the lists' link targets and the sitemap. One row per
- * written record — a handful — so collecting the table is bounded.
- */
 export const written = query({
   args: { section: writableSection },
   returns: v.array(v.string()),
@@ -91,11 +57,6 @@ export const written = query({
   },
 });
 
-/**
- * The editor's read: the record's title, for the header, and the body. Images come
- * back resolved rather than as tokens, because the editor has to display them;
- * `save` turns them back into tokens.
- */
 export const load = query({
   args: { section: writableSection, slug: v.string() },
   returns: v.union(
@@ -122,15 +83,12 @@ export const load = query({
   },
 });
 
-/** The body, and nothing else about the record: its fields are edited in `/admin`. */
 export const save = mutation({
   args: { section: writableSection, slug: v.string(), value: v.string() },
   returns: v.object({ updatedAt: v.number() }),
   handler: async (ctx, { section, slug, value }) => {
     await requireAdmin(ctx);
 
-    // Refusing an unknown slug keeps a renamed record from leaving a body behind
-    // under a slug nothing addresses.
     const record = await recordFor(ctx, section, slug);
     if (!record) {
       throw new ConvexError(`No ${section} record with the slug "${slug}".`);
@@ -150,7 +108,6 @@ export const save = mutation({
       });
     }
 
-    // An image dropped from the body leaves its file uploaded and unreachable.
     await ctx.scheduler.runAfter(0, internal.files.collectGarbage, {});
 
     return { updatedAt };

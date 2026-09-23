@@ -47,14 +47,6 @@ function FieldsEditor({
   );
 }
 
-/**
- * The section order: a list of ids, not records. Headings are read from the draft
- * so a renamed section shows its new name here.
- *
- * A section the stored order has never heard of — one added to the payload after
- * this list was last saved — is appended by the site rather than dropped, so it is
- * offered here instead of being unmovable until someone edits the database.
- */
 function OrderEditor({ block }: { block: Extract<Block, { kind: "order" }> }) {
   const draft = useDraft();
   const ids = draft.readList(block.path).map(String);

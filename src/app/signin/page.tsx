@@ -3,17 +3,6 @@ import { fetchQuery } from "convex/nextjs";
 import { connection } from "next/server";
 import { SignInForm } from "./form";
 
-/**
- * The one way in. Sign-up is offered only while the single account is unclaimed;
- * after that the form has a sign-in tab and nothing else.
- *
- * This page only decides what to render. Whether a sign-up is allowed is decided in
- * `convex/auth.ts`, which refuses once a user exists and, if `ADMIN_EMAIL` is set,
- * refuses every address but that one.
- */
-
-// Deliberately per-request: a prerendered "sign-up is open" would offer a form the
-// backend then refuses, and vice versa. `connection()` is what says so.
 export const instant = false;
 
 export default async function SignInPage() {

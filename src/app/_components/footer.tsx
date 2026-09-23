@@ -4,7 +4,6 @@ import { actionLinks, sortedLinks } from "./data";
 import { Newsletter } from "./newsletter";
 import { Signature } from "./signature";
 
-/** The footer: signature, newsletter sign-up, links, copyright. */
 export async function Footer() {
   const footer = await getFooter();
   const { newsletter } = await getConnect();
@@ -16,12 +15,8 @@ export async function Footer() {
     <footer className="pf-rule mt-16 border-t pt-9 pb-14">
       <Signature signature={footer.signature} />
 
-      {/* The action is passed in rather than imported by the client component, so
-          the form works from a cached, prerendered footer. */}
       <Newsletter copy={newsletter} subscribe={subscribeToNewsletter} />
 
-      {/* `mt-9` matches the `pt-9` above, so the form sits evenly between the
-          top rule and the links. */}
       <ul className="pf-meta mt-9 flex flex-wrap gap-x-5 gap-y-3">
         {links.map((link) => (
           <li key={link.site}>

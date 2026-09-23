@@ -9,12 +9,6 @@ import type { Block } from "../_lib/schema";
 import { FieldInput } from "./fields";
 import { SortableList, SortableRow } from "./sortable";
 
-/**
- * A list of records. Rows carry a key of their own, so reordering moves the row
- * rather than rewriting the one in that slot: React keeps the DOM node, the
- * browser keeps `:hover` and the open row on it, and all three follow the record.
- */
-
 type RecordsBlock = Extract<Block, { kind: "records" }>;
 
 const keysFor = (count: number) => Array.from({ length: count }, (_, at) => at);
@@ -26,7 +20,6 @@ export function RecordsEditor({ block }: { block: RecordsBlock }) {
   const [confirmKey, setConfirmKey] = useState<number | null>(null);
   const [rowKeys, setRowKeys] = useState(() => keysFor(items.length));
 
-  // The list can also change from outside this component — a discard, say.
   const keys =
     rowKeys.length === items.length ? rowKeys : keysFor(items.length);
 
@@ -111,10 +104,6 @@ export function RecordsEditor({ block }: { block: RecordsBlock }) {
   );
 }
 
-/**
- * What the other records hold in the same field, for an input that offers them.
- * Matched case-insensitively, so one spelling is offered rather than three.
- */
 function suggestionsFor(items: unknown[], key: string): string[] {
   const seen = new Map<string, string>();
 
@@ -161,8 +150,6 @@ function Record({
   const item = items[index];
   const summary = summaryOf(block, item);
 
-  // The button that was clicked is replaced by this one, so without the move the
-  // keyboard is left back at the top of the document.
   useEffect(() => {
     if (confirming) confirmRef.current?.focus();
   }, [confirming]);
@@ -176,8 +163,6 @@ function Record({
           type="button"
           onClick={onToggle}
           aria-expanded={open}
-          // The body is only in the DOM while it is open, and a dangling
-          // `aria-controls` is worse than none.
           aria-controls={open ? bodyId : undefined}
           className="pf-record-toggle"
         >
@@ -240,11 +225,6 @@ function Record({
   );
 }
 
-/**
- * The way into a record's own page. The address comes from the record — its slug
- * where it keeps one, otherwise its title — so there is nothing to fill in first. An
- * untitled record has nothing to address yet and says so.
- */
 function PageLink({ block, index }: { block: RecordsBlock; index: number }) {
   const draft = useDraft();
   const page = block.page;

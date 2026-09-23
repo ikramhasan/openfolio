@@ -7,16 +7,6 @@ import {
   wireSocialLink,
 } from "./validators";
 
-/**
- * The shape the Next.js app and the admin editor speak: sections keyed by id, each
- * with heading copy and a list of items. The database is normalised into a table per
- * section; this is the projection of it, declared once and used as both `returns` and
- * `args`.
- *
- * Images are strings here — an absolute URL on the way out to the site, a
- * `storage:<id>` token on the way to and from the editor. See `lib/images.ts`.
- */
-
 const nullableString = v.union(v.string(), v.null());
 
 export const wireEducation = v.object({
@@ -71,7 +61,6 @@ export const wireProject = v.object({
 export const wireTool = v.object({
   order: v.number(),
   title: v.string(),
-  /** The heading the site groups this tool under. */
   category: v.string(),
   url: v.string(),
   icon: wireImage,
@@ -79,29 +68,19 @@ export const wireTool = v.object({
 
 export const wireTrack = v.object({
   order: v.number(),
-  /** What the player plays. Everything shown comes from it.  */
   url: v.string(),
-  /** Not rendered: the editor's row label, and the frame's accessible name. */
   title: v.string(),
   artist: v.string(),
 });
 
-/**
- * One contribution. Everything but the URL is a snapshot of what GitHub answered
- * when it was last fetched — see `convex/github.ts` — so the site never reads from
- * GitHub to render, and a row typed by hand is still valid.
- */
 export const wireContribution = v.object({
   title: v.string(),
   url: v.string(),
-  /** `owner/name`. */
   repo: v.string(),
-  /** `0` for a contribution with no number of its own. */
   number: v.number(),
   avatar: wireImage,
   state: v.string(),
   date: v.string(),
-  /** `0` leaves the count off the row rather than claiming none. */
   stars: v.number(),
 });
 
@@ -134,10 +113,6 @@ export const wireSkill = v.object({
   url: v.string(),
 });
 
-// ------------------------------------------------------------------ sections
-
-// Every section is its heading copy plus whatever it carries, so each spreads
-// `wireSectionHeader.fields`.
 const header = wireSectionHeader.fields;
 
 export const wireSite = v.object({
@@ -250,7 +225,6 @@ export const wirePortfolio = v.object({
   footer: wireFooter,
 });
 
-/** The section keys the site renders, in the order the wire payload nests them. */
 export const SECTION_KEYS = [
   "intro",
   "about",
@@ -270,10 +244,6 @@ export const SECTION_KEYS = [
 
 export type SectionKey = (typeof SECTION_KEYS)[number];
 
-/**
- * Everything the site caches separately, so a save only invalidates what it
- * touched. `site` and `footer` are not sections but are cached the same way.
- */
 export const CACHE_KEYS = [...SECTION_KEYS, "site", "footer", "nav"] as const;
 
 export type CacheKey = (typeof CACHE_KEYS)[number];

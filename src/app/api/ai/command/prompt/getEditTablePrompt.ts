@@ -21,7 +21,6 @@ export function buildEditTableMultiCellPrompt(
   return buildStructuredPrompt({
     context: tableCellMarkdown,
     examples: [
-      // 1) Simple text edit
       dedent`
         <instruction>
         Fix grammar
@@ -44,7 +43,6 @@ export function buildEditTableMultiCellPrompt(
         </output>
       `,
 
-      // 2) Multi-cell edit
       dedent`
         <instruction>
         Translate to Chinese
@@ -73,7 +71,6 @@ export function buildEditTableMultiCellPrompt(
         </output>
       `,
 
-      // 3) Multi-block content in cell
       dedent`
         <instruction>
         Add more details

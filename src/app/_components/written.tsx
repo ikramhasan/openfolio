@@ -3,14 +3,6 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { ProseBody } from "./prose-body";
 
-/**
- * One written record at its own URL: a post, a role, a project, an award.
- *
- * Not the section `Panel`. A section's heading is a label on a list and is set at
- * body size, where this heading is the piece itself. What each section puts under
- * it differs — a post has a date and a read time, a role has a company — so the
- * furniture is here and the copy is the page's.
- */
 export function Written({
   title,
   standfirst,
@@ -21,12 +13,9 @@ export function Written({
   back,
 }: {
   title: string;
-  /** The record's own summary, where it has one. */
   standfirst?: string | null;
-  /** The line under the standfirst: dates, counts, a link out. */
   meta?: ReactNode;
   cover?: string | null;
-  /** Anything of the record's that belongs above the prose. */
   intro?: ReactNode;
   body: string;
   back: { href: string; label: string };
@@ -67,7 +56,6 @@ export function Written({
   );
 }
 
-/** A record's link out, set in the meta line beside the rest of it. */
 export function Outbound({ href, label }: { href: string; label: string }) {
   return (
     <a

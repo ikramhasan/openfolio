@@ -1,12 +1,3 @@
-/**
- * What the admin can edit, as data. A group is one rail item and one route; its
- * blocks are either loose fields, a list of records, or the section order.
- *
- * Paths are absolute from the portfolio root, which is what the draft store and a
- * patch endpoint both take. Nothing here may hold a function: the schema crosses
- * the server/client boundary as props.
- */
-
 import { WRITE_BASE, type WritableSection } from "../../_components/writing";
 
 export type FieldKind =
@@ -16,51 +7,31 @@ export type FieldKind =
   | "image"
   | "number"
   | "date"
-  /** Comma separated at the input, `string[]` in the data. */
   | "tags"
-  /** One per line at the input, `string[]` in the data. */
   | "lines";
 
 export type Field = {
-  /** Relative to the block's base, or to the record. */
   key: string;
   label: string;
   kind: FieldKind;
   hint?: string;
-  /** Spans both columns of the field grid. */
   wide?: boolean;
-  /**
-   * For an image: a sibling field holding the URL its icon can be taken from, which
-   * is what puts the "Use site icon" button beside the upload.
-   */
   from?: string;
-  /** Offers what the other records in this list have put in the same field. */
   suggest?: boolean;
-  /**
-   * Puts a button beside the field that fills the rest of the record from what it
-   * holds. `github` reads a pull request or issue — see `convex/github.ts`.
-   */
   fill?: "github";
 };
 
 export type RecordSchema = {
-  /** Names a collapsed row. */
   summaryKey: string;
   fields: Field[];
-  /** A new record, so every field has something to bind to. */
   blank: Record<string, unknown>;
 };
 
-/**
- * A record too large to edit in a row — a written body — is written on a page of its
- * own, addressed by what the record derives rather than by a field to fill in.
- */
 export type RecordPage = {
   basePath: string;
   label: string;
 };
 
-/** Where a section's bodies are written. One page, one route per section. */
 function writeRoute(section: WritableSection): RecordPage {
   return { basePath: `${WRITE_BASE}/${section}`, label: "Write" };
 }
@@ -74,9 +45,7 @@ export type Block =
       addLabel: string;
       record: RecordSchema;
       note?: string;
-      /** The record's own sort field, rewritten on every list change. */
       orderKey?: string;
-      /** Off where the site derives the order from the content itself. */
       sortable?: false;
       page?: RecordPage;
     }
@@ -84,20 +53,12 @@ export type Block =
       kind: "order";
       label: string;
       path: string;
-      /**
-       * Sections that are stored but are not stops in the rail: the masthead, the
-       * pinned lead section, the dropped one, and the footer's newsletter copy.
-       * Everything else the payload carries can be placed — see
-       * `_components/sections.tsx`.
-       */
       excludes?: string[];
     };
 
 export type AdminGroup = {
   id: string;
-  /** Rail wording. */
   label: string;
-  /** URL segment. The first group answers for `/admin` itself. */
   slug?: string;
   title: string;
   note?: string;
@@ -538,9 +499,6 @@ export const ADMIN_GROUPS: AdminGroup[] = [
         note: "Shown newest first, from the date GitHub gives — there is nothing to drag.",
         record: {
           summaryKey: "title",
-          // The URL is the only thing to type: the fetch fills the title, the
-          // repository, the number, the state, the date, the stars and the avatar,
-          // and the control beneath the field shows what it stored.
           fields: [
             {
               key: "url",

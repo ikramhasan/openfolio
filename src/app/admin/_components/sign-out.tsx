@@ -4,7 +4,6 @@ import { useAuthActions } from "@convex-dev/auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-/** Clears the session cookies, then leaves the editor. */
 export function SignOutButton() {
   const { signOut } = useAuthActions();
   const router = useRouter();

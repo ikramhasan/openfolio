@@ -9,12 +9,6 @@ import {
 } from "./table";
 import { readPath, slugOf } from "./writing";
 
-/**
- * Awards as rows. One date each, so the left column is a single line.
- *
- * An award written here goes to its own page, before whatever the record links out
- * to; one with neither is a row that does not move.
- */
 export async function Awards() {
   const [{ items }, written] = await Promise.all([
     getAwards(),

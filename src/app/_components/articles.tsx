@@ -3,10 +3,6 @@ import { blogUrl, formatCount, shortDate, sortedArticles } from "./data";
 import { DateCell, TableHead, TableLinkRow, TableList } from "./table";
 import { readPath, slugOf } from "./writing";
 
-/**
- * Posts as rows, newest first. A post written here goes to its own page; the
- * imported ones still go out to where they were published.
- */
 export async function Articles() {
   const [{ items }, written] = await Promise.all([
     getArticles(),
@@ -51,7 +47,6 @@ export async function Articles() {
   );
 }
 
-/** "View all" link, set on the section heading row. */
 export async function ArticlesAside() {
   const section = await getArticles();
   const href = blogUrl(section);

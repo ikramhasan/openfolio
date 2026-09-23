@@ -9,7 +9,6 @@ import {
   TableRow,
 } from "./table";
 
-/** Qualifications as rows. Stored ranges carry no months, so years only. */
 export async function Education() {
   const { items } = await getEducation();
 
@@ -28,8 +27,6 @@ export async function Education() {
               <span className="pf-meta mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
                 <Mark src={item.logo} />
                 <span className="pf-muted">{item.institution}</span>
-                {/* Separator grouped with the location so a wrap cannot leave
-                    it dangling. */}
                 <span className="whitespace-nowrap">
                   <span aria-hidden="true">· </span>
                   {item.location}

@@ -2,13 +2,6 @@ import Image from "next/image";
 import { getVideos } from "./content";
 import { byOrder } from "./data";
 
-/**
- * Videos, as stills at card width rather than a grid — there is one record.
- *
- * The anchor is capped at the card's width so the hover tint hugs the still. The
- * extra `1.5rem` is the `-mx-3 px-3` bleed, keeping its left edge aligned with the
- * rows in other sections.
- */
 export async function Videos() {
   const { items } = await getVideos();
 

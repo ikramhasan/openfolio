@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { getIntro } from "./content";
 
-/** Portrait, name, bio — the only block that persists across sections. */
 export async function Masthead() {
   const intro = await getIntro();
 

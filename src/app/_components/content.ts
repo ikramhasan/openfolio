@@ -6,20 +6,6 @@ import type { WritableSection } from "@convex/lib/writable";
 import { fetchQuery } from "convex/nextjs";
 import { cacheLife, cacheTag } from "next/cache";
 
-/**
- * The site's read path: one cached loader per section.
- *
- * Every loader is its own cache entry, tagged `portfolio:<section>` and given the
- * `max` lifetime — the content changes when its author saves it and at no other
- * time, so there is nothing for a timer to do. Saving revalidates only the tags
- * that changed (`_actions/content.ts`), which is why these are separate functions
- * rather than one read of the whole document.
- *
- * Route segments cache their own output too, so they declare the tags of every
- * loader they reach. A segment that reads a section without naming its tag would
- * keep serving the old copy after a save.
- */
-
 export { CACHE_KEYS, type CacheKey };
 
 export function tagFor(key: CacheKey | string): string {
@@ -33,7 +19,6 @@ export async function getSite() {
   return fetchQuery(api.content.site, {});
 }
 
-/** Which sections exist, in what order, under what wording. */
 export async function getNav() {
   "use cache";
   cacheLife("max");
@@ -76,11 +61,6 @@ export async function getArticles() {
   return fetchQuery(api.content.articles, {});
 }
 
-/**
- * A record's written body, and the slugs in a section that have one. Both carry the
- * section's own tag: a body saved in the editor refreshes the list, the section's
- * route and the page the record has of its own, and nothing else.
- */
 export async function getBody(section: WritableSection, slug: string) {
   "use cache";
   cacheLife("max");

@@ -150,10 +150,8 @@ export function getGeneratePrompt(
   editor: SlateEditor,
   { isSelecting, messages }: { isSelecting: boolean; messages: ChatMessage[] }
 ) {
-  // Freeform generation: open-ended creation without context
   if (!isSelecting) {
     return buildGenerateFreeformPrompt(messages);
   }
-  // Context-based generation: use selected text as context
   return buildGenerateContextPrompt(editor, messages);
 }

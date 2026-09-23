@@ -7,7 +7,6 @@ type PanelProps = {
   children: ReactNode;
 };
 
-/** The frame around one section: heading, optional gloss, then the content. */
 export function Panel({ title, note, aside, children }: PanelProps) {
   return (
     <div className="pf-rule pf-panel-enter border-t pt-6">

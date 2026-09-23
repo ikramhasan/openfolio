@@ -7,12 +7,8 @@ import type { Role } from "./types";
 
 const MIN_ROOM_BELOW = 220;
 const FLIP_MARGIN = 80;
-// Covers the panel's shadow too, which counts toward document scroll width even
-// though `offsetWidth` does not report it.
 const EDGE_GUTTER = 22;
 
-// Downward unless the room below is tight and above is clearly roomier; opening
-// upward covers the sentence just read, while overhanging only costs a scroll.
 function opensAbove(chip: DOMRect, panelHeight: number): boolean {
   const below = window.innerHeight - chip.bottom;
   const above = chip.top;
@@ -21,9 +17,6 @@ function opensAbove(chip: DOMRect, panelHeight: number): boolean {
   return above > below + FLIP_MARGIN;
 }
 
-// Negative offset pulling the panel back on screen. Left uncorrected, a panel
-// anchored near the right edge widens the document and adds a horizontal
-// scrollbar.
 function edgeCorrection(chip: DOMRect, panelWidth: number): number {
   const overhang = chip.left + panelWidth + EDGE_GUTTER - window.innerWidth;
   if (overhang <= 0) return 0;
@@ -31,13 +24,6 @@ function edgeCorrection(chip: DOMRect, panelWidth: number): number {
   return -Math.min(overhang, Math.max(0, chip.left - EDGE_GUTTER));
 }
 
-/**
- * A company named in the About summary, opening onto its role.
- *
- * The panel is positioned `absolute` so opening it shifts nothing, and stays
- * mounted with `inert` so open and close animate symmetrically and the content
- * stays in the HTML.
- */
 export function CompanyChip({ role }: { role: Role }) {
   const panelId = useId();
   const years = compactRange(role.dateRange);
@@ -48,8 +34,6 @@ export function CompanyChip({ role }: { role: Role }) {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLSpanElement>(null);
 
-  // Clamped whether open or not: a closed panel is `visibility: hidden`, which
-  // still occupies its position and still widens the document.
   useEffect(() => {
     const chipEl = buttonRef.current;
     const panel = panelRef.current;
@@ -129,8 +113,6 @@ export function CompanyChip({ role }: { role: Role }) {
         {shortCompany(role.company)}
       </button>
 
-      {/* No `role`: it is prose, already announced via the chip's
-          `aria-expanded` and `aria-controls`. */}
       <span
         ref={panelRef}
         id={panelId}

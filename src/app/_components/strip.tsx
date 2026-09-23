@@ -1,16 +1,10 @@
 import Image from "next/image";
 import { getIntro } from "./content";
 
-/**
- * Workshop photography: one lead frame, the others in a row beneath it.
- *
- * No width of its own — the caller sets the measure it shares with the prose.
- */
 export async function Strip() {
   const { headingImages } = await getIntro();
   const [lead, ...rest] = headingImages.filter((image) => image.url !== "");
 
-  // The list is editable, and one frame is the minimum this makes sense at.
   if (!lead) return null;
 
   return (

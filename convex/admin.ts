@@ -13,18 +13,6 @@ import {
   writeSite,
 } from "./lib/write";
 
-/**
- * The editor's read and its one write. Both start with `requireAdmin`, which takes
- * the identity from the request's token — never from an argument — and re-reads the
- * admin flag from the database.
- *
- * `save` takes the whole document because that is what the editor holds: a working
- * copy it diffs against what it loaded. The mutation does the same comparison per
- * section and returns the cache keys whose content actually changed, which is what
- * lets the site revalidate one component instead of the whole page.
- */
-
-/** A stable rendering of a value, so two payloads compare regardless of key order. */
 function canonical(value: unknown): string {
   return JSON.stringify(sortKeys(value));
 }
@@ -46,7 +34,6 @@ function sortKeys(value: unknown): unknown {
 
 const STORAGE_PREFIX = "storage:";
 
-/** Every `storage:<id>` token anywhere in the payload. */
 function tokensIn(value: unknown, found = new Set<string>()): Set<string> {
   if (typeof value === "string") {
     if (value.startsWith(STORAGE_PREFIX)) found.add(value);
@@ -63,7 +50,6 @@ export const load = query({
   args: {},
   returns: v.object({
     portfolio: wirePortfolio,
-    /** Preview URLs for the `storage:<id>` tokens the payload carries. */
     storageUrls: v.record(v.string(), v.string()),
   }),
   handler: async (ctx) => {
@@ -86,7 +72,6 @@ export const load = query({
 export const save = mutation({
   args: { portfolio: wirePortfolio },
   returns: v.object({
-    /** Cache keys whose content differs from what was stored. */
     changed: v.array(v.string()),
   }),
   handler: async (ctx, args) => {
@@ -102,9 +87,6 @@ export const save = mutation({
       return true;
     };
 
-    // The rail first. Every section's wire object carries its own heading, so the
-    // per-section comparisons below already account for heading edits; this one is
-    // about the order and about invalidating the rail itself.
     if (
       differs(
         "nav",
@@ -127,8 +109,6 @@ export const save = mutation({
     }
 
     if (changed.size > 0) {
-      // A replaced photograph leaves the old file uploaded and unreachable.
-      // Sweeping after the transaction commits keeps the save itself cheap.
       await ctx.scheduler.runAfter(0, internal.files.collectGarbage, {});
     }
 

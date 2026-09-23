@@ -1,28 +1,7 @@
-/*
- * The reading column: what a stored rich-text body looks like on the site.
- *
- * Articles use it today; anything else given a written body — a project write-up,
- * a case study — wears the same column by rendering into `.pf-prose`.
- *
- * The rest of the portfolio is a ledger — 14px rows, muted secondary text,
- * hairline rules, emphasis by weight and position rather than by hue. An article
- * is the one place where prose is the content rather than a caption, so it gets a
- * reading size of its own and the full ink. Everything else here is the same
- * vocabulary: the same ramp, the same hairlines, no colour.
- *
- * Every block-level node carries `pf-prose-block`, which is what the vertical
- * rhythm keys off; the specific classes only carry the look. Keeping the rhythm in
- * one sibling rule means a new block type inherits it by adding one class.
- */
-
 .pf-prose {
-  /* 17px, the standfirst's size: the largest thing on the site that is still
-     read as a sentence rather than as a label. */
   --pf-prose: 1.0625rem;
   --pf-prose-gap: 1.15em;
-  /* Space above a heading belongs to the heading, not to the block it follows. */
   --pf-prose-heading-gap: 2.1em;
-  /* 68ch at this size is ~580px, the same measure `.pf-body` holds at 14px. */
   --pf-prose-measure: 68ch;
   --pf-prose-mono:
     ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
@@ -31,39 +10,27 @@
   line-height: 1.72;
   letter-spacing: -0.011em;
   color: var(--pf-ink);
-  /* Long-form prose is read, not scanned: hyphenate rather than leave rivers. */
   text-wrap: pretty;
 }
 
-/* A heading the table of contents jumped to, flashed in ink rather than in yellow. */
 .pf-prose [data-nav-target="true"] {
   background-color: color-mix(in srgb, var(--pf-ink) 10%, transparent);
   border-radius: 4px;
 }
 
-/* ---------------------------------------------------------------- rhythm */
-
-/*
- * Two renderers, one rhythm. On the page a block is a direct child of the column; in
- * the editor it is wrapped by the drag handles container, which carries
- * `pf-prose-block` for exactly this reason — and the class saying which kind of block
- * it is then sits three levels in. So the gap is between blocks either way, and each
- * exception is matched at every depth the two renderers put it at.
- */
 .pf-prose-block + .pf-prose-block {
   margin-top: var(--pf-prose-gap);
 }
 
-/* Space above a heading belongs to the heading. */
 .pf-prose-block
-+ :is(
-  .pf-prose-h1,
-  .pf-prose-h2,
-  .pf-prose-h3,
-  .pf-prose-h4,
-  .pf-prose-h5,
-  .pf-prose-h6
-),
+  + :is(
+    .pf-prose-h1,
+    .pf-prose-h2,
+    .pf-prose-h3,
+    .pf-prose-h4,
+    .pf-prose-h5,
+    .pf-prose-h6
+  ),
 .pf-prose-block
   + .pf-prose-block:has(
     > :is(
@@ -97,7 +64,6 @@
   margin-top: var(--pf-prose-heading-gap);
 }
 
-/* A heading and the paragraph under it are one unit. */
 :is(
     .pf-prose-h1,
     .pf-prose-h2,
@@ -140,8 +106,6 @@
   margin-top: 0.6em;
 }
 
-/* Figures, tables and code blocks are artefacts rather than sentences, so they are
-   given air on both sides. */
 .pf-prose-block + :is(.pf-prose-figure, .pf-prose-table, .pf-prose-pre),
 .pf-prose-block
   + .pf-prose-block:has(
@@ -159,21 +123,19 @@
   margin-top: 1.9em;
 }
 
-/* A list item is an item whichever renderer drew it. */
 .pf-prose-block:has(
-  > :is(.pf-prose-item),
-  > * > :is(.pf-prose-item),
-  > * > * > :is(.pf-prose-item)
-)
-+ .pf-prose-block:has(
-  > :is(.pf-prose-item),
-  > * > :is(.pf-prose-item),
-  > * > * > :is(.pf-prose-item)
-) {
+    > :is(.pf-prose-item),
+    > * > :is(.pf-prose-item),
+    > * > * > :is(.pf-prose-item)
+  )
+  + .pf-prose-block:has(
+    > :is(.pf-prose-item),
+    > * > :is(.pf-prose-item),
+    > * > * > :is(.pf-prose-item)
+  ) {
   margin-top: 0.3em;
 }
 
-/* Nothing above the first block in the column, or in a container. */
 .pf-prose > :first-child,
 .pf-prose-quote > :first-child,
 .pf-prose-callout-body > :first-child,
@@ -181,17 +143,10 @@
   margin-top: 0;
 }
 
-/* ------------------------------------------------------------------ text */
-
 .pf-prose-p {
   max-width: var(--pf-prose-measure);
 }
 
-/*
- * Headings step by weight first and size second — an article's own title is
- * already the panel's `.pf-section-title` above it, so nothing in the body may
- * out-shout it. The tracking tightens as the size grows, as it does site-wide.
- */
 .pf-prose-h1,
 .pf-prose-h2,
 .pf-prose-h3,
@@ -239,8 +194,6 @@
   font-weight: 620;
 }
 
-/* The last step down cannot be smaller and still be a heading, so it changes kind
-   instead — the same label treatment as the column headers. */
 .pf-prose-h6 {
   font-size: 0.6875rem;
   line-height: 1.4;
@@ -250,11 +203,6 @@
   color: var(--pf-muted);
 }
 
-/*
- * The basic marks have no component in the base kit — they render as bare tags —
- * so they are reached by element. Inter's 620 is the site's own emphasis weight;
- * `font-bold` would be 700 and shout.
- */
 .pf-prose strong,
 .pf-prose b {
   font-weight: 620;
@@ -283,25 +231,15 @@
   line-height: 0;
 }
 
-/* No yellow: a wash of the ink itself, which reads as emphasis in both ramps. */
 .pf-prose-mark {
   background-color: color-mix(in srgb, var(--pf-ink) 11%, transparent);
   color: inherit;
   padding-inline: 0.12em;
   border-radius: 2px;
-  /* Without this a highlight broken over two lines loses its ends. */
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
 }
 
-/* ----------------------------------------------------------------- lists */
-
-/*
- * A list arrives one item at a time: each item is its own block, indented by an
- * inline `margin-left`, and either draws its own marker or wraps a one-item list
- * that draws it. The indent is therefore already paid for and the list adds none,
- * which is what keeps a bullet and a number hanging on the same vertical.
- */
 .pf-prose-item {
   max-width: var(--pf-prose-measure);
 }
@@ -320,11 +258,6 @@
   color: var(--pf-faint);
 }
 
-/*
- * A list arrives one item at a time — each item is a block wrapping a one-item
- * list — so the gap between items is the gap between those blocks, not between
- * `li`s, and it has to be tighter than the gap between paragraphs.
- */
 .pf-prose-item + .pf-prose-item {
   margin-top: 0.3em;
 }
@@ -333,7 +266,6 @@
   padding-left: 0.15em;
 }
 
-/* A checklist is not a bulleted list: the box replaces the marker. */
 .pf-prose-todo {
   list-style: none;
   position: relative;
@@ -364,12 +296,6 @@
   border-color: var(--pf-ink);
 }
 
-/* ---------------------------------------------------------------- quotes */
-
-/*
- * A rule and a colour, not italics: a long italic passage is harder to read than
- * the prose it is quoting, which defeats the point.
- */
 .pf-prose-quote {
   max-width: var(--pf-prose-measure);
   padding-left: 1.15em;
@@ -381,12 +307,9 @@
   margin-top: 0.7em;
 }
 
-/* ------------------------------------------------------------------ code */
-
 .pf-prose-code,
 .pf-prose-kbd {
   font-family: var(--pf-prose-mono);
-  /* Mono faces run large against Inter at the same size. */
   font-size: 0.855em;
   letter-spacing: 0;
   white-space: pre-wrap;
@@ -402,14 +325,12 @@
   font-size: 0.78em;
   font-weight: 500;
   color: var(--pf-muted);
-  /* A key is pressed: one hairline of relief under it, no coloured shadow. */
   box-shadow: 0 1px 0 var(--pf-rule);
 }
 
 .pf-prose-pre {
   background-color: var(--pf-hover);
   border: 1px solid var(--pf-rule);
-  /* 6px, as the editor's own fields. */
   border-radius: 6px;
   overflow: hidden;
 }
@@ -424,12 +345,6 @@
   tab-size: 2;
 }
 
-/*
- * The language and the copy button sit in a strip above the code rather than over
- * it. Floating them meant the label hung in space beside a button that was not there
- * yet; in a strip both have an edge to align to, and the hairline is the same one
- * that separates every other row on the site.
- */
 .pf-prose-code-actions {
   display: flex;
   align-items: center;
@@ -439,7 +354,6 @@
   border-bottom: 1px solid var(--pf-rule);
 }
 
-/* The language leads the strip; everything else is pushed to the far end. */
 .pf-prose-lang {
   margin-right: auto;
   font-size: 0.6875rem;
@@ -467,10 +381,6 @@
   outline-offset: 2px;
 }
 
-/*
- * Always there. It was hidden until hover, which made the strip look mis-set at rest
- * and left the affordance undiscoverable on a first read.
- */
 .pf-prose-copy {
   flex: none;
   font-size: 0.6875rem;
@@ -501,16 +411,6 @@
   outline-offset: 2px;
 }
 
-/*
- * Syntax highlighting. Code is the one place the site carries hue: a keyword and a
- * string differ in kind, and weight alone cannot say so across forty lines.
- *
- * The values and the groupings are the editor's, so a block reads the same while it
- * is being written and after it is published. They come from the registry's theme,
- * which is GitHub's. Two are changed, both in the dark ramp and both for contrast:
- * `bullet`, which the registry leaves at its light olive, and `comment`, which at
- * #6a737d sits at 4:1 on this background.
- */
 .pf-prose {
   --pf-code-keyword: #d73a49;
   --pf-code-string: #032f62;
@@ -635,17 +535,12 @@ html[data-theme="dark"] .pf-prose {
   color: var(--pf-code-deletion);
 }
 
-/* ----------------------------------------------------------------- rules */
-
-/* One hairline, the same one every panel is separated by. */
 .pf-prose-hr {
   height: 1px;
   border: 0;
   background-color: var(--pf-rule);
   margin-block: 2.6em;
 }
-
-/* ----------------------------------------------------------------- media */
 
 .pf-prose-figure {
   margin: 0;
@@ -658,8 +553,6 @@ html[data-theme="dark"] .pf-prose {
   height: auto;
   border-radius: 6px;
   background-color: var(--pf-hover);
-  /* Pure black/white at a tenth, never a tinted neutral: a tint picks up the
-     surface behind it and reads as dirt on the image edge. */
   outline: 1px solid var(--pf-edge);
   outline-offset: -1px;
 }
@@ -687,7 +580,6 @@ html[data-theme="dark"] .pf-prose {
   height: 2.5rem;
 }
 
-/* An attachment is a row, like every other record on the site. */
 .pf-prose-file {
   display: flex;
   align-items: center;
@@ -719,8 +611,6 @@ html[data-theme="dark"] .pf-prose {
   font-variant-numeric: tabular-nums;
 }
 
-/* ----------------------------------------------------------------- table */
-
 .pf-prose-table {
   overflow-x: auto;
 }
@@ -732,11 +622,6 @@ html[data-theme="dark"] .pf-prose {
   line-height: 1.5;
 }
 
-/*
- * The site's tables are lists of records, not grids: horizontal hairlines only,
- * no vertical ones, no fill. The author can still set a cell border in the editor,
- * and those are drawn in the same hairline.
- */
 .pf-prose-th,
 .pf-prose-td {
   padding: 0.625rem 1rem 0.625rem 0;
@@ -760,7 +645,6 @@ html[data-theme="dark"] .pf-prose {
   color: var(--pf-ink);
 }
 
-/* A cell's own paragraphs must not carry the prose rhythm. */
 .pf-prose-th .pf-prose-p,
 .pf-prose-td .pf-prose-p {
   max-width: none;
@@ -769,8 +653,6 @@ html[data-theme="dark"] .pf-prose {
 .pf-prose-table tr:last-child :is(.pf-prose-th, .pf-prose-td) {
   border-bottom: 0;
 }
-
-/* -------------------------------------------------------------- callouts */
 
 .pf-prose-callout {
   display: flex;
@@ -794,9 +676,6 @@ html[data-theme="dark"] .pf-prose {
   flex: 1;
 }
 
-/* ----------------------------------------------------------------- chips */
-
-/* A mention, a date, a footnote marker: the same small inline plate. */
 .pf-prose-chip {
   display: inline-block;
   padding: 0.05em 0.35em;
@@ -815,8 +694,6 @@ html[data-theme="dark"] .pf-prose {
   font-weight: 400;
 }
 
-/* ------------------------------------------------------------- equations */
-
 .pf-prose-equation {
   overflow-x: auto;
   padding-block: 0.5rem;
@@ -827,13 +704,9 @@ html[data-theme="dark"] .pf-prose {
   padding-inline: 0.1em;
 }
 
-/* KaTeX sets its own size relative to the parent; at the prose size it comes out
-   slightly large beside the text. */
 .pf-prose .katex {
   font-size: 1.04em;
 }
-
-/* --------------------------------------------------------------- columns */
 
 .pf-prose-columns {
   display: flex;
@@ -845,8 +718,6 @@ html[data-theme="dark"] .pf-prose {
   min-width: 0;
   flex: 1;
 }
-
-/* ------------------------------------------------------- toc and toggles */
 
 .pf-prose-toc {
   max-width: var(--pf-prose-measure);
@@ -896,8 +767,6 @@ html[data-theme="dark"] .pf-prose {
   color: var(--pf-faint);
 }
 
-/* ------------------------------------------------------------- footnotes */
-
 .pf-prose-footnote-ref {
   font-size: 0.7em;
   line-height: 0;
@@ -914,20 +783,12 @@ html[data-theme="dark"] .pf-prose {
   color: var(--pf-muted);
 }
 
-/* ----------------------------------------------------- editor left-overs */
-
-/*
- * Marks the editor leaves behind. A comment or a suggestion that reaches the site
- * is an oversight, not a feature, so it is shown as quietly as possible rather
- * than in the editor's colours.
- */
 .pf-prose-comment {
   background-color: color-mix(in srgb, var(--pf-ink) 7%, transparent);
   border-bottom: 1px dotted color-mix(in srgb, var(--pf-ink) 45%, transparent);
   transition: background-color 140ms ease;
 }
 
-/* Under the caret, or hovered, in the editor. */
 .pf-prose-comment-active {
   background-color: color-mix(in srgb, var(--pf-ink) 16%, transparent);
   border-bottom-style: solid;
@@ -949,12 +810,8 @@ html[data-theme="dark"] .pf-prose {
   border-bottom-style: solid;
 }
 
-/*
- * An inline node inside a pending suggestion — a link, a mention, a date — is marked
- * by an attribute on itself or on an ancestor rather than by a class.
- */
 .pf-prose
-:is([data-inline-suggestion="insert"], [data-inline-suggestion="insert"] *) {
+  :is([data-inline-suggestion="insert"], [data-inline-suggestion="insert"] *) {
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 0.18em;

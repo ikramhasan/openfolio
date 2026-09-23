@@ -10,10 +10,6 @@ import {
 } from "./table";
 import { readPath, slugOf } from "./writing";
 
-/**
- * Roles as rows. A role written here goes to its own page, before the company URL
- * the record carries.
- */
 export async function Experience() {
   const [{ items }, written] = await Promise.all([
     getExperience(),
@@ -42,8 +38,6 @@ export async function Experience() {
               <span className="pf-meta mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
                 <Mark src={item.logo} />
                 <span className="pf-muted">{item.company}</span>
-                {/* Separator grouped with the location so a wrap cannot leave
-                    it dangling. */}
                 <span className="whitespace-nowrap">
                   <span aria-hidden="true">· </span>
                   {item.location.trim()}

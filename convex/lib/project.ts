@@ -4,24 +4,14 @@ import type { ImageRef } from "./images";
 import { imageToken, imageUrl } from "./images";
 import type { SectionKey } from "./wire";
 
-/**
- * Turning rows into the wire shape. The site and the editor want the same
- * projection with one difference — what an image reference becomes — so every
- * function here takes a renderer for it.
- */
-
 export type RenderImage = (ref: ImageRef | undefined) => Promise<string>;
 
-/** Absolute URLs, for rendering. */
 export const renderForSite =
   (ctx: QueryCtx): RenderImage =>
   (ref) =>
     imageUrl(ctx, ref);
 
-/** References, for round-tripping through the editor without losing the file. */
 export const renderForEditor: RenderImage = async (ref) => imageToken(ref);
-
-// -------------------------------------------------------------------- headers
 
 export type Header = { title: string; note?: string; navLabel?: string };
 
@@ -43,10 +33,6 @@ export async function header(ctx: QueryCtx, key: SectionKey): Promise<Header> {
   return strip(doc, key);
 }
 
-/**
- * Every section's heading copy plus the rail order. One row per section — a fixed,
- * single-digit set — so collecting the table is bounded by design.
- */
 export async function headers(ctx: QueryCtx): Promise<{
   order: string[];
   byKey: Record<string, Header>;
@@ -62,20 +48,11 @@ export async function headers(ctx: QueryCtx): Promise<{
   };
 }
 
-// ---------------------------------------------------------------- singletons
-
-/**
- * The one row of a single-document table. `admin.ts` is the only writer and it
- * upserts, so a second row can only appear through the dashboard; the first by
- * creation time wins rather than the read failing.
- */
 export async function singleton<
   T extends "site" | "intro" | "footer" | "connect" | "articlesMeta",
 >(ctx: QueryCtx, table: T): Promise<Doc<T> | null> {
   return (await ctx.db.query(table).first()) as Doc<T> | null;
 }
-
-// -------------------------------------------------------------------- lists
 
 export async function socialLinks(
   ctx: QueryCtx,
@@ -271,8 +248,6 @@ export async function skills(ctx: QueryCtx) {
   }));
 }
 
-// ----------------------------------------------------------------- composites
-
 const EMPTY_NEWSLETTER = {
   inputLabel: "",
   placeholder: "",
@@ -333,7 +308,6 @@ export async function site(ctx: QueryCtx) {
   return { title: row?.title ?? "", description: row?.description ?? "" };
 }
 
-/** The whole payload, in the shape the editor's draft store expects. */
 export async function portfolio(ctx: QueryCtx, image: RenderImage) {
   const { order } = await headers(ctx);
 

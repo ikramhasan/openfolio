@@ -4,18 +4,11 @@ import { getIntro, getSite } from "./_components/content";
 import { siteUrl } from "./_components/site-url";
 import "./globals.css";
 
-// Inter's alternate glyphs (`cv05`, `cv08`, `ss03`) are enabled in `globals.css`.
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
   display: "swap",
 });
-
-/**
- * Absolute URLs for canonical links and social cards. Set `NEXT_PUBLIC_SITE_URL`
- * on the host; the localhost fallback only matters in development, where nothing
- * consumes them.
- */
 
 export async function generateMetadata(): Promise<Metadata> {
   const [site, intro] = await Promise.all([getSite(), getIntro()]);
@@ -44,27 +37,15 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-/**
- * The document shell. The portfolio's own chrome — rail, masthead, footer — lives
- * in `(site)/layout.tsx`, so `/admin` and `/signin` can supply their own without
- * inheriting it.
- */
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      // The theme script below sets `data-theme` before React arrives, which
-      // React would otherwise report as a mismatched attribute.
       suppressHydrationWarning
-      // `globals.css` scrolls smoothly; this is what lets the router suspend that
-      // for a navigation, so switching sections jumps to the top rather than
-      // animating the whole page there.
       data-scroll-behavior="smooth"
       className={`${inter.variable} h-full antialiased`}
     >
       <head>
-        {/* Has to run before the first paint, or a pinned theme flashes the system
-            ramp. The key mirrors `THEME_STORAGE_KEY` in `theme-toggle.tsx`. */}
         <script
           // biome-ignore lint/security/noDangerouslySetInnerHtml: a static literal, and it has to run before paint
           dangerouslySetInnerHTML={{

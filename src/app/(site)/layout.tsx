@@ -5,14 +5,6 @@ import { Masthead } from "../_components/masthead";
 import { Rail } from "../_components/rail";
 import { navItems } from "../_components/sections";
 
-/**
- * The persistent shell: index rail beside one section's route. Everything that
- * survives a section change lives here, so navigating re-renders only the panel.
- *
- * Cached as its own entry, tagged with every section it reads — the rail's order
- * and wording (`nav`), the masthead (`intro`), and the footer with its newsletter
- * copy. A section edited outside that set leaves this shell untouched.
- */
 export default async function SiteLayout({ children }: LayoutProps<"/">) {
   "use cache";
   cacheLife("max");

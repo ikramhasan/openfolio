@@ -4,7 +4,6 @@ import { google } from '@ai-sdk/google';
 import { generateText } from 'ai';
 import { NextResponse } from 'next/server';
 
-/** The same model the command route uses. `google()` reads the key from the env. */
 const MODEL = 'gemini-3.8-flash';
 
 export async function POST(req: NextRequest) {

@@ -6,24 +6,6 @@ import { formatCount, longDate } from "../../../_components/data";
 import { slugOf } from "../../../_components/writing";
 import { Written } from "../../../_components/written";
 
-/**
- * A post written here, at its own URL under the Articles section.
- *
- * A static segment, so it takes `/articles/<slug>` from the section catch-all while
- * `/articles` itself still answers with the list.
- *
- * Rendered on demand rather than prerendered — there is no `generateStaticParams`,
- * because publishing a post should not need a build. The body below is a cached
- * scope tagged with the section, so a post is rendered once and then served from
- * the cache until it is edited.
- *
- * The record comes from the section's own read rather than a query of its own: it is
- * already cached under this tag, and a post's fields are the row the Articles list
- * shows. A slug with no body is refused, but the refusal is a streamed 404 page
- * carrying `noindex` rather than a 404 status: the response has already begun by the
- * time the read comes back. The alternative is a lookup in `proxy.ts` on every
- * request to this route, which is a worse trade for a URL nothing links to.
- */
 export const instant = false;
 
 async function post(slug: string) {
@@ -61,7 +43,6 @@ export default async function ArticlePage({
 }: PageProps<"/articles/[slug]">) {
   const { slug } = await params;
 
-  // Before anything renders, so an unwritten slug is refused rather than framed.
   const [article, body] = await Promise.all([
     post(slug),
     getBody("articles", slug),
@@ -71,7 +52,6 @@ export default async function ArticlePage({
   return <CachedArticle slug={slug} />;
 }
 
-/** Cached separately so the tag is claimed from inside the entry, as elsewhere. */
 async function CachedArticle({ slug }: { slug: string }) {
   "use cache";
   cacheLife("max");

@@ -7,10 +7,6 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-/**
- * The auth provider is mounted here and under `/admin` only. The public site never
- * reads a cookie, which is what lets it prerender.
- */
 export default function SignInLayout({ children }: { children: ReactNode }) {
   return (
     <ConvexAuthNextjsServerProvider>{children}</ConvexAuthNextjsServerProvider>

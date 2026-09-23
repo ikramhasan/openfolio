@@ -2,9 +2,6 @@
 
 import { useDraft } from "../_lib/draft";
 
-/** The only place a change leaves the editor. */
-
-// Shared by both dock buttons, so the pair differs only in fill.
 const SHAPE = "rounded-md px-4 py-2 text-[0.8125rem] font-medium";
 
 export function SaveDock() {
@@ -19,7 +16,6 @@ export function SaveDock() {
         <p className="pf-meta min-w-0 flex-1">
           {dirty ? <span className="pf-strong">Unsaved changes</span> : null}
           {dirty && message ? <span aria-hidden="true"> · </span> : null}
-          {/* Rendered even when empty, so the message is announced when it lands. */}
           <output className="pf-muted">{message}</output>
         </p>
 

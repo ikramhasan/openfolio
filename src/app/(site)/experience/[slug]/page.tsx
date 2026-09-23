@@ -6,11 +6,6 @@ import { cleanBullet } from "../../../_components/data";
 import { slugOf } from "../../../_components/writing";
 import { Outbound, Written } from "../../../_components/written";
 
-/**
- * A role written here, at its own URL under the Experience section. The same
- * arrangement as a post — see `articles/[slug]` for why the segment is static, why
- * there is no `generateStaticParams`, and why a missing body is a streamed 404.
- */
 export const instant = false;
 
 async function role(slug: string) {
@@ -84,7 +79,6 @@ async function CachedRole({ slug }: { slug: string }) {
           ) : null}
         </>
       }
-      // The record's bullets, which are what the Experience list shows of the role.
       intro={
         item.details.length > 0 ? (
           <ul className="max-w-[72ch] space-y-1.5">

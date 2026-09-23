@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 
-/** Shared with the inline script in `layout.tsx`. Changing one means both. */
 export const THEME_STORAGE_KEY = "pf-theme";
 
 const ORDER = ["system", "light", "dark"] as const;
@@ -58,11 +57,7 @@ function Icon({ value }: { value: Theme }) {
   );
 }
 
-/** Follow the system, or pin light or dark. Three labels from `lg`, a cycling
- *  icon button below that, where the rail has no room to spare. */
 export function ThemeToggle() {
-  // Only feeds the controls' own state. The visible selection is a CSS match on
-  // `<html data-theme>`, which is already right at the first paint.
   const [theme, setTheme] = useState<Theme>("system");
 
   useEffect(() => {
@@ -85,9 +80,7 @@ export function ThemeToggle() {
       } else {
         localStorage.setItem(THEME_STORAGE_KEY, next);
       }
-    } catch {
-      // Private modes can refuse storage; the choice still holds for this visit.
-    }
+    } catch {}
   }
 
   return (
@@ -103,7 +96,6 @@ export function ThemeToggle() {
         ))}
       </button>
 
-      {/* Real radios, for arrow keys and a single tab stop at no cost. */}
       <fieldset className="pf-theme hidden lg:inline-flex">
         <legend className="sr-only">Theme</legend>
 

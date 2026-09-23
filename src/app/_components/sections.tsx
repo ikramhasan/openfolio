@@ -13,36 +13,15 @@ import { Tools } from "./tools";
 import type { Nav } from "./types";
 import { Videos } from "./videos";
 
-/**
- * The section registry. Each entry becomes a rail item and a route.
- *
- * Adding a section: write the component, add an entry to `REGISTRY`, and list the
- * sections it reads in `reads`. Ordering comes from the stored `sectionOrder`,
- * except `lead: true` which pins to the front. Anything registered but unsequenced
- * is appended. Headings, subtitles and rail labels are stored content, not written
- * here.
- *
- * `reads` is what makes a save invalidate the right routes: the page tags its own
- * cache entry with these, so editing Experience refreshes `/experience` and the
- * About panel that quotes it, and nothing else.
- */
-
 export type SectionEntry = {
-  /** Matches the section key in the stored content. */
   id: string;
-  /** URL segment, where the id reads badly. Ignored for the lead section. */
   slug?: string;
   body: ReactNode;
-  /** Trailing element on the panel's heading row. */
   aside?: ReactNode;
-  /** Pins ahead of the data-ordered entries. */
   lead?: boolean;
-  /** Cache keys this section's body reaches, directly or through a child. */
   reads: CacheKey[];
 };
 
-// Stored as sections but not rendered as one: `intro` is the masthead, `skills`
-// was dropped, `connect` moved to the footer.
 const STANDALONE_IDS = new Set(["intro", "skills", "connect"]);
 
 const REGISTRY: SectionEntry[] = [
@@ -50,7 +29,6 @@ const REGISTRY: SectionEntry[] = [
     id: "about",
     lead: true,
     body: <About />,
-    // The prose is composed from the roles, and the photo strip from the intro.
     reads: ["about", "experience", "intro"],
   },
   { id: "experience", body: <Experience />, reads: ["experience"] },
@@ -89,14 +67,11 @@ const byId = new Map(REGISTRY.map((entry) => [entry.id, entry]));
 
 export type RoutedSection = SectionEntry & {
   path: string;
-  /** Answers for `/` rather than a path of its own. */
   home: boolean;
   title: string;
   note?: string;
   navLabel: string;
-  /** Rail numbering, "01" upward. */
   index: string;
-  /** Every tag the route's own cache entry depends on. */
   tags: string[];
 };
 
@@ -121,10 +96,6 @@ function route(entry: SectionEntry, nav: Nav, position: number): RoutedSection {
   };
 }
 
-/**
- * The sections the site routes to, in order. Not cached itself — it holds React
- * elements — but the nav read inside it is.
- */
 export async function routedSections(): Promise<RoutedSection[]> {
   const nav = await getNav();
 

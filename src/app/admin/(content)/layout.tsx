@@ -7,14 +7,6 @@ import { DraftProvider } from "../_lib/draft";
 import { load } from "../_lib/repository";
 import { adminNavItems } from "../_lib/schema";
 
-/**
- * The content groups: the portfolio's own rail and panel, around a draft of the whole
- * document. Writing a post is not one of these — it is a window of its own, so it
- * sits outside this group and pays for none of this, including the read below.
- *
- * The draft lives here rather than in the page, so switching groups keeps the
- * unsaved work.
- */
 export default async function ContentLayout({
   children,
 }: LayoutProps<"/admin">) {
@@ -37,7 +29,6 @@ export default async function ContentLayout({
             <div className="flex shrink-0 items-baseline gap-5">
               <Link
                 href="/"
-                // A new tab: leaving the editor would discard the draft.
                 target="_blank"
                 rel="noreferrer"
                 className="pf-link-quiet pf-meta"

@@ -4,12 +4,6 @@ import { Mark } from "./mark";
 import { TableHead, TableLinkRow, TableList, TableRow } from "./table";
 import { readPath, slugOf } from "./writing";
 
-/**
- * Projects as rows. The left column is an ordinal: the records have no dates.
- *
- * A project written here goes to its own page; the rest go out to whatever the
- * record links to, and one with neither is a row that does not move.
- */
 export async function Projects() {
   const [{ items }, written] = await Promise.all([
     getProjects(),

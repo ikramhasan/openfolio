@@ -5,11 +5,6 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { ThemeToggle } from "./theme-toggle";
 
-/**
- * The index rail: a sticky vertical list from `lg`, a horizontal scrolling strip
- * below that. Shared by the portfolio and `/admin`.
- */
-
 type NavItem = {
   href: string;
   label: string;
@@ -18,7 +13,6 @@ type NavItem = {
 
 const DRAG_THRESHOLD = 6;
 
-/** The strip's edge fade, `--pf-rail` in `globals.css`: 2.5rem either side. */
 const FADE = 40;
 
 export function Rail({
@@ -32,12 +26,6 @@ export function Rail({
   const scrollerRef = useRef<HTMLUListElement>(null);
   const mountedRef = useRef(false);
 
-  // Reveal the current item. Centred on the first render, which is what arriving
-  // at a section's URL wants; after that the strip stays where it was scrolled to
-  // and the item is only nudged clear of an edge fade — re-centring on every tap
-  // throws away the scroll the reader just made to reach the tab.
-  // `scrollBy` on the scroller rather than `scrollIntoView` on the item, which
-  // would also scroll the page vertically.
   useEffect(() => {
     const scroller = scrollerRef.current;
     if (!scroller) return;
@@ -59,7 +47,6 @@ export function Rail({
     } else {
       const under = Math.min(item.left - box.left - FADE, 0);
       const over = Math.max(item.right - (box.right - FADE), 0);
-      // Both only when the item is wider than the unfaded track; align its start.
       delta = under < 0 ? under : over;
       if (delta === 0) return;
     }
@@ -70,14 +57,11 @@ export function Rail({
     scroller.scrollBy({ left: delta, behavior: instant ? "auto" : "smooth" });
   }, [pathname]);
 
-  // Drag to scroll, for pointers that cannot swipe, plus the edge fades.
   useEffect(() => {
     const scroller = scrollerRef.current;
     if (!scroller) return;
 
     const paint = () => {
-      // Guarded on layout, not just overflow: the vertical column's widest item
-      // can exceed its track without the list scrolling.
       const horizontal =
         getComputedStyle(scroller).flexDirection === "row" &&
         scroller.scrollWidth - scroller.clientWidth > 1;
@@ -121,9 +105,6 @@ export function Rail({
       const dx = event.clientX - originX;
       travelled = Math.max(travelled, Math.abs(dx));
 
-      // Capture only once the gesture is definitely a scroll. Taking it on
-      // pointerdown retargets the closing `click` to the `<ul>`, so the link
-      // never fires.
       if (!dragging) {
         if (travelled <= DRAG_THRESHOLD) return;
         dragging = true;
@@ -144,7 +125,6 @@ export function Rail({
       delete scroller.dataset.dragging;
     };
 
-    // Capture phase, so a drag's closing click never reaches `Link`.
     const onClick = (event: MouseEvent) => {
       if (!swallowClick) return;
       swallowClick = false;
@@ -188,7 +168,6 @@ export function Rail({
               <li key={item.href} className="contents">
                 <Link
                   href={item.href}
-                  // Without this the browser drags the link instead of scrolling.
                   draggable={false}
                   data-rail-href={item.href}
                   data-active={active}

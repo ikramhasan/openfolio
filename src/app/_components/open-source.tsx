@@ -3,14 +3,6 @@ import { formatCount, repoParts, shortDate, sortedContributions } from "./data";
 import { Mark } from "./mark";
 import { DateCell, TableHead, TableLinkRow, TableList } from "./table";
 
-/**
- * Contributions to other people's repositories, newest first. The whole row is the
- * pull request, so every one of these links out.
- *
- * The state and the star count are the snapshot the record holds, not a read of
- * GitHub: see `convex/github.ts`. A count of nothing is left off rather than shown
- * as zero.
- */
 export async function OpenSource() {
   const { items } = await getOpenSource();
 
@@ -19,7 +11,6 @@ export async function OpenSource() {
       <TableHead left="Date" middle="Contribution" right="Ref" />
 
       <TableList>
-        {/* A row added but never fetched has nothing to show; it is not a record yet. */}
         {sortedContributions(items)
           .filter((item) => item.title !== "")
           .map((item) => {

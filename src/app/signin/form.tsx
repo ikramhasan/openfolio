@@ -4,15 +4,6 @@ import { useAuthActions } from "@convex-dev/auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useId, useState } from "react";
 
-/**
- * Email and password, against the Password provider in `convex/auth.ts`.
- *
- * The error copy is whatever the backend threw, which is deliberate: the refusals
- * worth reading — sign-ups are closed, the password is too weak — come from there,
- * and inventing a friendlier message here would hide them.
- */
-
-/** Mirrors `validatePasswordRequirements` so the rule is stated before it fails. */
 const RULE = "At least 12 characters, with upper case, lower case and a digit.";
 
 function readable(error: unknown): string {
@@ -21,13 +12,9 @@ function readable(error: unknown): string {
 
   if (match) return match[1].trim();
 
-  // Convex reports bad credentials as a generic server error; saying so is more
-  // use than the stack, and it deliberately does not say which half was wrong.
   return "Could not sign in. Check the address and password.";
 }
 
-// Only ever a path on this site, so a crafted `next` cannot bounce the browser off
-// the deployment after a successful sign-in.
 function safeNext(value: string | null): string {
   if (!value || !value.startsWith("/") || value.startsWith("//"))
     return "/admin";

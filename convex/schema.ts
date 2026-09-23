@@ -10,24 +10,9 @@ import {
   socialLinkFields,
 } from "./lib/validators";
 
-/**
- * One table per section of the portfolio.
- *
- * Tables named for a single thing — `site`, `intro`, `articlesMeta`, `connect`,
- * `footer` — hold exactly one document. Nothing in the schema can enforce that,
- * so the writes in `admin.ts` go through `putSingleton`, which is the only thing
- * that inserts into them.
- *
- * Every list table carries its own `order`, rewritten on each save, because the
- * editor reorders by dragging and the site renders in that order.
- */
 export default defineSchema({
   ...authTables,
 
-  /**
-   * Overrides the auth component's `users` table to add the admin flag. Only the
-   * first sign-up is allowed (see `auth.ts`), so at most one row exists.
-   */
   users: defineTable({
     name: v.optional(v.string()),
     image: v.optional(v.string()),
@@ -36,25 +21,16 @@ export default defineSchema({
     phone: v.optional(v.string()),
     phoneVerificationTime: v.optional(v.number()),
     isAnonymous: v.optional(v.boolean()),
-    /** Set on the first and only user. Every write checks it. */
     isAdmin: v.optional(v.boolean()),
   }).index("email", ["email"]),
-
-  // ---------------------------------------------------------------- chrome
 
   site: defineTable({
     title: v.string(),
     description: v.string(),
   }),
 
-  /** Heading, subtitle and rail label for every section. */
   sectionHeaders: defineTable(sectionHeaderFields).index("key", ["key"]),
 
-  /**
-   * The rail's order, as section keys. Only the sections that get a route are
-   * listed: the masthead, the About heading and the footer's copy are sections in
-   * the payload but not stops in the rail.
-   */
   sectionOrder: defineTable({ keys: v.array(v.string()) }),
 
   intro: defineTable({
@@ -63,17 +39,12 @@ export default defineSchema({
     actions: v.array(actionValidator),
   }),
 
-  /** The masthead photo strip. First is the lead frame. */
   headingImages: defineTable({
     order: v.number(),
     image: imageRef,
     alt: v.string(),
   }).index("order", ["order"]),
 
-  /**
-   * `placement` separates the masthead's links from the footer's; they are edited
-   * as two lists and rendered in two places.
-   */
   socialLinks: defineTable({
     ...socialLinkFields,
     placement: v.union(v.literal("intro"), v.literal("footer")),
@@ -88,8 +59,6 @@ export default defineSchema({
   connect: defineTable({
     newsletter: newsletterCopy,
   }),
-
-  // --------------------------------------------------------------- sections
 
   skills: defineTable({
     order: v.number(),
@@ -131,11 +100,9 @@ export default defineSchema({
   articles: defineTable({
     order: v.number(),
     title: v.string(),
-    /** Addresses the post's own page in the admin. */
     slug: v.string(),
     url: v.string(),
     coverImage: v.optional(imageRef),
-    /** ISO 8601. The site sorts on this, newest first. */
     publishedAt: v.string(),
     readTimeMinutes: v.number(),
     views: v.number(),
@@ -146,23 +113,10 @@ export default defineSchema({
     .index("slug", ["slug"])
     .index("publishedAt", ["publishedAt"]),
 
-  /** The Articles panel's "view all" link, which belongs to no single post. */
   articlesMeta: defineTable({
     viewAll: v.object({ label: v.string(), url: v.string() }),
   }),
 
-  /**
-   * A record's body, written in the editor at `/admin/write/<section>/<slug>`.
-   *
-   * One table per section, as everything else here is, and its own table rather
-   * than a column on the record: a section save rewrites every row of that table
-   * from the wire payload and would drop a field the payload does not carry. Keyed
-   * by slug, which is what addresses the page.
-   *
-   * `value` is the Plate value as JSON text: it nests deeper than Convex objects
-   * allow and nothing queries inside it. Images in it are `storage:<id>` tokens,
-   * resolved on read — see `lib/body.ts`. `lib/writable.ts` names the four.
-   */
   articleBodies: defineTable({
     slug: v.string(),
     value: v.string(),
@@ -196,10 +150,6 @@ export default defineSchema({
     tags: v.array(v.string()),
   }).index("order", ["order"]),
 
-  /**
-   * The tools the author uses. `category` is the grouping the site renders under;
-   * it is free text because the set is the author's own and changes with the work.
-   */
   tools: defineTable({
     order: v.number(),
     title: v.string(),
@@ -208,15 +158,6 @@ export default defineSchema({
     icon: v.optional(imageRef),
   }).index("order", ["order"]),
 
-  /**
-   * Records the author listens to. The Spotify link is the whole record: the site
-   * renders Spotify's own player from it, which supplies the title and artist.
-   *
-   * `title` and `artist` are not rendered — the player shows them — but they are how
-   * a row is told apart in the editor, and they name the frame for a screen reader.
-   * Optional, so a row stored without them is still valid; the projection fills a
-   * blank.
-   */
   music: defineTable({
     order: v.number(),
     url: v.string(),
@@ -224,15 +165,6 @@ export default defineSchema({
     artist: v.optional(v.string()),
   }).index("order", ["order"]),
 
-  /**
-   * Contributions to repositories the author does not own — a merged pull request,
-   * not a project of their own.
-   *
-   * `repo` and `number` are optional because a GitHub or GitLab merge-request URL
-   * already carries both; stored values override what `repoRef` reads off it, which
-   * is what a self-hosted forge needs. `stars` is a figure copied by hand, so `0`
-   * means "don't claim one" rather than a repository with none.
-   */
   openSource: defineTable({
     order: v.number(),
     title: v.string(),
@@ -240,9 +172,7 @@ export default defineSchema({
     repo: v.optional(v.string()),
     number: v.optional(v.number()),
     avatar: v.optional(imageRef),
-    /** Free text, one spelling per state: `merged`, `open`, `closed`. */
     state: v.optional(v.string()),
-    /** ISO 8601. */
     date: v.string(),
     stars: v.optional(v.number()),
   }).index("order", ["order"]),
@@ -252,7 +182,6 @@ export default defineSchema({
     title: v.string(),
     organization: v.string(),
     logo: v.optional(imageRef),
-    /** ISO 8601. */
     date: v.string(),
     description: v.string(),
     url: v.union(v.string(), v.null()),
@@ -260,7 +189,6 @@ export default defineSchema({
 
   recommendations: defineTable({
     order: v.number(),
-    /** Admin-only label; the site shows the quote and its author. */
     title: v.string(),
     url: v.string(),
     body: v.string(),
@@ -271,12 +199,6 @@ export default defineSchema({
     }),
   }).index("order", ["order"]),
 
-  // ------------------------------------------------------------- newsletter
-
-  /**
-   * Newsletter sign-ups. The only table a visitor can write to, which is why
-   * `newsletter.subscribe` is rate limited and stores nothing but the address.
-   */
   subscribers: defineTable({
     email: v.string(),
     createdAt: v.number(),

@@ -6,17 +6,6 @@ import { createUploadUrl, lookupContribution } from "../_lib/actions";
 import { useDraft } from "../_lib/draft";
 import type { Field, FieldKind } from "../_lib/schema";
 
-/**
- * One input per schema field, bound to the draft by path.
- *
- * `tags` and `lines` hold `string[]`, so the parse on change has to round-trip
- * exactly — trimming there would fight the caret. They are tidied on blur.
- *
- * Two options come off the field rather than the value: `suggest` offers what the
- * other records in the same list hold in the same field, and `from` names a sibling
- * field whose URL an image can be taken from.
- */
-
 function toInput(kind: FieldKind, value: unknown): string {
   if (value === null || value === undefined) return "";
   if (Array.isArray(value)) return value.join(kind === "tags" ? "," : "\n");
@@ -39,8 +28,6 @@ function fromInput(kind: FieldKind, raw: string, previous: unknown): unknown {
   }
 }
 
-// Returns the value it was given when nothing needed tidying, so a focus and blur
-// with no edit does not count as a change.
 function tidy(kind: FieldKind, value: unknown): unknown {
   if (kind !== "tags" && kind !== "lines") return value;
   if (!Array.isArray(value)) return value;
@@ -60,7 +47,6 @@ export function FieldInput({
 }: {
   path: string;
   field: Field;
-  /** What the other records in this list put in the same field. */
   suggestions?: string[];
 }) {
   const draft = useDraft();
@@ -90,7 +76,6 @@ export function FieldInput({
 
   return (
     <div className={field.wide ? "sm:col-span-2" : undefined}>
-      {/* Label left, the field's own action right, as a block's heading row reads. */}
       <div className="flex items-baseline justify-between gap-x-4">
         <label htmlFor={id} className="pf-column">
           {field.label}
@@ -154,27 +139,14 @@ export function FieldInput({
   );
 }
 
-/**
- * Where a sibling field lives, given this one's path: the record's prefix is
- * whatever precedes this field's own key, dotted keys included.
- */
 function siblingPath(path: string, field: Field): string {
   return `${recordBase(path, field)}${field.from}`;
 }
 
-/** The record this field belongs to, as a path prefix ending in a dot. */
 function recordBase(path: string, field: Field): string {
   return path.slice(0, path.length - field.key.length);
 }
 
-/**
- * Fills the rest of the record from the address in this field, and says what it
- * holds: those fields have no inputs of their own, so this line is the only place
- * the stored snapshot is visible.
- *
- * The keys GitHub answers with are the record's own, so nothing here names them on
- * the way in — a field added to the lookup is filled without touching this file.
- */
 function GitHubFill({ path, base }: { path: string; base: string }) {
   const draft = useDraft();
   const [busy, setBusy] = useState(false);
@@ -233,18 +205,10 @@ function GitHubFill({ path, base }: { path: string; base: string }) {
   );
 }
 
-/**
- * Fills an image field with the favicon of whatever the sibling URL points at. The
- * value stored is that URL, so replacing it later — with an upload or another
- * address — is the same edit as any other image.
- */
 function SiteIcon({ path, source }: { path: string; source: string }) {
   const draft = useDraft();
   const icon = faviconUrl(String(draft.read(source) ?? ""));
 
-  // Kept in place while there is no URL to take one from, rather than appearing
-  // from nowhere once there is: faint type says "not yet" where a greyed pill would
-  // only have been a dead control.
   return (
     <button
       type="button"
@@ -261,14 +225,6 @@ function SiteIcon({ path, source }: { path: string; source: string }) {
   );
 }
 
-/**
- * An uploader beside the text input, so an image can be either a file on the
- * deployment or a URL on someone else's CDN.
- *
- * The bytes go straight from the browser to Convex, which hands back a storage id.
- * What lands in the draft is `storage:<id>`, not the URL that id currently resolves
- * to: those are minted on read and must not be stored.
- */
 const MAX_BYTES = 8 * 1024 * 1024;
 
 function Upload({ path, label }: { path: string; label: string }) {
@@ -341,11 +297,6 @@ function Upload({ path, label }: { path: string; label: string }) {
   );
 }
 
-/**
- * A plain `<img>`: the source is whatever host the author pastes, and `next/image`
- * only serves the ones allowed in `next.config.ts`. A `storage:<id>` reference is
- * resolved through the preview map the draft carries.
- */
 function Thumbnail({ token }: { token: string }) {
   const draft = useDraft();
   const src = token.startsWith("storage:") ? draft.previewFor(token) : token;

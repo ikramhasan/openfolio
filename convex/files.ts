@@ -12,13 +12,6 @@ import { bodyStorageIds } from "./lib/body";
 import { type ImageRef, storageIdsIn } from "./lib/images";
 import { BODY_TABLES } from "./lib/writable";
 
-/**
- * Uploads and the sweep that follows them.
- *
- * Convex mints a single-use upload URL rather than accepting the bytes through a
- * function, so the gate is here: only the admin can get one. Serving is public —
- * these are the portfolio's own photographs — but writing is not.
- */
 export const generateUploadUrl = mutation({
   args: {},
   returns: v.string(),
@@ -28,11 +21,6 @@ export const generateUploadUrl = mutation({
   },
 });
 
-/**
- * Where a freshly uploaded file can be read from. Only the editor needs it — the
- * site's URLs are minted inside the queries that return the content — so it is
- * behind the same gate as the upload itself.
- */
 export const url = query({
   args: { storageId: v.id("_storage") },
   returns: v.union(v.string(), v.null()),
@@ -42,17 +30,8 @@ export const url = query({
   },
 });
 
-/** How many files one sweep considers. A portfolio's image count is in the tens. */
 const SWEEP_LIMIT = 2000;
 
-/**
- * Deletes stored files no row points at any more.
- *
- * Scheduled by `admin.save`, because replacing a photograph leaves the old one
- * uploaded and unreferenced, and nothing else would ever remove it. Files younger
- * than the grace period are spared: an upload that has not been saved yet is not
- * garbage.
- */
 export const collectGarbage = internalMutation({
   args: {},
   returns: v.object({ deleted: v.number() }),
@@ -75,10 +54,6 @@ export const collectGarbage = internalMutation({
   },
 });
 
-/**
- * Every storage id reachable from content. Add a table with an image column and it
- * has to be added here, or the sweep will delete its files.
- */
 async function referencedStorageIds(
   ctx: QueryCtx | MutationCtx,
 ): Promise<Set<Id<"_storage">>> {
@@ -122,7 +97,6 @@ async function referencedStorageIds(
     refs.push(row.author.image);
   }
 
-  // Images inside a written body, which are tokens in the stored JSON.
   for (const table of Object.values(BODY_TABLES)) {
     for (const row of await ctx.db.query(table).collect()) {
       ids.push(...bodyStorageIds(row.value));

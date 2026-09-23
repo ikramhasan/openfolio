@@ -10,6 +10,4 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 # Comments
 
-Comment only what the code cannot say: a non-obvious constraint, a browser quirk, a gotcha that would otherwise be "fixed" back into a bug. One or two lines.
-
-No design rationale, no before/after narration, no restating the code below it.
+Do not add any comments in the codebase.

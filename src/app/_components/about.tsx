@@ -3,15 +3,6 @@ import { getExperience } from "./content";
 import { byOrder, yearsSince } from "./data";
 import { Strip } from "./strip";
 
-/**
- * The About panel: the photo strip, then a short prose summary with the companies
- * as clickable chips.
- *
- * The figures and dates are computed from the Experience records rather than
- * written out, so the copy cannot go stale. The sentences do name specific roles,
- * though: adding or removing one of the first four means editing this file. Each
- * clause is guarded so a shorter list renders a shorter summary instead of failing.
- */
 export async function About() {
   const { items } = await getExperience();
   const roles = byOrder(items);
@@ -19,9 +10,6 @@ export async function About() {
   const first = roles[roles.length - 1];
 
   return (
-    // One measure for the panel, set here rather than on each child: `ch` resolves
-    // against each element's own font-size, so the same `max-w` on the strip and
-    // the prose gave two different widths.
     <div className="max-w-[36rem]">
       <Strip />
 
