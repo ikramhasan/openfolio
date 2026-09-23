@@ -1,5 +1,5 @@
 import { getArticles, getWritten } from "./content";
-import { blogUrl, formatViews, shortDate, sortedArticles } from "./data";
+import { blogUrl, formatCount, shortDate, sortedArticles } from "./data";
 import { DateCell, TableHead, TableLinkRow, TableList } from "./table";
 import { readPath, slugOf } from "./writing";
 
@@ -30,7 +30,7 @@ export async function Articles() {
               left={<DateCell from={shortDate(article.publishedAt)} />}
               href={here ? readPath("articles", slug) : article.url}
               internal={here}
-              right={<span>{formatViews(article.views)}</span>}
+              right={<span>{formatCount(article.views)}</span>}
             >
               <span className="pf-title block">{article.title}</span>
 

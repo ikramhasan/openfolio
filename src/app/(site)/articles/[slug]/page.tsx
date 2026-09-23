@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { cacheLife, cacheTag } from "next/cache";
 import { notFound } from "next/navigation";
 import { getArticles, getBody, tagFor } from "../../../_components/content";
-import { formatViews, longDate } from "../../../_components/data";
+import { formatCount, longDate } from "../../../_components/data";
 import { slugOf } from "../../../_components/writing";
 import { Written } from "../../../_components/written";
 
@@ -96,7 +96,7 @@ async function CachedArticle({ slug }: { slug: string }) {
           <span aria-hidden="true"> · </span>
           {article.readTimeMinutes} min read
           <span aria-hidden="true"> · </span>
-          {formatViews(article.views)} views
+          {formatCount(article.views)} views
         </>
       }
       body={body}

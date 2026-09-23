@@ -18,6 +18,9 @@ type NavItem = {
 
 const DRAG_THRESHOLD = 6;
 
+/** The strip's edge fade, `--pf-rail` in `globals.css`: 2.5rem either side. */
+const FADE = 40;
+
 export function Rail({
   items,
   label = "Portfolio sections",
@@ -29,8 +32,12 @@ export function Rail({
   const scrollerRef = useRef<HTMLUListElement>(null);
   const mountedRef = useRef(false);
 
-  // Centre the current item in the strip. `scrollBy` on the scroller rather than
-  // `scrollIntoView` on the item, which would also scroll the page vertically.
+  // Reveal the current item. Centred on the first render, which is what arriving
+  // at a section's URL wants; after that the strip stays where it was scrolled to
+  // and the item is only nudged clear of an edge fade — re-centring on every tap
+  // throws away the scroll the reader just made to reach the tab.
+  // `scrollBy` on the scroller rather than `scrollIntoView` on the item, which
+  // would also scroll the page vertically.
   useEffect(() => {
     const scroller = scrollerRef.current;
     if (!scroller) return;
@@ -43,14 +50,24 @@ export function Rail({
 
     const box = scroller.getBoundingClientRect();
     const item = active.getBoundingClientRect();
-    const delta = item.left - box.left - (box.width - item.width) / 2;
+    const first = !mountedRef.current;
+    mountedRef.current = true;
+
+    let delta: number;
+    if (first) {
+      delta = item.left - box.left - (box.width - item.width) / 2;
+    } else {
+      const under = Math.min(item.left - box.left - FADE, 0);
+      const over = Math.max(item.right - (box.right - FADE), 0);
+      // Both only when the item is wider than the unfaded track; align its start.
+      delta = under < 0 ? under : over;
+      if (delta === 0) return;
+    }
 
     const instant =
-      !mountedRef.current ||
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      first || window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     scroller.scrollBy({ left: delta, behavior: instant ? "auto" : "smooth" });
-    mountedRef.current = true;
   }, [pathname]);
 
   // Drag to scroll, for pointers that cannot swipe, plus the edge fades.

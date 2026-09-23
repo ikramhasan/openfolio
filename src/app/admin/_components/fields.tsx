@@ -1,8 +1,8 @@
 "use client";
 
 import { useId, useRef, useState } from "react";
-import { faviconUrl } from "../../_components/data";
-import { createUploadUrl } from "../_lib/actions";
+import { faviconUrl, formatCount } from "../../_components/data";
+import { createUploadUrl, lookupContribution } from "../_lib/actions";
 import { useDraft } from "../_lib/draft";
 import type { Field, FieldKind } from "../_lib/schema";
 
@@ -141,6 +141,10 @@ export function FieldInput({
         <Upload path={path} label={field.label} />
       ) : null}
 
+      {field.fill === "github" ? (
+        <GitHubFill path={path} base={recordBase(path, field)} />
+      ) : null}
+
       {field.hint ? (
         <p id={describedBy} className="pf-meta pf-faint mt-1.5">
           {field.hint}
@@ -155,7 +159,78 @@ export function FieldInput({
  * whatever precedes this field's own key, dotted keys included.
  */
 function siblingPath(path: string, field: Field): string {
-  return `${path.slice(0, path.length - field.key.length)}${field.from}`;
+  return `${recordBase(path, field)}${field.from}`;
+}
+
+/** The record this field belongs to, as a path prefix ending in a dot. */
+function recordBase(path: string, field: Field): string {
+  return path.slice(0, path.length - field.key.length);
+}
+
+/**
+ * Fills the rest of the record from the address in this field, and says what it
+ * holds: those fields have no inputs of their own, so this line is the only place
+ * the stored snapshot is visible.
+ *
+ * The keys GitHub answers with are the record's own, so nothing here names them on
+ * the way in — a field added to the lookup is filled without touching this file.
+ */
+function GitHubFill({ path, base }: { path: string; base: string }) {
+  const draft = useDraft();
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const url = String(draft.read(path) ?? "").trim();
+  const read = (key: string) => draft.read(`${base}${key}`);
+
+  const repo = String(read("repo") ?? "");
+  const number = Number(read("number") ?? 0);
+  const stars = Number(read("stars") ?? 0);
+
+  const snapshot = [
+    number > 0 ? `${repo} #${number}` : repo,
+    String(read("state") ?? ""),
+    stars > 0 ? `${formatCount(stars)} stars` : "",
+    String(read("date") ?? ""),
+  ]
+    .filter(Boolean)
+    .join(" · ");
+
+  async function fill() {
+    setError(null);
+    setBusy(true);
+
+    const result = await lookupContribution(url);
+
+    if (result.ok) {
+      for (const [key, value] of Object.entries(result.record)) {
+        draft.setField(`${base}${key}`, value);
+      }
+    } else {
+      setError(result.error);
+    }
+
+    setBusy(false);
+  }
+
+  return (
+    <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5">
+      <button
+        type="button"
+        disabled={url === "" || busy}
+        onClick={() => void fill()}
+        className="pf-button-quiet disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        {busy ? "Fetching…" : snapshot ? "Fetch again" : "Fetch from GitHub"}
+      </button>
+
+      {error ? (
+        <output className="pf-meta pf-strong">{error}</output>
+      ) : snapshot ? (
+        <output className="pf-meta pf-faint min-w-0">{snapshot}</output>
+      ) : null}
+    </div>
+  );
 }
 
 /**

@@ -206,6 +206,23 @@ export async function music(ctx: QueryCtx) {
   }));
 }
 
+export async function openSource(ctx: QueryCtx, image: RenderImage) {
+  const rows = await ctx.db.query("openSource").withIndex("order").collect();
+
+  return Promise.all(
+    rows.map(async (row) => ({
+      title: row.title,
+      url: row.url,
+      repo: row.repo ?? "",
+      number: row.number ?? 0,
+      avatar: await image(row.avatar),
+      state: row.state ?? "",
+      date: row.date,
+      stars: row.stars ?? 0,
+    })),
+  );
+}
+
 export async function awards(ctx: QueryCtx, image: RenderImage) {
   const rows = await ctx.db.query("awards").withIndex("order").collect();
 
@@ -353,6 +370,10 @@ export async function portfolio(ctx: QueryCtx, image: RenderImage) {
       music: {
         ...(await sectionWith("music")),
         items: await music(ctx),
+      },
+      openSource: {
+        ...(await sectionWith("openSource")),
+        items: await openSource(ctx, image),
       },
       awards: {
         ...(await sectionWith("awards")),

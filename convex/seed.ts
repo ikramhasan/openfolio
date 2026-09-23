@@ -111,6 +111,18 @@ type Json = {
     music: JsonHeader & {
       items: { order: number; url: string; title: string; artist: string }[];
     };
+    openSource: JsonHeader & {
+      items: {
+        title: string;
+        url: string;
+        repo: string;
+        number: number;
+        avatar: string;
+        state: string;
+        date: string;
+        stars: number;
+      }[];
+    };
     awards: JsonHeader & {
       items: {
         date: string;
@@ -287,6 +299,19 @@ function toWire(): Wire {
           url: item.url,
           title: item.title,
           artist: item.artist,
+        })),
+      },
+      openSource: {
+        ...header(s.openSource),
+        items: s.openSource.items.map((item) => ({
+          title: item.title,
+          url: item.url,
+          repo: item.repo,
+          number: item.number,
+          avatar: item.avatar,
+          state: item.state,
+          date: item.date,
+          stars: item.stars,
         })),
       },
       awards: {

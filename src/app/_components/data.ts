@@ -1,4 +1,9 @@
-import type { Action, ArticlesSection, SocialLink } from "./types";
+import type {
+  Action,
+  ArticlesSection,
+  OpenSourceSection,
+  SocialLink,
+} from "./types";
 
 /**
  * Sorting and formatting over the content, with no content of its own. The reads
@@ -27,6 +32,15 @@ export function sortedArticles(
   return [...items].sort(
     (a, b) =>
       new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
+  );
+}
+
+/** Newest first, from the date the contribution landed. */
+export function sortedContributions(
+  items: OpenSourceSection["items"],
+): OpenSourceSection["items"] {
+  return [...items].sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
   );
 }
 
@@ -82,9 +96,20 @@ const MONTHS = [
   "Dec",
 ];
 
-/** Thousands abbreviated, for the Articles view counts. */
-export function formatViews(views: number): string {
-  return views >= 1000 ? `${(views / 1000).toFixed(1)}k` : String(views);
+/** Thousands abbreviated — view counts, star counts. */
+export function formatCount(value: number): string {
+  return value >= 1000 ? `${(value / 1000).toFixed(1)}k` : String(value);
+}
+
+/** "flutter/flutter" as its halves. A name with no owner keeps the whole string. */
+export function repoParts(repo: string): {
+  owner: string | null;
+  name: string;
+} {
+  const at = repo.indexOf("/");
+  if (at === -1) return { owner: null, name: repo.trim() };
+
+  return { owner: repo.slice(0, at).trim(), name: repo.slice(at + 1).trim() };
 }
 
 /** The start year of a range. The first four-digit run wins. */
@@ -146,15 +171,19 @@ export function rangeQualifier(dateRange: string): string | null {
   return dateRange.match(/\(([^)]+)\)/)?.[1] ?? null;
 }
 
-/** An ISO date as one short endpoint. */
+/** An ISO date as one short endpoint. Empty for anything that will not parse. */
 export function shortDate(iso: string): string {
   const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "";
+
   return `${MONTHS[date.getUTCMonth()]} ${String(date.getUTCFullYear()).slice(2)}`;
 }
 
 /** An ISO date written out, for a page that is about one day rather than a range. */
 export function longDate(iso: string): string {
   const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "";
+
   return `${date.getUTCDate()} ${MONTHS[date.getUTCMonth()]} ${date.getUTCFullYear()}`;
 }
 

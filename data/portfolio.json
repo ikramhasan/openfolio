@@ -25,6 +25,7 @@
     "youtubeVideos",
     "articles",
     "projects",
+    "openSource",
     "tools",
     "music",
     "awards",
@@ -447,6 +448,11 @@
     "music": {
       "title": "On repeat",
       "note": "Thirty seconds each here; the whole thing on Spotify.",
+      "items": []
+    },
+    "openSource": {
+      "title": "Open source",
+      "note": "Patches sent to other people's repositories.",
       "items": []
     },
     "awards": {

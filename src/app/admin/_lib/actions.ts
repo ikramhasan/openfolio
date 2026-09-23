@@ -4,7 +4,7 @@ import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import type { WritableSection } from "@convex/lib/writable";
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
-import { fetchMutation, fetchQuery } from "convex/nextjs";
+import { fetchAction, fetchMutation, fetchQuery } from "convex/nextjs";
 import { updateTag } from "next/cache";
 import { tagFor } from "../../_components/content";
 import type { Portfolio } from "../../_components/types";
@@ -99,12 +99,36 @@ export async function saveBody(
   }
 }
 
-function message(error: unknown): string {
+/**
+ * What GitHub says about a contribution, for the editor to fill a record with. A
+ * read rather than a write, but a server function all the same: the client cannot
+ * hold `GITHUB_TOKEN`, and the deployment's rate limit is not a visitor's to spend.
+ */
+export type LookupResult =
+  | { ok: true; record: Record<string, string | number> }
+  | { ok: false; error: string };
+
+export async function lookupContribution(url: string): Promise<LookupResult> {
+  const token = await convexAuthNextjsToken();
+  if (!token) return { ok: false, error: "Signed out. Sign in and try again." };
+
+  try {
+    const record = await fetchAction(api.github.lookup, { url }, { token });
+    return { ok: true, record };
+  } catch (error) {
+    return { ok: false, error: message(error, "Could not reach GitHub.") };
+  }
+}
+
+function message(
+  error: unknown,
+  fallback = "Could not save. Nothing was lost; try again.",
+): string {
   if (error instanceof Error) {
     // Convex prefixes application errors; the readable part is what was thrown.
     const match = error.message.match(/Uncaught ConvexError:\s*(.*)/);
     if (match) return match[1].trim();
   }
 
-  return "Could not save. Nothing was lost; try again.";
+  return fallback;
 }

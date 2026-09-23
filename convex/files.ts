@@ -112,6 +112,9 @@ async function referencedStorageIds(
   for (const row of await ctx.db.query("tools").collect()) {
     refs.push(row.icon);
   }
+  for (const row of await ctx.db.query("openSource").collect()) {
+    refs.push(row.avatar);
+  }
   for (const row of await ctx.db.query("awards").collect()) {
     refs.push(row.logo);
   }

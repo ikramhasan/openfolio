@@ -6,6 +6,7 @@ import { type CacheKey, getNav, tagFor } from "./content";
 import { Education } from "./education";
 import { Experience } from "./experience";
 import { Music } from "./music";
+import { OpenSource } from "./open-source";
 import { Projects } from "./projects";
 import { Recommendations } from "./recommendations";
 import { Tools } from "./tools";
@@ -56,6 +57,12 @@ const REGISTRY: SectionEntry[] = [
   { id: "projects", body: <Projects />, reads: ["projects"] },
   { id: "tools", body: <Tools />, reads: ["tools"] },
   { id: "music", body: <Music />, reads: ["music"] },
+  {
+    id: "openSource",
+    slug: "open-source",
+    body: <OpenSource />,
+    reads: ["openSource"],
+  },
   {
     id: "articles",
     body: <Articles />,

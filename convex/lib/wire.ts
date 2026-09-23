@@ -86,6 +86,25 @@ export const wireTrack = v.object({
   artist: v.string(),
 });
 
+/**
+ * One contribution. Everything but the URL is a snapshot of what GitHub answered
+ * when it was last fetched — see `convex/github.ts` — so the site never reads from
+ * GitHub to render, and a row typed by hand is still valid.
+ */
+export const wireContribution = v.object({
+  title: v.string(),
+  url: v.string(),
+  /** `owner/name`. */
+  repo: v.string(),
+  /** `0` for a contribution with no number of its own. */
+  number: v.number(),
+  avatar: wireImage,
+  state: v.string(),
+  date: v.string(),
+  /** `0` leaves the count off the row rather than claiming none. */
+  stars: v.number(),
+});
+
 export const wireAward = v.object({
   order: v.number(),
   title: v.string(),
@@ -173,6 +192,11 @@ export const wireMusicSection = v.object({
   items: v.array(wireTrack),
 });
 
+export const wireOpenSourceSection = v.object({
+  ...header,
+  items: v.array(wireContribution),
+});
+
 export const wireAwardsSection = v.object({
   ...header,
   items: v.array(wireAward),
@@ -218,6 +242,7 @@ export const wirePortfolio = v.object({
     projects: wireProjectsSection,
     tools: wireToolsSection,
     music: wireMusicSection,
+    openSource: wireOpenSourceSection,
     awards: wireAwardsSection,
     recommendations: wireRecommendationsSection,
     connect: wireConnectSection,
@@ -237,6 +262,7 @@ export const SECTION_KEYS = [
   "projects",
   "tools",
   "music",
+  "openSource",
   "awards",
   "recommendations",
   "connect",

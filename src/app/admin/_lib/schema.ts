@@ -36,6 +36,11 @@ export type Field = {
   from?: string;
   /** Offers what the other records in this list have put in the same field. */
   suggest?: boolean;
+  /**
+   * Puts a button beside the field that fills the rest of the record from what it
+   * holds. `github` reads a pull request or issue — see `convex/github.ts`.
+   */
+  fill?: "github";
 };
 
 export type RecordSchema = {
@@ -511,6 +516,50 @@ export const ADMIN_GROUPS: AdminGroup[] = [
             logo: "",
             title: "",
             url: null,
+          },
+        },
+      },
+    ],
+  },
+  {
+    id: "openSource",
+    label: "Open source",
+    slug: "open-source",
+    title: "Open source",
+    note: "One address per contribution: fetch it and GitHub supplies the title, the repository, its stars and whether it landed. What it answers is stored, so a row is a snapshot — fetch again to bring one up to date.",
+    blocks: [
+      heading("openSource"),
+      {
+        kind: "records",
+        label: "Contributions",
+        path: "sections.openSource.items",
+        addLabel: "Add contribution",
+        sortable: false,
+        note: "Shown newest first, from the date GitHub gives — there is nothing to drag.",
+        record: {
+          summaryKey: "title",
+          // The URL is the only thing to type: the fetch fills the title, the
+          // repository, the number, the state, the date, the stars and the avatar,
+          // and the control beneath the field shows what it stored.
+          fields: [
+            {
+              key: "url",
+              label: "URL",
+              kind: "url",
+              wide: true,
+              fill: "github",
+              hint: "`github.com/owner/repo/pull/123`, or an issue.",
+            },
+          ],
+          blank: {
+            title: "",
+            url: "",
+            repo: "",
+            number: 0,
+            avatar: "",
+            state: "",
+            date: "",
+            stars: 0,
           },
         },
       },

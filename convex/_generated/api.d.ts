@@ -13,6 +13,7 @@ import type * as auth from "../auth.js";
 import type * as bodies from "../bodies.js";
 import type * as content from "../content.js";
 import type * as files from "../files.js";
+import type * as github from "../github.js";
 import type * as http from "../http.js";
 import type * as lib_authz from "../lib/authz.js";
 import type * as lib_body from "../lib/body.js";
@@ -38,6 +39,7 @@ declare const fullApi: ApiFromModules<{
   bodies: typeof bodies;
   content: typeof content;
   files: typeof files;
+  github: typeof github;
   http: typeof http;
   "lib/authz": typeof lib_authz;
   "lib/body": typeof lib_body;

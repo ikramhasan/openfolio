@@ -50,6 +50,7 @@ convex/
   admin.ts              The editor's read, and the save that diffs it.
   auth.ts               Password sign-in, and the single-user lockout.
   files.ts              Upload URLs, and the sweep for orphaned files.
+  github.ts             A contribution, read off its pull request URL for the editor.
   newsletter.ts         The one write a visitor can make.
   users.ts              Viewer, sign-up availability, account release.
   seed.ts               The one-off import of data/portfolio.json.
@@ -126,8 +127,8 @@ which the editor can fill in from the tool's own URL; on the way out to the site
 absolute URL, minted on read. On the way to the editor a stored file stays a
 `storage:<id>` token, so saving a record whose photograph was not touched cannot
 freeze a resolved URL into the database. `next.config.ts` allows the Sanity and
-Hashnode CDNs, the favicon service, and whichever Convex deployment the build points
-at; a new host needs adding there.
+Hashnode CDNs, the favicon service, GitHub's avatars, and whichever Convex deployment
+the build points at; a new host needs adding there.
 
 Component furniture — column headers, `min read`, the date formats — stays in the
 components, as does the About panel's prose, which is written around the Experience
@@ -143,7 +144,7 @@ is cached too and tags itself with every section it reads. A section's entry in
 Saving in the editor calls `api.admin.save`, which compares the payload against what
 is stored and returns only the keys that differ. The server function then calls
 `updateTag` for exactly those, so editing Experience refreshes `/experience` and the
-About panel that quotes it, and leaves the other eight routes byte-identical.
+About panel that quotes it, and leaves the other nine routes byte-identical.
 
 Content changed some other way — a row edited in the Convex dashboard, a seed run —
 is published by posting the keys to `/api/revalidate` with `REVALIDATE_SECRET`:
@@ -315,6 +316,32 @@ the body stays under the old one, orphaned. Rename before writing, not after. An
 untitled record has nothing to address yet, which the record list says rather than
 linking nowhere.
 
+## Open source
+
+A contribution is a URL and a snapshot of it. The editor has one field: **Fetch from
+GitHub**, beneath it, calls `convex/github.ts`, which parses
+`github.com/<owner>/<repo>/pull/<number>` and asks GitHub's public API for the
+title, the repository's name and stars, the owner's avatar, whether it landed and
+when — then fills those in the draft for the author to save. The keys it answers with
+are the record's own, so the control names none of them on the way in; on the way out
+it prints them beside itself, which is the only place they are visible, since none of
+them has an input.
+
+Stored rather than read on render, because the public pages are prerendered with the
+`max` lifetime: a render that called GitHub would be a build that fails on their rate
+limit and a page that never refreshed anyway. The consequence is that the star count
+and the state are true as of the last fetch. Fetching the same row again brings it up
+to date, which is also how an open pull request becomes a merged one.
+
+Unauthenticated that API allows 60 requests an hour per IP and each lookup spends
+two, which is ample for someone adding a row. `GITHUB_TOKEN` on the Convex
+deployment — a token with no scopes; this only reads public data — raises it to
+5,000.
+
+The rows are sorted by date rather than dragged, like Articles, so there is nothing
+to reorder. A row with no number, or no stars, leaves those off rather than printing
+a zero.
+
 ## Music
 
 The Music section is Spotify's own player, once per record. Nothing is streamed from
@@ -416,7 +443,7 @@ node -e 'import("jose").then(async({generateKeyPair,exportPKCS8,exportJWK})=>{
 
 Set them with `npx convex env set "NAME=VALUE"` — the `NAME VALUE` form breaks on
 the private key, whose value starts with a dash. A different deployment needs its
-own keys and its own seed.
+own keys and its own seed. `GITHUB_TOKEN` is optional there — see "Open source".
 
 ## Notes
 

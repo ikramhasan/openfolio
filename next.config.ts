@@ -43,6 +43,8 @@ const nextConfig: NextConfig = {
         hostname: "www.google.com",
         pathname: "/s2/favicons",
       },
+      // Repository owners' avatars, which the Open source lookup fills in.
+      { protocol: "https", hostname: "avatars.githubusercontent.com" },
       ...convexImageHost(),
     ],
   },

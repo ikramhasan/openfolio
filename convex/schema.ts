@@ -224,6 +224,29 @@ export default defineSchema({
     artist: v.optional(v.string()),
   }).index("order", ["order"]),
 
+  /**
+   * Contributions to repositories the author does not own — a merged pull request,
+   * not a project of their own.
+   *
+   * `repo` and `number` are optional because a GitHub or GitLab merge-request URL
+   * already carries both; stored values override what `repoRef` reads off it, which
+   * is what a self-hosted forge needs. `stars` is a figure copied by hand, so `0`
+   * means "don't claim one" rather than a repository with none.
+   */
+  openSource: defineTable({
+    order: v.number(),
+    title: v.string(),
+    url: v.string(),
+    repo: v.optional(v.string()),
+    number: v.optional(v.number()),
+    avatar: v.optional(imageRef),
+    /** Free text, one spelling per state: `merged`, `open`, `closed`. */
+    state: v.optional(v.string()),
+    /** ISO 8601. */
+    date: v.string(),
+    stars: v.optional(v.number()),
+  }).index("order", ["order"]),
+
   awards: defineTable({
     order: v.number(),
     title: v.string(),

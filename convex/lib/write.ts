@@ -328,6 +328,24 @@ export async function writeSection(
       );
       return;
 
+    case "openSource":
+      await replaceList(
+        ctx,
+        "openSource",
+        next.sections.openSource.items.map((item, order) => ({
+          order,
+          title: item.title,
+          url: item.url,
+          repo: item.repo,
+          number: item.number,
+          avatar: optionalImage(item.avatar),
+          state: item.state,
+          date: item.date,
+          stars: item.stars,
+        })),
+      );
+      return;
+
     case "awards":
       await replaceList(
         ctx,
