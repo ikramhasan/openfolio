@@ -4,8 +4,8 @@ import { CACHE_KEYS, tagFor } from "../../_components/content";
 
 /**
  * Publishes content that changed without going through the editor — a row edited in
- * the Convex dashboard, or a seed run — by dropping the cache entries for the
- * sections named in the body.
+ * the Convex dashboard, or a snapshot imported — by dropping the cache entries for
+ * the sections named in the body.
  *
  * The editor does not use this: it saves through a server function, which knows the
  * session and which sections changed, and calls `updateTag` directly.

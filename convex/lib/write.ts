@@ -6,8 +6,7 @@ import { SECTION_KEYS, type SectionKey, type wirePortfolio } from "./wire";
 /**
  * Writing the wire payload back into the section tables.
  *
- * Shared by `admin.save` and the seed, which is why nothing here checks
- * authorisation — the callers do, and `seed` is an internal function. Adding a
+ * Nothing here checks authorisation — `admin.save`, its only caller, does. Adding a
  * writer that skips that is the one way to open a hole in this file.
  */
 
@@ -386,12 +385,4 @@ export async function writeSection(
       });
       return;
   }
-}
-
-/** Everything, for the seed. */
-export async function writeAll(ctx: MutationCtx, next: Wire): Promise<void> {
-  await writeSite(ctx, next);
-  await writeHeaders(ctx, next);
-  for (const key of SECTION_KEYS) await writeSection(ctx, key, next);
-  await writeFooter(ctx, next);
 }

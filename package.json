@@ -10,7 +10,6 @@
     "start": "next start",
     "lint": "biome check",
     "format": "biome format --write",
-    "seed": "convex run seed:fromJson '{}'",
     "release-account": "convex run users:releaseAccount '{}'"
   },
   "dependencies": {

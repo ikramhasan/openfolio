@@ -16,15 +16,10 @@ One command: `convex dev --start 'next dev'` pushes `convex/` to the dev deploym
 then starts Next.js beside it and keeps watching both. Ctrl-C stops the pair. Run
 them apart with `pnpm dev:backend` and `pnpm dev:web` when you want separate logs.
 
-Open [http://localhost:3000](http://localhost:3000). The first run needs a database
-with something in it and an account to edit it with:
-
-```bash
-pnpm seed          # imports data/portfolio.json into the section tables
-```
-
-Then open `/signin` and claim the account. The address has to match `ADMIN_EMAIL`
-on the deployment, and after that first sign-up there is no second one.
+Open [http://localhost:3000](http://localhost:3000). A fresh deployment has no
+content and nothing to edit it with: open `/signin` and claim the account, then fill
+the sections in at `/admin`. The address has to match `ADMIN_EMAIL` on the
+deployment, and after that first sign-up there is no second one.
 
 ## Scripts
 
@@ -37,7 +32,6 @@ on the deployment, and after that first sign-up there is no second one.
 | `pnpm start`           | Serve the production build                       |
 | `pnpm lint`            | Biome check (lint + format + imports)            |
 | `pnpm format`          | Rewrite files to Biome's formatting              |
-| `pnpm seed`            | Import `data/portfolio.json`, overwriting        |
 | `pnpm release-account` | Delete the account, re-opening sign-up           |
 
 ## Layout
@@ -53,7 +47,6 @@ convex/
   github.ts             A contribution, read off its pull request URL for the editor.
   newsletter.ts         The one write a visitor can make.
   users.ts              Viewer, sign-up availability, account release.
-  seed.ts               The one-off import of data/portfolio.json.
   lib/
     validators.ts       Shared field validators.
     wire.ts             The payload shape the app and the editor speak.
@@ -64,7 +57,6 @@ convex/
     writable.ts         Which sections can be written here, and what addresses one.
     authz.ts            requireAdmin.
 
-data/portfolio.json     The content as it was before the database. Seed only.
 public/signature.svg    The footer signature, used as a CSS mask.
 src/proxy.ts            Proxies /api/auth; turns /admin and /api/ai away when signed out.
 src/app/layout.tsx      Document shell, font, metadata, the pre-paint theme script.
@@ -113,11 +105,11 @@ places it was edited are commented as such.
 ## Content
 
 Every section is its own table, and every section has its own public query in
-`convex/content.ts`. Nothing is bundled into the build: `data/portfolio.json` is
-only the seed, and `pnpm seed` overwrites whatever is there with it.
+`convex/content.ts`. Nothing is bundled into the build: an empty deployment renders
+empty sections, and everything the site shows was typed into `/admin`.
 
-The queries return the shape the JSON had — sections keyed by id, each with its
-heading copy and a list of items — because that is also the shape the editor's draft
+The queries return sections keyed by id, each with its heading copy and a list of
+items, because that is also the shape the editor's draft
 store edits by dotted path. `convex/lib/wire.ts` declares it once and both
 directions use it.
 
@@ -146,8 +138,9 @@ is stored and returns only the keys that differ. The server function then calls
 `updateTag` for exactly those, so editing Experience refreshes `/experience` and the
 About panel that quotes it, and leaves the other nine routes byte-identical.
 
-Content changed some other way — a row edited in the Convex dashboard, a seed run —
-is published by posting the keys to `/api/revalidate` with `REVALIDATE_SECRET`:
+Content changed some other way — a row edited in the Convex dashboard, a snapshot
+imported — is published by posting the keys to `/api/revalidate` with
+`REVALIDATE_SECRET`:
 
 ```bash
 curl -X POST http://localhost:3000/api/revalidate \
@@ -443,7 +436,7 @@ node -e 'import("jose").then(async({generateKeyPair,exportPKCS8,exportJWK})=>{
 
 Set them with `npx convex env set "NAME=VALUE"` — the `NAME VALUE` form breaks on
 the private key, whose value starts with a dash. A different deployment needs its
-own keys and its own seed. `GITHUB_TOKEN` is optional there — see "Open source".
+own keys and its own content. `GITHUB_TOKEN` is optional there — see "Open source".
 
 ## Notes
 

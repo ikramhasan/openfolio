@@ -8,10 +8,10 @@ import {
 } from "./validators";
 
 /**
- * The shape the Next.js app and the admin editor speak, which is the shape
- * `data/portfolio.json` had: sections keyed by id, each with heading copy and a
- * list of items. The database is normalised into a table per section; this is the
- * projection of it, declared once and used as both `returns` and `args`.
+ * The shape the Next.js app and the admin editor speak: sections keyed by id, each
+ * with heading copy and a list of items. The database is normalised into a table per
+ * section; this is the projection of it, declared once and used as both `returns` and
+ * `args`.
  *
  * Images are strings here — an absolute URL on the way out to the site, a
  * `storage:<id>` token on the way to and from the editor. See `lib/images.ts`.

@@ -24,7 +24,6 @@ import type * as lib_wire from "../lib/wire.js";
 import type * as lib_writable from "../lib/writable.js";
 import type * as lib_write from "../lib/write.js";
 import type * as newsletter from "../newsletter.js";
-import type * as seed from "../seed.js";
 import type * as users from "../users.js";
 
 import type {
@@ -50,7 +49,6 @@ declare const fullApi: ApiFromModules<{
   "lib/writable": typeof lib_writable;
   "lib/write": typeof lib_write;
   newsletter: typeof newsletter;
-  seed: typeof seed;
   users: typeof users;
 }>;
 
