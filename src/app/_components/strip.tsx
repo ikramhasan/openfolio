@@ -20,7 +20,7 @@ export async function Strip() {
           src={lead.url}
           alt={lead.alt}
           fill
-          sizes="(min-width: 1024px) 480px, 100vw"
+          sizes="(min-width: 1024px) 576px, 100vw"
           priority
           className="object-cover"
         />
@@ -37,7 +37,7 @@ export async function Strip() {
                 src={image.url}
                 alt=""
                 fill
-                sizes="(min-width: 1024px) 237px, 50vw"
+                sizes="(min-width: 1024px) 285px, 50vw"
                 className="object-cover"
               />
             </div>

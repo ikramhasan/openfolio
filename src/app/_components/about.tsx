@@ -22,7 +22,7 @@ export async function About() {
     // One measure for the panel, set here rather than on each child: `ch` resolves
     // against each element's own font-size, so the same `max-w` on the strip and
     // the prose gave two different widths.
-    <div className="max-w-[30rem]">
+    <div className="max-w-[36rem]">
       <Strip />
 
       <div className="pf-body mt-8 space-y-4">
