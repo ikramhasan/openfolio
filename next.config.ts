@@ -34,6 +34,15 @@ const nextConfig: NextConfig = {
       // CDN, article covers on the Hashnode one.
       { protocol: "https", hostname: "cdn.sanity.io", pathname: "/images/**" },
       { protocol: "https", hostname: "cdn.hashnode.com", pathname: "/res/**" },
+      // Favicons, for the tools a record has not been given an icon of its own.
+      // The query carries the host being asked about, so it cannot be pinned; the
+      // path can. It answers with a redirect to `gstatic.com`, which the optimiser
+      // follows without needing a pattern of its own.
+      {
+        protocol: "https",
+        hostname: "www.google.com",
+        pathname: "/s2/favicons",
+      },
       ...convexImageHost(),
     ],
   },

@@ -29,6 +29,13 @@ export type Field = {
   hint?: string;
   /** Spans both columns of the field grid. */
   wide?: boolean;
+  /**
+   * For an image: a sibling field holding the URL its icon can be taken from, which
+   * is what puts the "Use site icon" button beside the upload.
+   */
+  from?: string;
+  /** Offers what the other records in this list have put in the same field. */
+  suggest?: boolean;
 };
 
 export type RecordSchema = {
@@ -72,6 +79,13 @@ export type Block =
       kind: "order";
       label: string;
       path: string;
+      /**
+       * Sections that are stored but are not stops in the rail: the masthead, the
+       * pinned lead section, the dropped one, and the footer's newsletter copy.
+       * Everything else the payload carries can be placed — see
+       * `_components/sections.tsx`.
+       */
+      excludes?: string[];
     };
 
 export type AdminGroup = {
@@ -228,7 +242,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
           fields: [
             { key: "title", label: "Role", kind: "text" },
             { key: "company", label: "Company", kind: "text" },
-            { key: "logo", label: "Logo", kind: "image" },
+            { key: "logo", label: "Logo", kind: "image", from: "url" },
             { key: "location", label: "Location", kind: "text" },
             {
               key: "dateRange",
@@ -277,7 +291,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
           summaryKey: "title",
           fields: [
             { key: "title", label: "Title", kind: "text" },
-            { key: "logo", label: "Logo", kind: "image" },
+            { key: "logo", label: "Logo", kind: "image", from: "link" },
             { key: "link", label: "URL", kind: "url", wide: true },
             {
               key: "tags",
@@ -301,6 +315,45 @@ export const ADMIN_GROUPS: AdminGroup[] = [
             tags: [],
             title: "",
           },
+        },
+      },
+    ],
+  },
+  {
+    id: "tools",
+    label: "Tools",
+    title: "Tools I use",
+    note: "Grouped on the site by category, in the order the categories first appear here — so dragging a row orders the groups as well.",
+    blocks: [
+      heading("tools"),
+      {
+        kind: "records",
+        label: "Tools",
+        path: "sections.tools.items",
+        addLabel: "Add tool",
+        orderKey: "order",
+        record: {
+          summaryKey: "title",
+          fields: [
+            { key: "title", label: "Name", kind: "text" },
+            {
+              key: "category",
+              label: "Category",
+              kind: "text",
+              suggest: true,
+              hint: "Reuse the same wording to file tools together.",
+            },
+            { key: "url", label: "URL", kind: "url", wide: true },
+            {
+              key: "icon",
+              label: "Icon",
+              kind: "image",
+              wide: true,
+              from: "url",
+              hint: "Take the site's own favicon, paste a URL, or upload a file.",
+            },
+          ],
+          blank: { order: 0, title: "", category: "", url: "", icon: "" },
         },
       },
     ],
@@ -403,7 +456,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
           fields: [
             { key: "title", label: "Qualification", kind: "text", wide: true },
             { key: "institution", label: "Institution", kind: "text" },
-            { key: "logo", label: "Logo", kind: "image" },
+            { key: "logo", label: "Logo", kind: "image", from: "url" },
             { key: "location", label: "Location", kind: "text" },
             {
               key: "dateRange",
@@ -578,12 +631,13 @@ export const ADMIN_GROUPS: AdminGroup[] = [
     id: "order",
     label: "Order",
     title: "Section order",
-    note: "The order the rail and the routes follow. About is pinned first.",
+    note: "The order the rail and the routes follow. About is pinned first, and a section left unplaced is appended after the rest.",
     blocks: [
       {
         kind: "order",
         label: "Sections",
         path: "sectionOrder",
+        excludes: ["intro", "about", "skills", "connect"],
       },
     ],
   },

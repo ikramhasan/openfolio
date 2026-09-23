@@ -25,6 +25,7 @@
     "youtubeVideos",
     "articles",
     "projects",
+    "tools",
     "awards",
     "recommendations"
   ],
@@ -436,6 +437,11 @@
           "title": "GitHub Stargazers"
         }
       ]
+    },
+    "tools": {
+      "title": "Tools I use",
+      "note": "The software the work actually gets done in.",
+      "items": []
     },
     "awards": {
       "title": "Awards",

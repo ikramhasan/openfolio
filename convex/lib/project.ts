@@ -181,6 +181,20 @@ export async function projects(ctx: QueryCtx, image: RenderImage) {
   );
 }
 
+export async function tools(ctx: QueryCtx, image: RenderImage) {
+  const rows = await ctx.db.query("tools").withIndex("order").collect();
+
+  return Promise.all(
+    rows.map(async (row) => ({
+      order: row.order,
+      title: row.title,
+      category: row.category,
+      url: row.url,
+      icon: await image(row.icon),
+    })),
+  );
+}
+
 export async function awards(ctx: QueryCtx, image: RenderImage) {
   const rows = await ctx.db.query("awards").withIndex("order").collect();
 
@@ -320,6 +334,10 @@ export async function portfolio(ctx: QueryCtx, image: RenderImage) {
       projects: {
         ...(await sectionWith("projects")),
         items: await projects(ctx, image),
+      },
+      tools: {
+        ...(await sectionWith("tools")),
+        items: await tools(ctx, image),
       },
       awards: {
         ...(await sectionWith("awards")),

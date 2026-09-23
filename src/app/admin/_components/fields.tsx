@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useRef, useState } from "react";
+import { faviconUrl } from "../../_components/data";
 import { createUploadUrl } from "../_lib/actions";
 import { useDraft } from "../_lib/draft";
 import type { Field, FieldKind } from "../_lib/schema";
@@ -10,6 +11,10 @@ import type { Field, FieldKind } from "../_lib/schema";
  *
  * `tags` and `lines` hold `string[]`, so the parse on change has to round-trip
  * exactly — trimming there would fight the caret. They are tidied on blur.
+ *
+ * Two options come off the field rather than the value: `suggest` offers what the
+ * other records in the same list hold in the same field, and `from` names a sibling
+ * field whose URL an image can be taken from.
  */
 
 function toInput(kind: FieldKind, value: unknown): string {
@@ -48,13 +53,26 @@ function tidy(kind: FieldKind, value: unknown): unknown {
   return same ? value : next;
 }
 
-export function FieldInput({ path, field }: { path: string; field: Field }) {
+export function FieldInput({
+  path,
+  field,
+  suggestions,
+}: {
+  path: string;
+  field: Field;
+  /** What the other records in this list put in the same field. */
+  suggestions?: string[];
+}) {
   const draft = useDraft();
   const id = useId();
 
   const value = draft.read(path);
   const text = toInput(field.kind, value);
   const describedBy = field.hint ? `${id}-hint` : undefined;
+  const listId =
+    field.suggest && suggestions && suggestions.length > 0
+      ? `${id}-options`
+      : undefined;
 
   const multiline = field.kind === "textarea" || field.kind === "lines";
   const type =
@@ -72,9 +90,16 @@ export function FieldInput({ path, field }: { path: string; field: Field }) {
 
   return (
     <div className={field.wide ? "sm:col-span-2" : undefined}>
-      <label htmlFor={id} className="pf-column block">
-        {field.label}
-      </label>
+      {/* Label left, the field's own action right, as a block's heading row reads. */}
+      <div className="flex items-baseline justify-between gap-x-4">
+        <label htmlFor={id} className="pf-column">
+          {field.label}
+        </label>
+
+        {field.kind === "image" && field.from ? (
+          <SiteIcon path={path} source={siblingPath(path, field)} />
+        ) : null}
+      </div>
 
       <div className="mt-1.5 flex items-start gap-2">
         {field.kind === "image" ? <Thumbnail token={text} /> : null}
@@ -94,6 +119,7 @@ export function FieldInput({ path, field }: { path: string; field: Field }) {
             id={id}
             type={type}
             value={text}
+            list={listId}
             inputMode={field.kind === "number" ? "numeric" : undefined}
             aria-describedby={describedBy}
             onChange={(event) => commit(event.target.value)}
@@ -102,6 +128,14 @@ export function FieldInput({ path, field }: { path: string; field: Field }) {
           />
         )}
       </div>
+
+      {listId ? (
+        <datalist id={listId}>
+          {suggestions?.map((option) => (
+            <option key={option} value={option} />
+          ))}
+        </datalist>
+      ) : null}
 
       {field.kind === "image" ? (
         <Upload path={path} label={field.label} />
@@ -113,6 +147,42 @@ export function FieldInput({ path, field }: { path: string; field: Field }) {
         </p>
       ) : null}
     </div>
+  );
+}
+
+/**
+ * Where a sibling field lives, given this one's path: the record's prefix is
+ * whatever precedes this field's own key, dotted keys included.
+ */
+function siblingPath(path: string, field: Field): string {
+  return `${path.slice(0, path.length - field.key.length)}${field.from}`;
+}
+
+/**
+ * Fills an image field with the favicon of whatever the sibling URL points at. The
+ * value stored is that URL, so replacing it later — with an upload or another
+ * address — is the same edit as any other image.
+ */
+function SiteIcon({ path, source }: { path: string; source: string }) {
+  const draft = useDraft();
+  const icon = faviconUrl(String(draft.read(source) ?? ""));
+
+  // Kept in place while there is no URL to take one from, rather than appearing
+  // from nowhere once there is: faint type says "not yet" where a greyed pill would
+  // only have been a dead control.
+  return (
+    <button
+      type="button"
+      disabled={icon === ""}
+      onClick={() => draft.setField(path, icon)}
+      className={
+        icon === ""
+          ? "pf-meta pf-faint shrink-0 cursor-not-allowed"
+          : "pf-link-quiet pf-meta shrink-0"
+      }
+    >
+      Use site icon
+    </button>
   );
 }
 

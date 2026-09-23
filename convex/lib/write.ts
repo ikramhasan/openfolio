@@ -301,6 +301,20 @@ export async function writeSection(
       );
       return;
 
+    case "tools":
+      await replaceList(
+        ctx,
+        "tools",
+        next.sections.tools.items.map((item, order) => ({
+          order,
+          title: item.title,
+          category: item.category,
+          url: item.url,
+          icon: optionalImage(item.icon),
+        })),
+      );
+      return;
+
     case "awards":
       await replaceList(
         ctx,

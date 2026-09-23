@@ -50,10 +50,22 @@ function FieldsEditor({
 /**
  * The section order: a list of ids, not records. Headings are read from the draft
  * so a renamed section shows its new name here.
+ *
+ * A section the stored order has never heard of — one added to the payload after
+ * this list was last saved — is appended by the site rather than dropped, so it is
+ * offered here instead of being unmovable until someone edits the database.
  */
 function OrderEditor({ block }: { block: Extract<Block, { kind: "order" }> }) {
   const draft = useDraft();
   const ids = draft.readList(block.path).map(String);
+
+  const titleOf = (id: string) =>
+    String(getPath(draft.portfolio, `sections.${id}.title`) ?? id);
+
+  const excluded = new Set(block.excludes ?? []);
+  const unplaced = Object.keys(draft.portfolio.sections).filter(
+    (id) => !excluded.has(id) && !ids.includes(id),
+  );
 
   return (
     <section>
@@ -64,9 +76,7 @@ function OrderEditor({ block }: { block: Extract<Block, { kind: "order" }> }) {
         onMove={(from, to) => draft.moveRecord(block.path, from, to)}
       >
         {ids.map((id, index) => {
-          const title = String(
-            getPath(draft.portfolio, `sections.${id}.title`) ?? id,
-          );
+          const title = titleOf(id);
 
           return (
             <SortableRow key={id} id={id} label={title}>
@@ -85,6 +95,36 @@ function OrderEditor({ block }: { block: Extract<Block, { kind: "order" }> }) {
           );
         })}
       </SortableList>
+
+      {unplaced.length > 0 ? (
+        <div className="mt-10">
+          <h3 className="pf-rule pf-column border-b pb-2">Unplaced</h3>
+
+          <p className="pf-meta mt-2">
+            Shown after the rest on the site. Place one to give it a position of
+            its own.
+          </p>
+
+          <ol className="pf-rule mt-1 divide-y">
+            {unplaced.map((id) => (
+              <li
+                key={id}
+                className="flex items-center justify-between gap-2 py-2.5"
+              >
+                <span className="pf-title truncate">{titleOf(id)}</span>
+
+                <button
+                  type="button"
+                  onClick={() => draft.addRecord(block.path, id)}
+                  className="pf-button-quiet shrink-0"
+                >
+                  Place
+                </button>
+              </li>
+            ))}
+          </ol>
+        </div>
+      ) : null}
     </section>
   );
 }

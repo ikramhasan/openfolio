@@ -95,6 +95,7 @@ src/app/_components/
   written.tsx           The frame around one written record.
   table.tsx             Shared row/grid primitives every section is built from.
   masthead.tsx          Portrait, name, bio. Persists across tabs.
+  tools.tsx             The tools, grouped under their category.
   about.tsx             Current role, links, photo strip, skills.
   prose-body.tsx        A stored body as markup, with no client JavaScript.
   <section>.tsx         One file per section.
@@ -119,12 +120,13 @@ store edits by dotted path. `convex/lib/wire.ts` declares it once and both
 directions use it.
 
 Images are references, not URLs. A record points either at a file in Convex storage
-or at a URL on a CDN we do not own; on the way out to the site both resolve to an
+or at a URL on a CDN we do not own — or, for a tool, at Google's favicon service,
+which the editor can fill in from the tool's own URL; on the way out to the site both resolve to an
 absolute URL, minted on read. On the way to the editor a stored file stays a
 `storage:<id>` token, so saving a record whose photograph was not touched cannot
 freeze a resolved URL into the database. `next.config.ts` allows the Sanity and
-Hashnode CDNs plus whichever Convex deployment the build points at; a new host needs
-adding there.
+Hashnode CDNs, the favicon service, and whichever Convex deployment the build points
+at; a new host needs adding there.
 
 Component furniture — column headers, `min read`, the date formats — stays in the
 components, as does the About panel's prose, which is written around the Experience
@@ -158,7 +160,8 @@ curl -X POST http://localhost:3000/api/revalidate \
    projection to `convex/lib/project.ts` and its writer to `convex/lib/write.ts`.
 2. Add a query to `convex/content.ts` and a loader to `_components/content.ts`.
 3. Write the component, then add one entry to `REGISTRY` in
-   `_components/sections.tsx`, listing in `reads` every section it reaches.
+   `_components/sections.tsx`, listing in `reads` every section it reaches. A section
+   that is not a stop in the rail also belongs in `excludes` on the order block.
 4. To make it editable, add a group to `ADMIN_GROUPS` in `admin/_lib/schema.ts`.
 5. If it has an image column, add it to `referencedStorageIds` in `convex/files.ts`,
    or the sweep will delete its files.
@@ -178,7 +181,15 @@ logs a warning.
 the same rail, panel and ink. One group per rail item: profile, one per section,
 contact, the footer, and the section order. Lists reorder by dragging a handle or by
 lifting a row with the space bar and moving it with the arrows. Image fields take
-either a URL or a file, which goes straight from the browser to Convex.
+either a URL or a file, which goes straight from the browser to Convex; one that
+names a sibling URL field (`from`, in the schema) also offers **Use site icon**,
+which fills it with that site's favicon. A field with `suggest` offers what the other
+records in the same list hold in it, which is how the tools' categories stay one
+spelling.
+
+The section order group lists what the stored order holds, then anything the payload
+carries that it does not. A section is appended to the rail either way; **Place**
+gives it a position of its own.
 
 ```
 admin/layout.tsx          Guards the route. Nothing visual: the two kinds of page

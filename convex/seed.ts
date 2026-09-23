@@ -99,6 +99,15 @@ type Json = {
         title: string;
       }[];
     };
+    tools: JsonHeader & {
+      items: {
+        order: number;
+        title: string;
+        category: string;
+        url: string;
+        icon: string;
+      }[];
+    };
     awards: JsonHeader & {
       items: {
         date: string;
@@ -256,6 +265,16 @@ function toWire(): Wire {
           link: item.link,
           logo: item.logo,
           tags: item.tags,
+        })),
+      },
+      tools: {
+        ...header(s.tools),
+        items: ordered(s.tools.items).map((item, order) => ({
+          order,
+          title: item.title,
+          category: item.category,
+          url: item.url,
+          icon: item.icon,
         })),
       },
       awards: {

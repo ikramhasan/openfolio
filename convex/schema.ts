@@ -196,6 +196,18 @@ export default defineSchema({
     tags: v.array(v.string()),
   }).index("order", ["order"]),
 
+  /**
+   * The tools the author uses. `category` is the grouping the site renders under;
+   * it is free text because the set is the author's own and changes with the work.
+   */
+  tools: defineTable({
+    order: v.number(),
+    title: v.string(),
+    category: v.string(),
+    url: v.string(),
+    icon: v.optional(imageRef),
+  }).index("order", ["order"]),
+
   awards: defineTable({
     order: v.number(),
     title: v.string(),

@@ -181,3 +181,61 @@ export function compactRange(dateRange: string): string {
 export function formatTags(tags: string[]): string {
   return tags.map((tag) => tag.toLowerCase()).join(", ");
 }
+
+/** A URL as the site it points at — "figma.com". Unparseable values are left alone. */
+export function hostOf(url: string): string {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return url.trim();
+  }
+}
+
+/**
+ * Google's favicon service, which answers for any host and falls back to a globe
+ * rather than a 404. Hot-linked rather than copied into storage: it is the site's own
+ * mark, and an upload replaces it whenever the author would rather hold the file.
+ *
+ * `""` for anything that is not an http(s) URL, which is what the button keys off.
+ */
+export function faviconUrl(url: string, size = 128): string {
+  try {
+    const { protocol, hostname } = new URL(url);
+    if (protocol !== "http:" && protocol !== "https:") return "";
+
+    return `https://www.google.com/s2/favicons?sz=${size}&domain=${hostname}`;
+  } catch {
+    return "";
+  }
+}
+
+/**
+ * Records grouped under their category, in the order the categories first appear —
+ * so dragging a row in the editor orders the groups as well as the rows.
+ *
+ * Matched case-insensitively, because a category is free text typed twice; the first
+ * spelling is the one shown. A record with no category joins a trailing group rather
+ * than disappearing.
+ */
+export function groupByCategory<T extends { category: string }>(
+  items: T[],
+  fallback = "Other",
+): { name: string; items: T[] }[] {
+  const groups = new Map<string, { name: string; items: T[] }>();
+
+  for (const item of items) {
+    const name = item.category.trim() || fallback;
+    const key = name.toLowerCase();
+    const group = groups.get(key);
+
+    if (group) group.items.push(item);
+    else groups.set(key, { name, items: [item] });
+  }
+
+  // The fallback group last, wherever its first record happened to sit.
+  return [...groups.values()].sort((a, b) => {
+    const left = a.name === fallback ? 1 : 0;
+    const right = b.name === fallback ? 1 : 0;
+    return left - right;
+  });
+}

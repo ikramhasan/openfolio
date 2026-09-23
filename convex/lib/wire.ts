@@ -68,6 +68,15 @@ export const wireProject = v.object({
   tags: v.array(v.string()),
 });
 
+export const wireTool = v.object({
+  order: v.number(),
+  title: v.string(),
+  /** The heading the site groups this tool under. */
+  category: v.string(),
+  url: v.string(),
+  icon: wireImage,
+});
+
 export const wireAward = v.object({
   order: v.number(),
   title: v.string(),
@@ -145,6 +154,11 @@ export const wireProjectsSection = v.object({
   items: v.array(wireProject),
 });
 
+export const wireToolsSection = v.object({
+  ...header,
+  items: v.array(wireTool),
+});
+
 export const wireAwardsSection = v.object({
   ...header,
   items: v.array(wireAward),
@@ -188,6 +202,7 @@ export const wirePortfolio = v.object({
     youtubeVideos: wireVideosSection,
     articles: wireArticlesSection,
     projects: wireProjectsSection,
+    tools: wireToolsSection,
     awards: wireAwardsSection,
     recommendations: wireRecommendationsSection,
     connect: wireConnectSection,
@@ -205,6 +220,7 @@ export const SECTION_KEYS = [
   "youtubeVideos",
   "articles",
   "projects",
+  "tools",
   "awards",
   "recommendations",
   "connect",

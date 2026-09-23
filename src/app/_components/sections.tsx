@@ -7,6 +7,7 @@ import { Education } from "./education";
 import { Experience } from "./experience";
 import { Projects } from "./projects";
 import { Recommendations } from "./recommendations";
+import { Tools } from "./tools";
 import type { Nav } from "./types";
 import { Videos } from "./videos";
 
@@ -52,6 +53,7 @@ const REGISTRY: SectionEntry[] = [
   },
   { id: "experience", body: <Experience />, reads: ["experience"] },
   { id: "projects", body: <Projects />, reads: ["projects"] },
+  { id: "tools", body: <Tools />, reads: ["tools"] },
   {
     id: "articles",
     body: <Articles />,

@@ -14,6 +14,7 @@ import {
   wireRecommendationsSection,
   wireSite,
   wireSkillsSection,
+  wireToolsSection,
   wireVideosSection,
 } from "./lib/wire";
 
@@ -104,6 +105,15 @@ export const projects = query({
   handler: async (ctx) => ({
     ...(await project.header(ctx, "projects")),
     items: await project.projects(ctx, project.renderForSite(ctx)),
+  }),
+});
+
+export const tools = query({
+  args: {},
+  returns: wireToolsSection,
+  handler: async (ctx) => ({
+    ...(await project.header(ctx, "tools")),
+    items: await project.tools(ctx, project.renderForSite(ctx)),
   }),
 });
 

@@ -111,6 +111,23 @@ export function RecordsEditor({ block }: { block: RecordsBlock }) {
   );
 }
 
+/**
+ * What the other records hold in the same field, for an input that offers them.
+ * Matched case-insensitively, so one spelling is offered rather than three.
+ */
+function suggestionsFor(items: unknown[], key: string): string[] {
+  const seen = new Map<string, string>();
+
+  for (const item of items) {
+    const value = String(getPath(item, key) ?? "").trim();
+    if (value && !seen.has(value.toLowerCase())) {
+      seen.set(value.toLowerCase(), value);
+    }
+  }
+
+  return [...seen.values()].sort((a, b) => a.localeCompare(b));
+}
+
 function summaryOf(block: RecordsBlock, item: unknown): string {
   return (
     String(getPath(item, block.record.summaryKey) ?? "").trim() || "Untitled"
@@ -140,7 +157,8 @@ function Record({
   const bodyId = useId();
   const confirmRef = useRef<HTMLButtonElement>(null);
 
-  const item = draft.readList(block.path)[index];
+  const items = draft.readList(block.path);
+  const item = items[index];
   const summary = summaryOf(block, item);
 
   // The button that was clicked is replaced by this one, so without the move the
@@ -211,6 +229,9 @@ function Record({
               key={field.key}
               field={field}
               path={`${block.path}.${index}.${field.key}`}
+              suggestions={
+                field.suggest ? suggestionsFor(items, field.key) : undefined
+              }
             />
           ))}
         </div>
