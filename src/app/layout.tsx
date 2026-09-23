@@ -56,6 +56,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       // The theme script below sets `data-theme` before React arrives, which
       // React would otherwise report as a mismatched attribute.
       suppressHydrationWarning
+      // `globals.css` scrolls smoothly; this is what lets the router suspend that
+      // for a navigation, so switching sections jumps to the top rather than
+      // animating the whole page there.
+      data-scroll-behavior="smooth"
       className={`${inter.variable} h-full antialiased`}
     >
       <head>

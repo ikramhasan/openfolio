@@ -27,6 +27,15 @@ html {
   scrollbar-gutter: stable;
   /* Also makes native scrollbars and form controls follow the theme. */
   color-scheme: light dark;
+  scroll-behavior: smooth;
+}
+
+/* Below `lg` the rail pins itself to the top of the viewport, so an anchor target
+   — a heading reached from a body's table of contents — would land under it. */
+@media (width < 64rem) {
+  html {
+    scroll-padding-top: 3.5rem;
+  }
 }
 
 /* `data-theme` is an explicit choice and is absent while following the system.
@@ -704,6 +713,10 @@ html[data-theme="dark"] .pf-theme-icon[data-value="dark"] {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
   .pf-row,
   .pf-row-arrow,
   .pf-tab,
