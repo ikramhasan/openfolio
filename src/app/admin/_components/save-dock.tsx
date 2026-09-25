@@ -2,7 +2,7 @@
 
 import { useDraft } from "../_lib/draft";
 
-const SHAPE = "rounded-md px-4 py-2 text-[0.8125rem] font-medium";
+const SHAPE = "rounded-full px-4 py-2 text-[0.8125rem] font-medium";
 
 export function SaveDock() {
   const { dirty, saveState, saveMessage, save, discard } = useDraft();

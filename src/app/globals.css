@@ -60,7 +60,7 @@ body {
 
 @media (prefers-color-scheme: dark) {
   html:not([data-theme="light"]) body {
-    --pf-bg: #09090b;
+    --pf-bg: #121110;
     --pf-ink: #f4f4f5;
     --pf-muted: #a1a1aa;
     --pf-faint: #8b8b95;
@@ -72,7 +72,7 @@ body {
 }
 
 html[data-theme="dark"] body {
-  --pf-bg: #09090b;
+  --pf-bg: #121110;
   --pf-ink: #f4f4f5;
   --pf-muted: #a1a1aa;
   --pf-faint: #8b8b95;
