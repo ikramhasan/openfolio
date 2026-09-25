@@ -7,6 +7,8 @@ import { DraftProvider } from "../_lib/draft";
 import { load } from "../_lib/repository";
 import { adminNavItems } from "../_lib/schema";
 
+export const instant = false;
+
 export default async function ContentLayout({
   children,
 }: LayoutProps<"/admin">) {
