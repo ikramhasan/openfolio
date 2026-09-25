@@ -14,7 +14,9 @@ export function VideoElementStatic(
   return (
     <SlateElement className="pf-prose-block pf-prose-figure" {...props}>
       <figure className="m-0" style={{ width, textAlign: align }}>
-        <video className="pf-prose-video w-full" src={url} controls />
+        {url ? (
+          <video className="pf-prose-video w-full" src={url} controls />
+        ) : null}
         {caption && (
           <figcaption className="pf-prose-caption">
             {NodeApi.string(caption[0])}

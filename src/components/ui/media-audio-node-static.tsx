@@ -8,14 +8,14 @@ import { SlateElement } from 'platejs/static';
 import { cn } from '@/lib/utils';
 
 export function AudioElementStatic(props: SlateElementProps<TAudioElement>) {
+  const { url } = props.element;
+
   return (
     <SlateElement {...props} className="pf-prose-block pf-prose-figure">
       <figure className="m-0">
-        <audio
-          className={cn('pf-prose-audio')}
-          src={props.element.url}
-          controls
-        />
+        {url ? (
+          <audio className={cn('pf-prose-audio')} src={url} controls />
+        ) : null}
       </figure>
       {props.children}
     </SlateElement>

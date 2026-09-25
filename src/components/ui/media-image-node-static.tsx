@@ -16,11 +16,13 @@ export function ImageElementStatic(
   return (
     <SlateElement {...props} className="pf-prose-block pf-prose-figure">
       <figure className="m-0" style={{ width, textAlign: align }}>
-        <img
-          className={cn('pf-prose-image')}
-          alt={(props.attributes as any).alt}
-          src={url}
-        />
+        {url ? (
+          <img
+            className={cn('pf-prose-image')}
+            alt={(props.attributes as any).alt}
+            src={url}
+          />
+        ) : null}
         {caption && (
           <figcaption className="pf-prose-caption">
             {NodeApi.string(caption[0])}

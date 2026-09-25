@@ -18,23 +18,37 @@ export function FileElementStatic(props: SlateElementProps<TFileElement>) {
   ).suggestion;
   const isRemoveSuggestion = suggestionData?.type === 'remove';
 
+  const className = cn(
+    'pf-prose-file',
+    isRemoveSuggestion && 'pf-prose-suggestion-remove'
+  );
+
+  const inner = (
+    <>
+      <FileUp className="size-4 shrink-0 text-(--pf-faint)" />
+      <span className="pf-prose-file-name truncate">{name}</span>
+    </>
+  );
+
   return (
     <SlateElement className="pf-prose-block" {...props}>
-      <a
-        className={cn(
-          'pf-prose-file',
-          isRemoveSuggestion && 'pf-prose-suggestion-remove'
-        )}
-        contentEditable={false}
-        download={name}
-        href={url}
-        rel="noopener noreferrer"
-        role="button"
-        target="_blank"
-      >
-        <FileUp className="size-4 shrink-0 text-(--pf-faint)" />
-        <span className="pf-prose-file-name truncate">{name}</span>
-      </a>
+      {url ? (
+        <a
+          className={className}
+          contentEditable={false}
+          download={name}
+          href={url}
+          rel="noopener noreferrer"
+          role="button"
+          target="_blank"
+        >
+          {inner}
+        </a>
+      ) : (
+        <span className={className} contentEditable={false}>
+          {inner}
+        </span>
+      )}
       {props.children}
     </SlateElement>
   );
