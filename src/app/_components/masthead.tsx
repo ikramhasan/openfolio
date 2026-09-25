@@ -20,9 +20,7 @@ export async function Masthead() {
 
       <h1 className="pf-display mt-7 text-balance">{intro.title}</h1>
 
-      <p className="pf-standfirst mt-4 max-w-[38ch] text-pretty">
-        {intro.bio}.
-      </p>
+      <p className="pf-standfirst mt-4 max-w-[38ch] text-pretty">{intro.bio}</p>
     </header>
   );
 }
