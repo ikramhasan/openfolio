@@ -1,3 +1,19 @@
+import Award01Icon from "@hugeicons/core-free-icons/Award01Icon";
+import Briefcase01Icon from "@hugeicons/core-free-icons/Briefcase01Icon";
+import Doc01Icon from "@hugeicons/core-free-icons/Doc01Icon";
+import Folder02Icon from "@hugeicons/core-free-icons/Folder02Icon";
+import GitForkIcon from "@hugeicons/core-free-icons/GitForkIcon";
+import GraduationCapIcon from "@hugeicons/core-free-icons/GraduationCapIcon";
+import IdCardIcon from "@hugeicons/core-free-icons/IdCardIcon";
+import LayoutBottomIcon from "@hugeicons/core-free-icons/LayoutBottomIcon";
+import Mail01Icon from "@hugeicons/core-free-icons/Mail01Icon";
+import MusicNote01Icon from "@hugeicons/core-free-icons/MusicNote01Icon";
+import QuoteUpIcon from "@hugeicons/core-free-icons/QuoteUpIcon";
+import Sorting04Icon from "@hugeicons/core-free-icons/Sorting04Icon";
+import ToolsIcon from "@hugeicons/core-free-icons/ToolsIcon";
+import UserCircleIcon from "@hugeicons/core-free-icons/UserCircleIcon";
+import YoutubeIcon from "@hugeicons/core-free-icons/YoutubeIcon";
+import type { IconSvgElement } from "@hugeicons/react";
 import { WRITE_BASE, type WritableSection } from "../../_components/writing";
 
 export type FieldKind =
@@ -62,6 +78,7 @@ export type AdminGroup = {
   slug?: string;
   title: string;
   note?: string;
+  icon: IconSvgElement;
   blocks: Block[];
 };
 
@@ -132,6 +149,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
   {
     id: "profile",
     label: "Profile",
+    icon: IdCardIcon,
     title: "Profile",
     note: "The masthead, the photographs and the links that follow you everywhere.",
     blocks: [
@@ -185,6 +203,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
   {
     id: "about",
     label: "About",
+    icon: UserCircleIcon,
     title: "About",
     note: "The panel's heading is the only copy here: its prose is written in `_components/about.tsx`, out of the roles in Experience.",
     blocks: [heading("about")],
@@ -192,6 +211,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
   {
     id: "experience",
     label: "Experience",
+    icon: Briefcase01Icon,
     title: "Experience",
     blocks: [
       heading("experience"),
@@ -242,6 +262,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
   {
     id: "projects",
     label: "Projects",
+    icon: Folder02Icon,
     title: "Projects",
     blocks: [
       heading("projects"),
@@ -288,6 +309,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
   {
     id: "tools",
     label: "Tools",
+    icon: ToolsIcon,
     title: "Tools I use",
     note: "Grouped on the site by category, in the order the categories first appear here — so dragging a row orders the groups as well.",
     blocks: [
@@ -327,6 +349,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
   {
     id: "music",
     label: "Music",
+    icon: MusicNote01Icon,
     title: "Music",
     note: "One Spotify player per link, which supplies the title, artist and artwork on the site — the two fields here are just so you can tell the rows apart. Thirty seconds for a visitor who is not signed in, the whole track for one who is.",
     blocks: [
@@ -358,6 +381,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
   {
     id: "articles",
     label: "Articles",
+    icon: Doc01Icon,
     title: "Articles",
     blocks: [
       heading("articles"),
@@ -415,6 +439,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
   {
     id: "youtubeVideos",
     label: "Video",
+    icon: YoutubeIcon,
     slug: "videos",
     title: "Videos",
     blocks: [
@@ -440,6 +465,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
   {
     id: "education",
     label: "Education",
+    icon: GraduationCapIcon,
     title: "Education",
     blocks: [
       heading("education"),
@@ -485,6 +511,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
   {
     id: "openSource",
     label: "Open source",
+    icon: GitForkIcon,
     slug: "open-source",
     title: "Open source",
     note: "One address per contribution: fetch it and GitHub supplies the title, the repository, its stars and whether it landed. What it answers is stored, so a row is a snapshot — fetch again to bring one up to date.",
@@ -526,6 +553,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
   {
     id: "awards",
     label: "Awards",
+    icon: Award01Icon,
     title: "Awards",
     blocks: [
       heading("awards"),
@@ -568,6 +596,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
   {
     id: "recommendations",
     label: "References",
+    icon: QuoteUpIcon,
     slug: "references",
     title: "Recommendations",
     blocks: [
@@ -610,6 +639,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
   {
     id: "contact",
     label: "Contact",
+    icon: Mail01Icon,
     title: "Contact",
     note: "The row of links at the foot of every page: the networks first, then the actions.",
     blocks: [
@@ -633,6 +663,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
   {
     id: "footer",
     label: "Footer",
+    icon: LayoutBottomIcon,
     title: "Footer",
     note: "The signature and the small print beneath it.",
     blocks: [
@@ -668,6 +699,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
   {
     id: "order",
     label: "Order",
+    icon: Sorting04Icon,
     title: "Section order",
     note: "The order the rail and the routes follow. About is pinned first, and a section left unplaced is appended after the rest.",
     blocks: [
@@ -693,8 +725,8 @@ export const groupByPath = new Map(
   ADMIN_GROUPS.map((group) => [groupPath(group), group]),
 );
 
-export const adminNavItems = ADMIN_GROUPS.map((group, index) => ({
+export const adminNavItems = ADMIN_GROUPS.map((group) => ({
   href: groupPath(group),
   label: group.label,
-  index: String(index + 1).padStart(2, "0"),
+  icon: group.icon,
 }));

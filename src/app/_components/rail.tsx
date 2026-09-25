@@ -1,5 +1,7 @@
 "use client";
 
+import type { IconSvgElement } from "@hugeicons/react";
+import { HugeiconsIcon } from "@hugeicons/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { type ReactNode, useEffect, useRef } from "react";
@@ -9,7 +11,7 @@ import { ThemeToggle } from "./theme-toggle";
 type NavItem = {
   href: string;
   label: string;
-  index: string;
+  icon: IconSvgElement;
 };
 
 const DRAG_THRESHOLD = 6;
@@ -178,13 +180,17 @@ export function Rail({
                   data-rail-href={item.href}
                   data-active={active}
                   aria-current={active ? "page" : undefined}
-                  className="pf-tab pf-meta shrink-0 whitespace-nowrap px-2.5 lg:-mx-2 lg:flex lg:items-baseline lg:gap-2.5 lg:px-2"
+                  className="pf-tab pf-meta shrink-0 whitespace-nowrap px-2.5 lg:-mx-2 lg:flex lg:items-center lg:gap-2.5 lg:px-2"
                 >
                   <span
                     aria-hidden="true"
-                    className="pf-faint pf-figure hidden lg:inline"
+                    className="pf-faint hidden lg:inline"
                   >
-                    {item.index}
+                    <HugeiconsIcon
+                      icon={item.icon}
+                      size={16}
+                      strokeWidth={1.5}
+                    />
                   </span>
                   <span>{item.label}</span>
                 </Link>
