@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useId, useRef, useState } from "react";
-import { compactRange, shortCompany } from "./data";
+import { companyBrief, shortCompany } from "./data";
 import type { Role } from "./types";
 
 const MIN_ROOM_BELOW = 220;
@@ -26,7 +26,6 @@ function edgeCorrection(chip: DOMRect, panelWidth: number): number {
 
 export function CompanyChip({ role }: { role: Role }) {
   const panelId = useId();
-  const years = compactRange(role.dateRange);
   const [open, setOpen] = useState(false);
   const [above, setAbove] = useState(false);
   const [shift, setShift] = useState(0);
@@ -123,7 +122,7 @@ export function CompanyChip({ role }: { role: Role }) {
         className="pf-chip-panel"
       >
         <span className="pf-chip-panel-inner">
-          <span className="flex items-start gap-2.5">
+          <span className="pf-chip-panel-head">
             <span className="pf-chip-panel-mark">
               {role.logo ? (
                 <Image
@@ -131,36 +130,18 @@ export function CompanyChip({ role }: { role: Role }) {
                   alt=""
                   width={64}
                   height={64}
-                  sizes="28px"
+                  sizes="20px"
                   className="size-full object-contain"
                 />
               ) : null}
             </span>
 
-            <span className="block min-w-0">
-              <span className="pf-title pf-strong block">{role.title}</span>
-              <span className="pf-meta mt-0.5 block">{role.company}</span>
-            </span>
+            <span className="pf-title pf-strong">{role.company}</span>
           </span>
 
-          <span className="pf-meta mt-2.5 flex flex-wrap items-baseline gap-x-2">
-            <span className="pf-figure">{years}</span>
-            <span className="pf-faint" aria-hidden="true">
-              ·
-            </span>
-            <span>{role.location.trim()}</span>
+          <span className="pf-meta pf-chip-panel-caption">
+            {companyBrief(role.company)}
           </span>
-
-          {role.url ? (
-            <a
-              href={role.url}
-              target="_blank"
-              rel="noreferrer"
-              className="pf-link-quiet pf-meta mt-2 inline-block"
-            >
-              {new URL(role.url).hostname.replace(/^www\./, "")} ↗
-            </a>
-          ) : null}
         </span>
       </span>
     </span>

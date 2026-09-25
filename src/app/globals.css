@@ -417,10 +417,10 @@ html[data-theme="dark"] body {
 .pf-chip-panel-mark {
   flex: none;
   display: inline-flex;
-  width: 1.75rem;
-  height: 1.75rem;
-  padding: 0.2rem;
-  border-radius: 5px;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0.18rem;
+  border-radius: 4px;
   background-color: #f4f4f2;
   border: 1px solid var(--pf-rule);
   overflow: hidden;
@@ -449,7 +449,7 @@ html[data-theme="dark"] body {
   left: var(--pf-chip-shift, 0px);
   z-index: 30;
   display: block;
-  width: min(17rem, calc(100vw - 3rem));
+  width: min(18rem, calc(100vw - 3rem));
   opacity: 0;
   visibility: hidden;
   transform: translateY(-0.25rem) scale(0.985);
@@ -482,14 +482,30 @@ html[data-theme="dark"] body {
 }
 
 .pf-chip-panel-inner {
-  display: block;
-  padding: 0.8rem 0.9rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.45rem;
+  padding: 0.85rem 0.9rem;
+  text-align: left;
   background-color: var(--pf-bg);
   border: 1px solid var(--pf-rule);
   border-radius: 8px;
   box-shadow:
     0 1px 2px color-mix(in srgb, var(--pf-ink) 5%, transparent),
     0 8px 24px -6px color-mix(in srgb, var(--pf-ink) 14%, transparent);
+}
+
+.pf-chip-panel-head {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.pf-chip-panel-caption {
+  line-height: 1.4;
+  text-align: justify;
+  text-justify: inter-word;
 }
 
 .pf-signature {

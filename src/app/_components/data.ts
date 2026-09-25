@@ -110,6 +110,21 @@ export function shortCompany(company: string): string {
   return company.split("|")[0].trim();
 }
 
+const COMPANY_BRIEFS: Record<string, string> = {
+  Techshoi:
+    "A software studio in Dhaka that also runs an eco-friendly ecommerce marketplace, building apps and websites for clients from the ground up.",
+  "ICT Division":
+    "The Bangladesh government division overseeing the country's ICT policy and digital transformation, under the Ministry of Posts, Telecommunications and IT.",
+  "Transmedia Inc":
+    "A Toronto software company behind FreeConvert.com and ImageResizer.com, serving millions of people every month with file conversion and image tools.",
+  "Markopolo.ai":
+    "An AI marketing platform for ecommerce brands, using behavioral prediction to personalize campaigns and recover lost sales automatically.",
+};
+
+export function companyBrief(company: string): string | null {
+  return COMPANY_BRIEFS[shortCompany(company)] ?? null;
+}
+
 export function dateEndpoints(dateRange: string): [string, string | null] {
   const ongoing = /present|current|now/i.test(dateRange);
 
