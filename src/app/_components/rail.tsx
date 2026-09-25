@@ -23,11 +23,13 @@ export function Rail({
   identity,
   label = "Portfolio sections",
   admin = false,
+  actions,
 }: {
   items: NavItem[];
   identity?: ReactNode;
   label?: string;
   admin?: boolean;
+  actions?: ReactNode;
 }) {
   const pathname = usePathname();
   const scrollerRef = useRef<HTMLUListElement>(null);
@@ -202,6 +204,7 @@ export function Rail({
 
       <div className="flex shrink-0 items-center gap-3 lg:mt-auto lg:-ml-0.5 lg:flex-col lg:items-start lg:gap-2.5">
         {admin ? <AdminLink /> : null}
+        {actions}
 
         <ThemeToggle />
       </div>

@@ -5,6 +5,7 @@ import Folder02Icon from "@hugeicons/core-free-icons/Folder02Icon";
 import GitForkIcon from "@hugeicons/core-free-icons/GitForkIcon";
 import GraduationCapIcon from "@hugeicons/core-free-icons/GraduationCapIcon";
 import IdCardIcon from "@hugeicons/core-free-icons/IdCardIcon";
+import Image02Icon from "@hugeicons/core-free-icons/Image02Icon";
 import LayoutBottomIcon from "@hugeicons/core-free-icons/LayoutBottomIcon";
 import Mail01Icon from "@hugeicons/core-free-icons/Mail01Icon";
 import MusicNote01Icon from "@hugeicons/core-free-icons/MusicNote01Icon";
@@ -35,6 +36,7 @@ export type Field = {
   from?: string;
   suggest?: boolean;
   fill?: "github";
+  probeSize?: boolean;
 };
 
 export type RecordSchema = {
@@ -159,7 +161,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
     label: "Profile",
     icon: IdCardIcon,
     title: "Profile",
-    note: "The masthead, the photographs and the links that follow you everywhere.",
+    note: "The masthead and the links that follow you everywhere.",
     blocks: [
       {
         kind: "fields",
@@ -191,21 +193,6 @@ export const ADMIN_GROUPS: AdminGroup[] = [
           },
         ],
       },
-      {
-        kind: "records",
-        label: "Photo strip",
-        path: "sections.intro.headingImages",
-        addLabel: "Add photograph",
-        note: "The first is the lead frame; the rest sit in a row beneath it.",
-        record: {
-          summaryKey: "alt",
-          fields: [
-            { key: "url", label: "Image", kind: "image", wide: true },
-            { key: "alt", label: "Alt text", kind: "text", wide: true },
-          ],
-          blank: { url: "", alt: "" },
-        },
-      },
     ],
   },
   {
@@ -213,7 +200,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
     label: "About",
     icon: UserCircleIcon,
     title: "About",
-    note: "The heading sits above the bio; the bio itself is rich text, rendered on the site exactly as written here. Use the website chip to link a company or site inline.",
+    note: "Rich text, shown exactly as written. Use the website chip to link a company inline.",
     blocks: [heading("about"), { kind: "richText", label: "Bio" }],
   },
   {
@@ -221,6 +208,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
     label: "Experience",
     icon: Briefcase01Icon,
     title: "Experience",
+    note: "Roles you've held, shown on the site by date.",
     blocks: [
       heading("experience"),
       {
@@ -229,7 +217,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
         path: "sections.experience.items",
         addLabel: "Add role",
         orderKey: "order",
-        note: "About names the first four roles in order, so adding or removing one needs an edit to `_components/about.tsx`. Write gives a role a page of its own, at its title.",
+        note: "About shows the first four roles in order. Write gives one its own page.",
         page: writeRoute("experience"),
         record: {
           summaryKey: "title",
@@ -273,6 +261,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
     label: "Projects",
     icon: Folder02Icon,
     title: "Projects",
+    note: "Things you've built, with tags and a link out.",
     blocks: [
       heading("projects"),
       {
@@ -281,7 +270,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
         path: "sections.projects.items",
         addLabel: "Add project",
         orderKey: "order",
-        note: "Write gives a project a page of its own, at its title; the rest link straight out.",
+        note: "Write gives a project its own page; the rest link straight out.",
         page: writeRoute("projects"),
         record: {
           summaryKey: "title",
@@ -321,7 +310,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
     label: "Tools",
     icon: ToolsIcon,
     title: "Tools I use",
-    note: "Grouped on the site by category, in the order the categories first appear here — so dragging a row orders the groups as well.",
+    note: "Grouped by category on the site — reorder rows to reorder groups.",
     blocks: [
       heading("tools"),
       {
@@ -368,7 +357,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
     label: "Music",
     icon: MusicNote01Icon,
     title: "Music",
-    note: "One Spotify player per link, which supplies the title, artist and artwork on the site — the two fields here are just so you can tell the rows apart. Thirty seconds for a visitor who is not signed in, the whole track for one who is.",
+    note: "One Spotify embed per track — full length once signed in.",
     blocks: [
       heading("music"),
       {
@@ -406,6 +395,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
     label: "Articles",
     icon: Doc01Icon,
     title: "Articles",
+    note: "Posts shown newest first, either written here or linked out.",
     blocks: [
       heading("articles"),
       {
@@ -423,7 +413,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
         path: "sections.articles.items",
         addLabel: "Add post",
         sortable: false,
-        note: "Shown newest first, from the publish date — there is nothing to drag. Write gives a post a page here rather than a link out.",
+        note: "Shown newest first by publish date — nothing to drag. Write gives a post its own page.",
         page: writeRoute("articles"),
         record: {
           summaryKey: "title",
@@ -461,11 +451,62 @@ export const ADMIN_GROUPS: AdminGroup[] = [
     ],
   },
   {
+    id: "photos",
+    label: "Photos",
+    icon: Image02Icon,
+    title: "Photos",
+    note: "Mixed aspect ratios sit side by side. Clicking one opens it full screen.",
+    blocks: [
+      heading("photos"),
+      {
+        kind: "records",
+        label: "Photos",
+        path: "sections.photos.items",
+        addLabel: "Add photograph",
+        orderKey: "order",
+        record: {
+          summaryKey: "alt",
+          fields: [
+            {
+              key: "url",
+              label: "Image",
+              kind: "image",
+              wide: true,
+              probeSize: true,
+            },
+            {
+              key: "title",
+              label: "Title",
+              kind: "text",
+              hint: "Shown under the photo when set. Optional.",
+            },
+            {
+              key: "alt",
+              label: "Alt text",
+              kind: "text",
+              hint: "Read out to screen readers.",
+            },
+          ],
+          blank: {
+            order: 0,
+            url: "",
+            alt: "",
+            title: "",
+            width: 0,
+            height: 0,
+            hidden: false,
+          },
+        },
+      },
+    ],
+  },
+  {
     id: "youtubeVideos",
     label: "Video",
     icon: YoutubeIcon,
     slug: "videos",
     title: "Videos",
+    note: "Clips linked out to YouTube, each with its own still.",
     blocks: [
       heading("youtubeVideos"),
       {
@@ -497,6 +538,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
     label: "Education",
     icon: GraduationCapIcon,
     title: "Education",
+    note: "Your qualifications, listed by institution and date.",
     blocks: [
       heading("education"),
       {
@@ -545,7 +587,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
     icon: GitForkIcon,
     slug: "open-source",
     title: "Open source",
-    note: "One address per contribution: fetch it and GitHub supplies the title, the repository, its stars and whether it landed. What it answers is stored, so a row is a snapshot — fetch again to bring one up to date.",
+    note: "Contributions fetched from GitHub — paste a URL to fill in the rest.",
     blocks: [
       heading("openSource"),
       {
@@ -554,7 +596,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
         path: "sections.openSource.items",
         addLabel: "Add contribution",
         sortable: false,
-        note: "Shown newest first, from the date GitHub gives — there is nothing to drag.",
+        note: "Shown newest first by date — nothing to drag.",
         record: {
           summaryKey: "title",
           fields: [
@@ -587,6 +629,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
     label: "Awards",
     icon: Award01Icon,
     title: "Awards",
+    note: "Recognition you've received, shown by date.",
     blocks: [
       heading("awards"),
       {
@@ -595,7 +638,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
         path: "sections.awards.items",
         addLabel: "Add award",
         orderKey: "order",
-        note: "Write gives an award a page of its own, at its title; the rest link straight out.",
+        note: "Write gives an award its own page; the rest link straight out.",
         page: writeRoute("awards"),
         record: {
           summaryKey: "title",
@@ -632,6 +675,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
     icon: QuoteUpIcon,
     slug: "references",
     title: "Recommendations",
+    note: "Testimonials from people you've worked with.",
     blocks: [
       heading("recommendations"),
       {
@@ -675,7 +719,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
     label: "Contact",
     icon: Mail01Icon,
     title: "Contact",
-    note: "The row of links at the foot of every page: the networks first, then the actions.",
+    note: "The links at the foot of every page — networks first, then actions.",
     blocks: [
       {
         kind: "records",
@@ -735,7 +779,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
     label: "Order",
     icon: Sorting04Icon,
     title: "Section order",
-    note: "The order the rail and the routes follow. About is pinned first, and a section left unplaced is appended after the rest.",
+    note: "The order sections appear in the rail. About is always first.",
     blocks: [
       {
         kind: "order",

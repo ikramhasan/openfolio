@@ -44,12 +44,6 @@ export default defineSchema({
     updatedAt: v.number(),
   }),
 
-  headingImages: defineTable({
-    order: v.number(),
-    image: imageRef,
-    alt: v.string(),
-  }).index("order", ["order"]),
-
   socialLinks: defineTable({
     ...socialLinkFields,
     placement: v.union(v.literal("intro"), v.literal("footer")),
@@ -157,6 +151,16 @@ export default defineSchema({
     link: v.string(),
     logo: v.optional(imageRef),
     tags: v.array(v.string()),
+    hidden: v.optional(v.boolean()),
+  }).index("order", ["order"]),
+
+  photos: defineTable({
+    order: v.number(),
+    image: imageRef,
+    alt: v.string(),
+    title: v.optional(v.string()),
+    width: v.number(),
+    height: v.number(),
     hidden: v.optional(v.boolean()),
   }).index("order", ["order"]),
 

@@ -4,6 +4,7 @@ import Doc01Icon from "@hugeicons/core-free-icons/Doc01Icon";
 import Folder02Icon from "@hugeicons/core-free-icons/Folder02Icon";
 import GitForkIcon from "@hugeicons/core-free-icons/GitForkIcon";
 import GraduationCapIcon from "@hugeicons/core-free-icons/GraduationCapIcon";
+import Image02Icon from "@hugeicons/core-free-icons/Image02Icon";
 import MusicNote01Icon from "@hugeicons/core-free-icons/MusicNote01Icon";
 import QuoteUpIcon from "@hugeicons/core-free-icons/QuoteUpIcon";
 import ToolsIcon from "@hugeicons/core-free-icons/ToolsIcon";
@@ -19,6 +20,7 @@ import { Education } from "./education";
 import { Experience } from "./experience";
 import { Music } from "./music";
 import { OpenSource } from "./open-source";
+import { Photos } from "./photos";
 import { Projects } from "./projects";
 import { Recommendations } from "./recommendations";
 import { Tools } from "./tools";
@@ -56,6 +58,12 @@ const REGISTRY: SectionEntry[] = [
     body: <Projects />,
     reads: ["projects"],
     icon: Folder02Icon,
+  },
+  {
+    id: "photos",
+    body: <Photos />,
+    reads: ["photos"],
+    icon: Image02Icon,
   },
   { id: "tools", body: <Tools />, reads: ["tools"], icon: ToolsIcon },
   { id: "music", body: <Music />, reads: ["music"], icon: MusicNote01Icon },

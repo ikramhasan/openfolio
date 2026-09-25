@@ -97,6 +97,13 @@ export async function getProjects() {
   return fetchQuery(api.content.projects, {});
 }
 
+export async function getPhotos() {
+  "use cache";
+  cacheLife("max");
+  cacheTag(tagFor("photos"));
+  return fetchQuery(api.content.photos, {});
+}
+
 export async function getTools() {
   "use cache";
   cacheLife("max");

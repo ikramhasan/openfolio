@@ -78,11 +78,19 @@ export async function socialLinks(
   }));
 }
 
-export async function headingImages(ctx: QueryCtx, image: RenderImage) {
-  const rows = await ctx.db.query("headingImages").withIndex("order").collect();
+export async function photos(ctx: QueryCtx, image: RenderImage) {
+  const rows = await ctx.db.query("photos").withIndex("order").collect();
 
   return Promise.all(
-    rows.map(async (row) => ({ url: await image(row.image), alt: row.alt })),
+    rows.map(async (row) => ({
+      order: row.order,
+      url: await image(row.image),
+      alt: row.alt,
+      ...(row.title ? { title: row.title } : {}),
+      width: row.width,
+      height: row.height,
+      hidden: row.hidden ?? false,
+    })),
   );
 }
 
@@ -280,7 +288,6 @@ export async function intro(ctx: QueryCtx, image: RenderImage) {
     ...(await header(ctx, "intro")),
     bio: row?.bio ?? "",
     profileImage: await image(row?.profileImage),
-    headingImages: await headingImages(ctx, image),
     socialLinks: await socialLinks(ctx, "intro"),
     actions: row?.actions ?? [],
   };
@@ -358,6 +365,10 @@ export async function portfolio(ctx: QueryCtx, image: RenderImage) {
       projects: {
         ...(await sectionWith("projects")),
         items: await projects(ctx, image),
+      },
+      photos: {
+        ...(await sectionWith("photos")),
+        items: await photos(ctx, image),
       },
       tools: {
         ...(await sectionWith("tools")),
