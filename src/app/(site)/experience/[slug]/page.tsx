@@ -1,12 +1,20 @@
 import type { Metadata } from "next";
 import { cacheLife, cacheTag } from "next/cache";
 import { notFound } from "next/navigation";
-import { getBody, getExperience, tagFor } from "../../../_components/content";
+import { Suspense } from "react";
+import {
+  getBody,
+  getExperience,
+  tagFor,
+  writtenParams,
+} from "../../../_components/content";
 import { cleanBullet } from "../../../_components/data";
 import { slugOf } from "../../../_components/writing";
 import { Outbound, Written } from "../../../_components/written";
 
-export const instant = false;
+export function generateStaticParams() {
+  return writtenParams("experience");
+}
 
 async function role(slug: string) {
   const { items } = await getExperience();
@@ -36,24 +44,24 @@ export async function generateMetadata({
   };
 }
 
-export default async function RolePage({
-  params,
-}: PageProps<"/experience/[slug]">) {
-  const { slug } = await params;
-
-  const [item, body] = await Promise.all([
-    role(slug),
-    getBody("experience", slug),
-  ]);
-  if (!item || !body) notFound();
-
-  return <CachedRole slug={slug} />;
+export default function RolePage({ params }: PageProps<"/experience/[slug]">) {
+  return (
+    <Suspense>
+      <CachedRole params={params} />
+    </Suspense>
+  );
 }
 
-async function CachedRole({ slug }: { slug: string }) {
+async function CachedRole({
+  params,
+}: {
+  params: PageProps<"/experience/[slug]">["params"];
+}) {
   "use cache";
   cacheLife("max");
   cacheTag(tagFor("experience"));
+
+  const { slug } = await params;
 
   const [item, body] = await Promise.all([
     role(slug),

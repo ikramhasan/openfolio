@@ -8,6 +8,8 @@ import { cacheLife, cacheTag } from "next/cache";
 
 export { CACHE_KEYS, type CacheKey };
 
+const EMPTY_SECTION_SLUG = "__none__";
+
 export function tagFor(key: CacheKey | string): string {
   return `portfolio:${key}`;
 }
@@ -73,6 +75,12 @@ export async function getWritten(section: WritableSection) {
   cacheLife("max");
   cacheTag(tagFor(section));
   return fetchQuery(api.bodies.written, { section });
+}
+
+export async function writtenParams(section: WritableSection) {
+  const slugs = (await getWritten(section)).filter((slug) => slug.length > 0);
+  if (slugs.length === 0) return [{ slug: EMPTY_SECTION_SLUG }];
+  return slugs.map((slug) => ({ slug }));
 }
 
 export async function getProjects() {

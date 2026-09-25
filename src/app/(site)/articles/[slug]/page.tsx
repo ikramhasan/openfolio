@@ -1,12 +1,20 @@
 import type { Metadata } from "next";
 import { cacheLife, cacheTag } from "next/cache";
 import { notFound } from "next/navigation";
-import { getArticles, getBody, tagFor } from "../../../_components/content";
+import { Suspense } from "react";
+import {
+  getArticles,
+  getBody,
+  tagFor,
+  writtenParams,
+} from "../../../_components/content";
 import { formatCount, longDate } from "../../../_components/data";
 import { slugOf } from "../../../_components/writing";
 import { Written } from "../../../_components/written";
 
-export const instant = false;
+export function generateStaticParams() {
+  return writtenParams("articles");
+}
 
 async function post(slug: string) {
   const { items } = await getArticles();
@@ -38,24 +46,24 @@ export async function generateMetadata({
   };
 }
 
-export default async function ArticlePage({
-  params,
-}: PageProps<"/articles/[slug]">) {
-  const { slug } = await params;
-
-  const [article, body] = await Promise.all([
-    post(slug),
-    getBody("articles", slug),
-  ]);
-  if (!article || !body) notFound();
-
-  return <CachedArticle slug={slug} />;
+export default function ArticlePage({ params }: PageProps<"/articles/[slug]">) {
+  return (
+    <Suspense>
+      <CachedArticle params={params} />
+    </Suspense>
+  );
 }
 
-async function CachedArticle({ slug }: { slug: string }) {
+async function CachedArticle({
+  params,
+}: {
+  params: PageProps<"/articles/[slug]">["params"];
+}) {
   "use cache";
   cacheLife("max");
   cacheTag(tagFor("articles"));
+
+  const { slug } = await params;
 
   const [article, body] = await Promise.all([
     post(slug),

@@ -1,12 +1,20 @@
 import type { Metadata } from "next";
 import { cacheLife, cacheTag } from "next/cache";
 import { notFound } from "next/navigation";
-import { getBody, getProjects, tagFor } from "../../../_components/content";
+import { Suspense } from "react";
+import {
+  getBody,
+  getProjects,
+  tagFor,
+  writtenParams,
+} from "../../../_components/content";
 import { formatTags } from "../../../_components/data";
 import { slugOf } from "../../../_components/writing";
 import { Outbound, Written } from "../../../_components/written";
 
-export const instant = false;
+export function generateStaticParams() {
+  return writtenParams("projects");
+}
 
 async function project(slug: string) {
   const { items } = await getProjects();
@@ -34,24 +42,24 @@ export async function generateMetadata({
   };
 }
 
-export default async function ProjectPage({
-  params,
-}: PageProps<"/projects/[slug]">) {
-  const { slug } = await params;
-
-  const [item, body] = await Promise.all([
-    project(slug),
-    getBody("projects", slug),
-  ]);
-  if (!item || !body) notFound();
-
-  return <CachedProject slug={slug} />;
+export default function ProjectPage({ params }: PageProps<"/projects/[slug]">) {
+  return (
+    <Suspense>
+      <CachedProject params={params} />
+    </Suspense>
+  );
 }
 
-async function CachedProject({ slug }: { slug: string }) {
+async function CachedProject({
+  params,
+}: {
+  params: PageProps<"/projects/[slug]">["params"];
+}) {
   "use cache";
   cacheLife("max");
   cacheTag(tagFor("projects"));
+
+  const { slug } = await params;
 
   const [item, body] = await Promise.all([
     project(slug),

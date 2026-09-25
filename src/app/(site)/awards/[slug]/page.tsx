@@ -1,12 +1,20 @@
 import type { Metadata } from "next";
 import { cacheLife, cacheTag } from "next/cache";
 import { notFound } from "next/navigation";
-import { getAwards, getBody, tagFor } from "../../../_components/content";
+import { Suspense } from "react";
+import {
+  getAwards,
+  getBody,
+  tagFor,
+  writtenParams,
+} from "../../../_components/content";
 import { longDate } from "../../../_components/data";
 import { slugOf } from "../../../_components/writing";
 import { Outbound, Written } from "../../../_components/written";
 
-export const instant = false;
+export function generateStaticParams() {
+  return writtenParams("awards");
+}
 
 async function award(slug: string) {
   const { items } = await getAwards();
@@ -35,24 +43,24 @@ export async function generateMetadata({
   };
 }
 
-export default async function AwardPage({
-  params,
-}: PageProps<"/awards/[slug]">) {
-  const { slug } = await params;
-
-  const [item, body] = await Promise.all([
-    award(slug),
-    getBody("awards", slug),
-  ]);
-  if (!item || !body) notFound();
-
-  return <CachedAward slug={slug} />;
+export default function AwardPage({ params }: PageProps<"/awards/[slug]">) {
+  return (
+    <Suspense>
+      <CachedAward params={params} />
+    </Suspense>
+  );
 }
 
-async function CachedAward({ slug }: { slug: string }) {
+async function CachedAward({
+  params,
+}: {
+  params: PageProps<"/awards/[slug]">["params"];
+}) {
   "use cache";
   cacheLife("max");
   cacheTag(tagFor("awards"));
+
+  const { slug } = await params;
 
   const [item, body] = await Promise.all([
     award(slug),
