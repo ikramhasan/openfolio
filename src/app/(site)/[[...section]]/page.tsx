@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { Panel } from "../../_components/panel";
 import { routedSections, sectionForPath } from "../../_components/sections";
 
+export const instant = false;
+
 export async function generateStaticParams() {
   const sections = await routedSections();
 
