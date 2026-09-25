@@ -54,6 +54,7 @@ function writeRoute(section: WritableSection): RecordPage {
 
 export type Block =
   | { kind: "fields"; label: string; base: string; fields: Field[] }
+  | { kind: "richText"; label: string; note?: string }
   | {
       kind: "records";
       label: string;
@@ -205,8 +206,8 @@ export const ADMIN_GROUPS: AdminGroup[] = [
     label: "About",
     icon: UserCircleIcon,
     title: "About",
-    note: "The panel's heading is the only copy here: its prose is written in `_components/about.tsx`, out of the roles in Experience.",
-    blocks: [heading("about")],
+    note: "The heading sits above the bio; the bio itself is rich text, rendered on the site exactly as written here. Use the website chip to link a company or site inline.",
+    blocks: [heading("about"), { kind: "richText", label: "Bio" }],
   },
   {
     id: "experience",

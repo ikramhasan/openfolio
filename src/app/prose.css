@@ -694,6 +694,21 @@ html[data-theme="dark"] .pf-prose {
   font-weight: 400;
 }
 
+.pf-prose-chip-website {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.32em;
+  vertical-align: -0.14em;
+  cursor: pointer;
+}
+
+.pf-prose-chip-website-icon {
+  width: 0.95em;
+  height: 0.95em;
+  border-radius: 2px;
+  object-fit: contain;
+}
+
 .pf-prose-equation {
   overflow-x: auto;
   padding-block: 0.5rem;

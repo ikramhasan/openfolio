@@ -28,6 +28,8 @@ import {
   PathApi,
 } from 'platejs';
 
+import { WEBSITE_CHIP_KEY } from '@/components/editor/plugins/website-chip-base-plugin';
+
 const ACTION_THREE_COLUMNS = 'action_three_columns';
 const ACTION_FOOTNOTE = 'action_footnote';
 
@@ -87,6 +89,17 @@ const insertBlockMap: Record<
   [KEYS.video]: (editor) => insertVideoPlaceholder(editor, { select: true }),
 };
 
+const insertWebsiteChip = (editor: PlateEditor) => {
+  editor.tf.insertNodes(
+    {
+      type: WEBSITE_CHIP_KEY,
+      url: '',
+      children: [{ text: '' }],
+    },
+    { select: true }
+  );
+};
+
 const insertInlineMap: Record<
   string,
   (editor: PlateEditor, type: string) => void
@@ -96,6 +109,7 @@ const insertInlineMap: Record<
   [KEYS.inlineEquation]: (editor) =>
     insertInlineEquation(editor, '', { select: true }),
   [KEYS.link]: (editor) => triggerFloatingLink(editor, { focused: true }),
+  [WEBSITE_CHIP_KEY]: (editor) => insertWebsiteChip(editor),
 };
 
 type InsertBlockOptions = {

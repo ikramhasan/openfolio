@@ -37,6 +37,7 @@ import { SuggestionKit } from '@/components/editor/plugins/suggestion-kit';
 import { TableKit } from '@/components/editor/plugins/table-kit';
 import { TocKit } from '@/components/editor/plugins/toc-kit';
 import { ToggleKit } from '@/components/editor/plugins/toggle-kit';
+import { WebsiteChipKit } from '@/components/editor/plugins/website-chip-kit';
 
 export const EditorKit = [
   ...CopilotKit,
@@ -55,6 +56,7 @@ export const EditorKit = [
   ...DateKit,
   ...LinkKit,
   ...MentionKit,
+  ...WebsiteChipKit,
 
   // Marks
   ...BasicMarksKit,

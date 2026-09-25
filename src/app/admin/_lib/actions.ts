@@ -77,6 +77,21 @@ export async function saveBody(
   }
 }
 
+export async function saveAboutBio(value: string): Promise<SaveResult> {
+  const token = await convexAuthNextjsToken();
+  if (!token) return { ok: false, error: "Signed out. Sign in and try again." };
+
+  try {
+    await fetchMutation(api.aboutBio.save, { value }, { token });
+
+    updateTag(tagFor("about"));
+
+    return { ok: true, changed: ["about"] };
+  } catch (error) {
+    return { ok: false, error: message(error) };
+  }
+}
+
 export type LookupResult =
   | { ok: true; record: Record<string, string | number> }
   | { ok: false; error: string };

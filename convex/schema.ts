@@ -39,6 +39,11 @@ export default defineSchema({
     actions: v.array(actionValidator),
   }),
 
+  aboutBio: defineTable({
+    value: v.string(),
+    updatedAt: v.number(),
+  }),
+
   headingImages: defineTable({
     order: v.number(),
     image: imageRef,

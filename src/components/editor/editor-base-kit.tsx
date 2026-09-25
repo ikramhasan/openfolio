@@ -19,6 +19,7 @@ import { BaseSuggestionKit } from './plugins/suggestion-base-kit';
 import { BaseTableKit } from './plugins/table-base-kit';
 import { BaseTocKit } from './plugins/toc-base-kit';
 import { BaseToggleKit } from './plugins/toggle-base-kit';
+import { BaseWebsiteChipKit } from './plugins/website-chip-base-kit';
 
 export const BaseEditorKit = [
   ...BaseBasicBlocksKit,
@@ -33,6 +34,7 @@ export const BaseEditorKit = [
   ...BaseDateKit,
   ...BaseLinkKit,
   ...BaseMentionKit,
+  ...BaseWebsiteChipKit,
   ...BaseBasicMarksKit,
   ...BaseFontKit,
   ...BaseListKit,

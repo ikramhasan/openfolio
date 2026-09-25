@@ -20,3 +20,8 @@ export async function loadBody(section: WritableSection, slug: string) {
   const token = await convexAuthNextjsToken();
   return fetchQuery(api.bodies.load, { section, slug }, { token });
 }
+
+export async function loadAboutBio(): Promise<string> {
+  const token = await convexAuthNextjsToken();
+  return fetchQuery(api.aboutBio.load, {}, { token });
+}

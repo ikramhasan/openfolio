@@ -372,142 +372,6 @@ html[data-theme="dark"] body {
   background-color: #1f1f1f;
 }
 
-.pf-chip-wrap {
-  position: relative;
-  display: inline-block;
-}
-
-.pf-chip {
-  font: inherit;
-  font-weight: 530;
-  letter-spacing: -0.008em;
-  color: var(--pf-ink);
-  background-color: var(--pf-hover);
-  border: 1px solid var(--pf-rule);
-  border-radius: 5px;
-  padding: 0.05em 0.45em 0.05em 0.34em;
-  cursor: pointer;
-  white-space: nowrap;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3em;
-  vertical-align: -0.16em;
-  transition:
-    background-color 150ms ease,
-    border-color 150ms ease,
-    color 150ms ease,
-    transform 140ms ease-out;
-}
-
-.pf-chip:active {
-  transform: scale(0.96);
-}
-
-.pf-chip-mark {
-  flex: none;
-  display: inline-flex;
-  width: 1.05em;
-  height: 1.05em;
-  padding: 0.1em;
-  border-radius: 3px;
-  background-color: #f4f4f2;
-  overflow: hidden;
-}
-
-.pf-chip-panel-mark {
-  flex: none;
-  display: inline-flex;
-  width: 1.5rem;
-  height: 1.5rem;
-  padding: 0.18rem;
-  border-radius: 4px;
-  background-color: #f4f4f2;
-  border: 1px solid var(--pf-rule);
-  overflow: hidden;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .pf-chip:hover {
-    border-color: color-mix(in srgb, var(--pf-ink) 32%, transparent);
-  }
-}
-
-.pf-chip:focus-visible {
-  outline: 2px solid var(--pf-ink);
-  outline-offset: 2px;
-}
-
-.pf-chip[data-open="true"] {
-  background-color: var(--pf-ink);
-  border-color: var(--pf-ink);
-  color: var(--pf-bg);
-}
-
-.pf-chip-panel {
-  position: absolute;
-  top: calc(100% + 0.55rem);
-  left: var(--pf-chip-shift, 0px);
-  z-index: 30;
-  display: block;
-  width: min(18rem, calc(100vw - 3rem));
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(-0.25rem) scale(0.985);
-  transform-origin: top left;
-  transition:
-    opacity 170ms ease,
-    transform 190ms cubic-bezier(0.22, 1, 0.36, 1),
-    visibility 0s linear 190ms;
-}
-
-.pf-chip-panel[data-open="true"] {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0) scale(1);
-  transition:
-    opacity 170ms ease,
-    transform 190ms cubic-bezier(0.22, 1, 0.36, 1),
-    visibility 0s;
-}
-
-.pf-chip-panel[data-above="true"] {
-  top: auto;
-  bottom: calc(100% + 0.55rem);
-  transform-origin: bottom left;
-  transform: translateY(0.25rem) scale(0.985);
-}
-
-.pf-chip-panel[data-above="true"][data-open="true"] {
-  transform: translateY(0) scale(1);
-}
-
-.pf-chip-panel-inner {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.45rem;
-  padding: 0.85rem 0.9rem;
-  text-align: left;
-  background-color: var(--pf-bg);
-  border: 1px solid var(--pf-rule);
-  border-radius: 8px;
-  box-shadow:
-    0 1px 2px color-mix(in srgb, var(--pf-ink) 5%, transparent),
-    0 8px 24px -6px color-mix(in srgb, var(--pf-ink) 14%, transparent);
-}
-
-.pf-chip-panel-head {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.pf-chip-panel-caption {
-  line-height: 1.4;
-  text-align: justify;
-  text-justify: inter-word;
-}
-
 .pf-signature {
   --pf-signature-image: url("/signature.svg");
   width: 11.5rem;
@@ -698,7 +562,6 @@ html[data-theme="dark"] .pf-theme-icon[data-value="dark"] {
   .pf-row,
   .pf-row-arrow,
   .pf-tab,
-  .pf-chip,
   .pf-admin,
   .pf-admin-arrow,
   .pf-theme-option,
@@ -707,7 +570,6 @@ html[data-theme="dark"] .pf-theme-icon[data-value="dark"] {
     transition: none;
   }
 
-  .pf-chip:active,
   .pf-button:active:not(:disabled) {
     transform: none;
   }
@@ -715,15 +577,6 @@ html[data-theme="dark"] .pf-theme-icon[data-value="dark"] {
   .pf-status {
     opacity: 1;
     transform: none;
-  }
-
-  .pf-chip-panel,
-  .pf-chip-panel[data-open="true"],
-  .pf-chip-panel[data-above="true"] {
-    transform: none;
-    transition:
-      opacity 1ms linear,
-      visibility 0s;
   }
 
   .pf-panel-enter,

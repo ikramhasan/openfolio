@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { Panel } from "../../../_components/panel";
 import { GroupEditor } from "../../_components/group-editor";
+import { loadAboutBio } from "../../_lib/repository";
 import { ADMIN_GROUPS, groupByPath, groupSegments } from "../../_lib/schema";
 
 export function generateStaticParams() {
@@ -19,9 +20,13 @@ export default async function AdminGroupPage({
 
   if (!group) notFound();
 
+  const aboutBio = group.blocks.some((block) => block.kind === "richText")
+    ? await loadAboutBio()
+    : null;
+
   return (
     <Panel title={group.title} note={group.note}>
-      <GroupEditor blocks={group.blocks} />
+      <GroupEditor blocks={group.blocks} aboutBio={aboutBio} />
     </Panel>
   );
 }

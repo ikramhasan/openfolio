@@ -103,5 +103,8 @@ async function referencedStorageIds(
     }
   }
 
+  const aboutBio = await ctx.db.query("aboutBio").first();
+  if (aboutBio) ids.push(...bodyStorageIds(aboutBio.value));
+
   return new Set([...storageIdsIn(refs), ...ids]);
 }

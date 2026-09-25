@@ -35,6 +35,13 @@ export async function getIntro() {
   return fetchQuery(api.content.intro, {});
 }
 
+export async function getAbout() {
+  "use cache";
+  cacheLife("max");
+  cacheTag(tagFor("about"));
+  return fetchQuery(api.content.about, {});
+}
+
 export async function getEducation() {
   "use cache";
   cacheLife("max");

@@ -1,5 +1,6 @@
 import type { Doc } from "../_generated/dataModel";
 import type { QueryCtx } from "../_generated/server";
+import { bodyToUrls, EMPTY_BODY } from "./body";
 import type { ImageRef } from "./images";
 import { imageToken, imageUrl } from "./images";
 import type { SectionKey } from "./wire";
@@ -306,6 +307,11 @@ export async function footer(ctx: QueryCtx, image: RenderImage) {
 export async function site(ctx: QueryCtx) {
   const row = await singleton(ctx, "site");
   return { title: row?.title ?? "", description: row?.description ?? "" };
+}
+
+export async function aboutBio(ctx: QueryCtx): Promise<string> {
+  const row = await ctx.db.query("aboutBio").first();
+  return row ? await bodyToUrls(ctx, row.value) : EMPTY_BODY;
 }
 
 export async function portfolio(ctx: QueryCtx, image: RenderImage) {

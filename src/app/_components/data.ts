@@ -92,37 +92,8 @@ export function repoParts(repo: string): {
   return { owner: repo.slice(0, at).trim(), name: repo.slice(at + 1).trim() };
 }
 
-export function startYear(value: string): string {
-  return value.match(/\d{4}/)?.[0] ?? value.trim();
-}
-
 export function cleanBullet(detail: string): string {
   return detail.replace(/^\s*-\s*/, "").trim();
-}
-
-export function yearsSince(dateRange: string): number {
-  const start = Number(startYear(dateRange));
-  if (!Number.isFinite(start)) return 0;
-  return Math.max(1, new Date().getUTCFullYear() - start);
-}
-
-export function shortCompany(company: string): string {
-  return company.split("|")[0].trim();
-}
-
-const COMPANY_BRIEFS: Record<string, string> = {
-  Techshoi:
-    "A software studio in Dhaka that also runs an eco-friendly ecommerce marketplace, building apps and websites for clients from the ground up.",
-  "ICT Division":
-    "The Bangladesh government division overseeing the country's ICT policy and digital transformation, under the Ministry of Posts, Telecommunications and IT.",
-  "Transmedia Inc":
-    "A Toronto software company behind FreeConvert.com and ImageResizer.com, serving millions of people every month with file conversion and image tools.",
-  "Markopolo.ai":
-    "An AI marketing platform for ecommerce brands, using behavioral prediction to personalize campaigns and recover lost sales automatically.",
-};
-
-export function companyBrief(company: string): string | null {
-  return COMPANY_BRIEFS[shortCompany(company)] ?? null;
 }
 
 export function dateEndpoints(dateRange: string): [string, string | null] {

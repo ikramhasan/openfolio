@@ -50,8 +50,12 @@ export const intro = query({
 
 export const about = query({
   args: {},
-  returns: wireAbout,
-  handler: (ctx) => project.header(ctx, "about"),
+  returns: v.object({ ...wireAbout.fields, bio: v.string() }),
+  handler: async (ctx) => {
+    const header = await project.header(ctx, "about");
+    const bio = await project.aboutBio(ctx);
+    return { ...header, bio };
+  },
 });
 
 export const education = query({

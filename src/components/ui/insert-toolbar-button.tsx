@@ -11,6 +11,7 @@ import {
   Columns3Icon,
   FileCodeIcon,
   FilmIcon,
+  GlobeIcon,
   Heading1Icon,
   Heading2Icon,
   Heading3Icon,
@@ -42,6 +43,7 @@ import {
   insertBlock,
   insertInlineElement,
 } from '@/components/editor/transforms';
+import { WEBSITE_CHIP_KEY } from '@/components/editor/plugins/website-chip-base-plugin';
 
 import { ToolbarButton, ToolbarMenuGroup } from './toolbar';
 
@@ -220,6 +222,12 @@ const groups: Group[] = [
         icon: <RadicalIcon />,
         label: 'Inline Equation',
         value: KEYS.inlineEquation,
+      },
+      {
+        focusEditor: true,
+        icon: <GlobeIcon />,
+        label: 'Website chip',
+        value: WEBSITE_CHIP_KEY,
       },
     ].map((item) => ({
       ...item,

@@ -14,6 +14,7 @@ import {
   Heading2Icon,
   Heading3Icon,
   LightbulbIcon,
+  GlobeIcon,
   ListIcon,
   ListOrdered,
   PenToolIcon,
@@ -29,10 +30,8 @@ import {
 import { type TComboboxInputElement, KEYS } from 'platejs';
 import { PlateElement } from 'platejs/react';
 
-import {
-  insertBlock,
-  insertInlineElement,
-} from '@/components/editor/transforms';
+import { insertBlock, insertInlineElement } from '@/components/editor/transforms';
+import { WEBSITE_CHIP_KEY } from '@/components/editor/plugins/website-chip-base-plugin';
 
 import {
   InlineCombobox,
@@ -221,6 +220,13 @@ const groups: Group[] = [
         icon: <RadicalIcon />,
         label: 'Inline Equation',
         value: KEYS.inlineEquation,
+      },
+      {
+        focusEditor: true,
+        icon: <GlobeIcon />,
+        keywords: ['website', 'chip', 'link'],
+        label: 'Website chip',
+        value: WEBSITE_CHIP_KEY,
       },
     ].map((item) => ({
       ...item,

@@ -3,16 +3,30 @@
 import { useDraft } from "../_lib/draft";
 import { getPath } from "../_lib/paths";
 import type { Block } from "../_lib/schema";
+import { AboutBioEditor } from "./about-bio-editor";
 import { FieldInput } from "./fields";
 import { RecordsEditor } from "./record-list";
 import { SortableList, SortableRow } from "./sortable";
 
-export function GroupEditor({ blocks }: { blocks: Block[] }) {
+export function GroupEditor({
+  blocks,
+  aboutBio,
+}: {
+  blocks: Block[];
+  aboutBio?: string | null;
+}) {
   return (
     <div>
       {blocks.map((block) =>
         block.kind === "fields" ? (
           <FieldsEditor key={`${block.base}.${block.label}`} block={block} />
+        ) : block.kind === "richText" ? (
+          <AboutBioEditor
+            key={block.label}
+            label={block.label}
+            note={block.note}
+            body={aboutBio ?? ""}
+          />
         ) : block.kind === "records" ? (
           <RecordsEditor key={block.path} block={block} />
         ) : (

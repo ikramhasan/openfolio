@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as aboutBio from "../aboutBio.js";
 import type * as admin from "../admin.js";
 import type * as auth from "../auth.js";
 import type * as bodies from "../bodies.js";
@@ -33,6 +34,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  aboutBio: typeof aboutBio;
   admin: typeof admin;
   auth: typeof auth;
   bodies: typeof bodies;
