@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { cacheLife, cacheTag } from "next/cache";
 import { notFound } from "next/navigation";
+import { Masthead } from "../../_components/masthead";
 import { Panel } from "../../_components/panel";
 import { routedSections, sectionForPath } from "../../_components/sections";
 
@@ -60,6 +61,18 @@ async function CachedSection({ path }: { path: string }) {
   if (!entry) notFound();
 
   cacheTag(...entry.tags);
+
+  if (entry.home) {
+    return (
+      <>
+        <Masthead />
+
+        <Panel title={entry.title} note={entry.note} aside={entry.aside} lead>
+          {entry.body}
+        </Panel>
+      </>
+    );
+  }
 
   return (
     <Panel title={entry.title} note={entry.note} aside={entry.aside}>

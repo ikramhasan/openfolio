@@ -1,14 +1,13 @@
 import { cacheLife, cacheTag } from "next/cache";
 import { tagFor } from "../_components/content";
 import { Footer } from "../_components/footer";
-import { Masthead } from "../_components/masthead";
 import { Rail } from "../_components/rail";
 import { navItems } from "../_components/sections";
 
 export default async function SiteLayout({ children }: LayoutProps<"/">) {
   "use cache";
   cacheLife("max");
-  cacheTag(tagFor("nav"), tagFor("intro"), tagFor("footer"), tagFor("connect"));
+  cacheTag(tagFor("nav"), tagFor("footer"), tagFor("connect"));
 
   const items = await navItems();
 
@@ -20,7 +19,6 @@ export default async function SiteLayout({ children }: LayoutProps<"/">) {
       <Rail items={items} admin />
 
       <div className="min-w-0">
-        <Masthead />
         <main>{children}</main>
         <Footer />
       </div>

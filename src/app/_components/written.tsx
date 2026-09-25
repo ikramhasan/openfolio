@@ -21,20 +21,24 @@ export function Written({
   back: { href: string; label: string };
 }) {
   return (
-    <article className="pf-rule pf-panel-enter border-t pt-6">
-      <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
-        <h1 className="pf-page-title">{title}</h1>
-
-        <Link href={back.href} className="pf-link-quiet pf-meta shrink-0">
+    <article className="pf-panel-enter pt-8 lg:pt-14 xl:pt-16">
+      <header>
+        <Link href={back.href} className="pf-link-quiet pf-meta inline-flex">
           ← {back.label}
         </Link>
-      </div>
 
-      {standfirst ? (
-        <p className="pf-page-standfirst">{standfirst.trim()}</p>
-      ) : null}
+        <h1 className="pf-page-title mt-5 text-balance">{title}</h1>
 
-      {meta ? <p className="pf-meta mt-4">{meta}</p> : null}
+        {standfirst ? (
+          <p className="pf-page-standfirst mt-3 max-w-[52ch]">
+            {standfirst.trim()}
+          </p>
+        ) : null}
+
+        {meta ? (
+          <p className="pf-rule pf-meta mt-6 border-t pt-4">{meta}</p>
+        ) : null}
+      </header>
 
       {cover ? (
         <Image
