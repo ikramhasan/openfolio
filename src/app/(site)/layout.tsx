@@ -17,7 +17,7 @@ export default async function SiteLayout({ children }: LayoutProps<"/">) {
       id="top"
       className="mx-auto grid w-full max-w-6xl flex-1 grid-cols-[minmax(0,1fr)] gap-x-16 px-6 sm:px-10 lg:grid-cols-[200px_minmax(0,1fr)]"
     >
-      <Rail items={items} />
+      <Rail items={items} admin />
 
       <div className="min-w-0">
         <Masthead />

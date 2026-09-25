@@ -34,5 +34,6 @@ export const config = {
     "/api/auth",
     "/api/auth/:path*",
     "/api/ai/:path*",
+    "/api/session",
   ],
 };

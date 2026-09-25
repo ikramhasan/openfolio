@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
+import { AdminLink } from "./admin-link";
 import { ThemeToggle } from "./theme-toggle";
 
 type NavItem = {
@@ -18,9 +19,11 @@ const FADE = 40;
 export function Rail({
   items,
   label = "Portfolio sections",
+  admin = false,
 }: {
   items: NavItem[];
   label?: string;
+  admin?: boolean;
 }) {
   const pathname = usePathname();
   const scrollerRef = useRef<HTMLUListElement>(null);
@@ -188,7 +191,9 @@ export function Rail({
         </ul>
       </nav>
 
-      <div className="shrink-0 lg:mt-auto lg:-ml-0.5">
+      <div className="flex shrink-0 items-center gap-3 lg:mt-auto lg:-ml-0.5 lg:flex-col lg:items-start lg:gap-2.5">
+        {admin ? <AdminLink /> : null}
+
         <ThemeToggle />
       </div>
     </div>
