@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { type ReactNode, useEffect, useRef } from "react";
 import { AdminLink } from "./admin-link";
 import { ThemeToggle } from "./theme-toggle";
 
@@ -18,10 +18,12 @@ const FADE = 40;
 
 export function Rail({
   items,
+  identity,
   label = "Portfolio sections",
   admin = false,
 }: {
   items: NavItem[];
+  identity?: ReactNode;
   label?: string;
   admin?: boolean;
 }) {
@@ -159,6 +161,7 @@ export function Rail({
 
   return (
     <div className="pf-rule sticky top-0 z-20 -mx-6 flex min-w-0 items-center gap-4 border-b bg-[var(--pf-bg)] px-6 py-0.5 sm:-mx-10 sm:px-10 lg:mx-0 lg:h-screen lg:flex-col lg:items-stretch lg:gap-0 lg:self-start lg:border-b-0 lg:px-0 lg:pt-16 lg:pb-8">
+      {identity}
       <nav aria-label={label} className="min-w-0 flex-1 lg:flex-none">
         <ul
           ref={scrollerRef}
