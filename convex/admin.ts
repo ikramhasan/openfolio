@@ -119,8 +119,8 @@ export const save = mutation({
 function headingsOf(portfolio: Wire) {
   return Object.fromEntries(
     SECTION_KEYS.map((key) => {
-      const { title, note, navLabel } = portfolio.sections[key];
-      return [key, { title, note, navLabel }];
+      const { title, note, navLabel, hidden } = portfolio.sections[key];
+      return [key, { title, note, navLabel, hidden }];
     }),
   );
 }

@@ -14,14 +14,20 @@ export const renderForSite =
 
 export const renderForEditor: RenderImage = async (ref) => imageToken(ref);
 
-export type Header = { title: string; note?: string; navLabel?: string };
+export type Header = {
+  title: string;
+  note?: string;
+  navLabel?: string;
+  hidden: boolean;
+};
 
 function strip(doc: Doc<"sectionHeaders"> | null, key: string): Header {
-  if (!doc) return { title: key };
+  if (!doc) return { title: key, hidden: false };
   return {
     title: doc.title,
     ...(doc.note ? { note: doc.note } : {}),
     ...(doc.navLabel ? { navLabel: doc.navLabel } : {}),
+    hidden: doc.hidden ?? false,
   };
 }
 
@@ -92,6 +98,7 @@ export async function education(ctx: QueryCtx, image: RenderImage) {
       dateRange: row.dateRange,
       description: row.description,
       url: row.url,
+      hidden: row.hidden ?? false,
     })),
   );
 }
@@ -109,6 +116,7 @@ export async function experience(ctx: QueryCtx, image: RenderImage) {
       dateRange: row.dateRange,
       details: row.details,
       url: row.url,
+      hidden: row.hidden ?? false,
     })),
   );
 }
@@ -122,6 +130,7 @@ export async function youtubeVideos(ctx: QueryCtx, image: RenderImage) {
       title: row.title,
       url: row.url,
       thumbnail: await image(row.thumbnail),
+      hidden: row.hidden ?? false,
     })),
   );
 }
@@ -140,6 +149,7 @@ export async function articles(ctx: QueryCtx, image: RenderImage) {
       views: row.views,
       ...(row.pinned === undefined ? {} : { pinned: row.pinned }),
       excerpt: row.excerpt,
+      hidden: row.hidden ?? false,
     })),
   );
 }
@@ -155,6 +165,7 @@ export async function projects(ctx: QueryCtx, image: RenderImage) {
       link: row.link,
       logo: await image(row.logo),
       tags: row.tags,
+      hidden: row.hidden ?? false,
     })),
   );
 }
@@ -169,6 +180,7 @@ export async function tools(ctx: QueryCtx, image: RenderImage) {
       category: row.category,
       url: row.url,
       icon: await image(row.icon),
+      hidden: row.hidden ?? false,
     })),
   );
 }
@@ -181,6 +193,7 @@ export async function music(ctx: QueryCtx) {
     url: row.url,
     title: row.title ?? "",
     artist: row.artist ?? "",
+    hidden: row.hidden ?? false,
   }));
 }
 
@@ -197,6 +210,7 @@ export async function openSource(ctx: QueryCtx, image: RenderImage) {
       state: row.state ?? "",
       date: row.date,
       stars: row.stars ?? 0,
+      hidden: row.hidden ?? false,
     })),
   );
 }
@@ -213,6 +227,7 @@ export async function awards(ctx: QueryCtx, image: RenderImage) {
       date: row.date,
       description: row.description,
       url: row.url,
+      hidden: row.hidden ?? false,
     })),
   );
 }
@@ -233,6 +248,7 @@ export async function recommendations(ctx: QueryCtx, image: RenderImage) {
         bio: row.author.bio,
         image: await image(row.author.image),
       },
+      hidden: row.hidden ?? false,
     })),
   );
 }

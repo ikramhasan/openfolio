@@ -17,6 +17,7 @@ export const wireEducation = v.object({
   dateRange: v.string(),
   description: nullableString,
   url: nullableString,
+  hidden: v.boolean(),
 });
 
 export const wireExperience = v.object({
@@ -28,6 +29,7 @@ export const wireExperience = v.object({
   dateRange: v.string(),
   details: v.array(v.string()),
   url: nullableString,
+  hidden: v.boolean(),
 });
 
 export const wireVideo = v.object({
@@ -35,6 +37,7 @@ export const wireVideo = v.object({
   title: v.string(),
   url: v.string(),
   thumbnail: wireImage,
+  hidden: v.boolean(),
 });
 
 export const wireArticle = v.object({
@@ -47,6 +50,7 @@ export const wireArticle = v.object({
   views: v.number(),
   pinned: v.optional(v.boolean()),
   excerpt: nullableString,
+  hidden: v.boolean(),
 });
 
 export const wireProject = v.object({
@@ -56,6 +60,7 @@ export const wireProject = v.object({
   link: v.string(),
   logo: wireImage,
   tags: v.array(v.string()),
+  hidden: v.boolean(),
 });
 
 export const wireTool = v.object({
@@ -64,6 +69,7 @@ export const wireTool = v.object({
   category: v.string(),
   url: v.string(),
   icon: wireImage,
+  hidden: v.boolean(),
 });
 
 export const wireTrack = v.object({
@@ -71,6 +77,7 @@ export const wireTrack = v.object({
   url: v.string(),
   title: v.string(),
   artist: v.string(),
+  hidden: v.boolean(),
 });
 
 export const wireContribution = v.object({
@@ -82,6 +89,7 @@ export const wireContribution = v.object({
   state: v.string(),
   date: v.string(),
   stars: v.number(),
+  hidden: v.boolean(),
 });
 
 export const wireAward = v.object({
@@ -92,6 +100,7 @@ export const wireAward = v.object({
   date: v.string(),
   description: v.string(),
   url: nullableString,
+  hidden: v.boolean(),
 });
 
 export const wireRecommendation = v.object({
@@ -103,6 +112,7 @@ export const wireRecommendation = v.object({
     bio: v.string(),
     image: wireImage,
   }),
+  hidden: v.boolean(),
 });
 
 export const wireSkill = v.object({

@@ -20,6 +20,10 @@ import {
   wireVideosSection,
 } from "./lib/wire";
 
+function visible<T extends { hidden?: boolean }>(items: T[]): T[] {
+  return items.filter((item) => !item.hidden);
+}
+
 export const site = query({
   args: {},
   returns: wireSite,
@@ -36,6 +40,7 @@ export const nav = query({
         title: v.string(),
         note: v.optional(v.string()),
         navLabel: v.optional(v.string()),
+        hidden: v.boolean(),
       }),
     ),
   }),
@@ -63,7 +68,7 @@ export const education = query({
   returns: wireEducationSection,
   handler: async (ctx) => ({
     ...(await project.header(ctx, "education")),
-    items: await project.education(ctx, project.renderForSite(ctx)),
+    items: visible(await project.education(ctx, project.renderForSite(ctx))),
   }),
 });
 
@@ -72,7 +77,7 @@ export const experience = query({
   returns: wireExperienceSection,
   handler: async (ctx) => ({
     ...(await project.header(ctx, "experience")),
-    items: await project.experience(ctx, project.renderForSite(ctx)),
+    items: visible(await project.experience(ctx, project.renderForSite(ctx))),
   }),
 });
 
@@ -81,14 +86,22 @@ export const youtubeVideos = query({
   returns: wireVideosSection,
   handler: async (ctx) => ({
     ...(await project.header(ctx, "youtubeVideos")),
-    items: await project.youtubeVideos(ctx, project.renderForSite(ctx)),
+    items: visible(
+      await project.youtubeVideos(ctx, project.renderForSite(ctx)),
+    ),
   }),
 });
 
 export const articles = query({
   args: {},
   returns: wireArticlesSection,
-  handler: (ctx) => project.articlesSection(ctx, project.renderForSite(ctx)),
+  handler: async (ctx) => {
+    const section = await project.articlesSection(
+      ctx,
+      project.renderForSite(ctx),
+    );
+    return { ...section, items: visible(section.items) };
+  },
 });
 
 export const projects = query({
@@ -96,7 +109,7 @@ export const projects = query({
   returns: wireProjectsSection,
   handler: async (ctx) => ({
     ...(await project.header(ctx, "projects")),
-    items: await project.projects(ctx, project.renderForSite(ctx)),
+    items: visible(await project.projects(ctx, project.renderForSite(ctx))),
   }),
 });
 
@@ -105,7 +118,7 @@ export const tools = query({
   returns: wireToolsSection,
   handler: async (ctx) => ({
     ...(await project.header(ctx, "tools")),
-    items: await project.tools(ctx, project.renderForSite(ctx)),
+    items: visible(await project.tools(ctx, project.renderForSite(ctx))),
   }),
 });
 
@@ -114,7 +127,7 @@ export const music = query({
   returns: wireMusicSection,
   handler: async (ctx) => ({
     ...(await project.header(ctx, "music")),
-    items: await project.music(ctx),
+    items: visible(await project.music(ctx)),
   }),
 });
 
@@ -123,7 +136,7 @@ export const openSource = query({
   returns: wireOpenSourceSection,
   handler: async (ctx) => ({
     ...(await project.header(ctx, "openSource")),
-    items: await project.openSource(ctx, project.renderForSite(ctx)),
+    items: visible(await project.openSource(ctx, project.renderForSite(ctx))),
   }),
 });
 
@@ -132,7 +145,7 @@ export const awards = query({
   returns: wireAwardsSection,
   handler: async (ctx) => ({
     ...(await project.header(ctx, "awards")),
-    items: await project.awards(ctx, project.renderForSite(ctx)),
+    items: visible(await project.awards(ctx, project.renderForSite(ctx))),
   }),
 });
 
@@ -141,7 +154,9 @@ export const recommendations = query({
   returns: wireRecommendationsSection,
   handler: async (ctx) => ({
     ...(await project.header(ctx, "recommendations")),
-    items: await project.recommendations(ctx, project.renderForSite(ctx)),
+    items: visible(
+      await project.recommendations(ctx, project.renderForSite(ctx)),
+    ),
   }),
 });
 

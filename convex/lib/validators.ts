@@ -35,12 +35,14 @@ export const sectionHeaderFields = {
   title: v.string(),
   note: v.optional(v.string()),
   navLabel: v.optional(v.string()),
+  hidden: v.optional(v.boolean()),
 };
 
 export const wireSectionHeader = v.object({
   title: v.string(),
   note: v.optional(v.string()),
   navLabel: v.optional(v.string()),
+  hidden: v.boolean(),
 });
 
 export const newsletterCopy = v.object({

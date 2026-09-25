@@ -53,7 +53,13 @@ function writeRoute(section: WritableSection): RecordPage {
 }
 
 export type Block =
-  | { kind: "fields"; label: string; base: string; fields: Field[] }
+  | {
+      kind: "fields";
+      label: string;
+      base: string;
+      fields: Field[];
+      sectionToggle?: string;
+    }
   | { kind: "richText"; label: string; note?: string }
   | {
       kind: "records";
@@ -106,6 +112,7 @@ function heading(id: string): Block {
     label: "Heading",
     base: `sections.${id}`,
     fields: HEADING_FIELDS,
+    sectionToggle: id,
   };
 }
 
@@ -255,6 +262,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
             order: 0,
             title: "",
             url: null,
+            hidden: false,
           },
         },
       },
@@ -302,6 +310,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
             order: 0,
             tags: [],
             title: "",
+            hidden: false,
           },
         },
       },
@@ -342,7 +351,14 @@ export const ADMIN_GROUPS: AdminGroup[] = [
               hint: "Take the site's own favicon, paste a URL, or upload a file.",
             },
           ],
-          blank: { order: 0, title: "", category: "", url: "", icon: "" },
+          blank: {
+            order: 0,
+            title: "",
+            category: "",
+            url: "",
+            icon: "",
+            hidden: false,
+          },
         },
       },
     ],
@@ -374,7 +390,13 @@ export const ADMIN_GROUPS: AdminGroup[] = [
               hint: "Share → Copy link, from the track, album or playlist. A link anywhere else cannot be played.",
             },
           ],
-          blank: { order: 0, title: "", artist: "", url: "" },
+          blank: {
+            order: 0,
+            title: "",
+            artist: "",
+            url: "",
+            hidden: false,
+          },
         },
       },
     ],
@@ -432,6 +454,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
             readTimeMinutes: 1,
             views: 0,
             excerpt: null,
+            hidden: false,
           },
         },
       },
@@ -458,7 +481,13 @@ export const ADMIN_GROUPS: AdminGroup[] = [
             { key: "url", label: "URL", kind: "url", wide: true },
             { key: "thumbnail", label: "Still", kind: "image", wide: true },
           ],
-          blank: { order: 0, thumbnail: "", title: "", url: "" },
+          blank: {
+            order: 0,
+            thumbnail: "",
+            title: "",
+            url: "",
+            hidden: false,
+          },
         },
       },
     ],
@@ -504,6 +533,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
             logo: "",
             title: "",
             url: null,
+            hidden: false,
           },
         },
       },
@@ -546,6 +576,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
             state: "",
             date: "",
             stars: 0,
+            hidden: false,
           },
         },
       },
@@ -589,6 +620,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
             organization: "",
             title: "",
             url: null,
+            hidden: false,
           },
         },
       },
@@ -632,6 +664,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
             body: "",
             title: "",
             url: "",
+            hidden: false,
           },
         },
       },

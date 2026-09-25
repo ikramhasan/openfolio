@@ -116,6 +116,10 @@
   }
 }
 
+.pf-record[data-hidden] {
+  opacity: 0.55;
+}
+
 .pf-record-toggle {
   display: flex;
   flex: 1;
@@ -188,6 +192,38 @@
   }
 }
 
+.pf-hide-toggle {
+  position: relative;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  color: var(--pf-faint);
+  cursor: pointer;
+  border-radius: 999px;
+  transition:
+    color 150ms ease,
+    background-color 140ms ease;
+}
+
+.pf-hide-toggle[data-hidden] {
+  color: var(--pf-muted);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pf-hide-toggle:hover {
+    color: var(--pf-ink);
+    background-color: var(--pf-hover);
+  }
+}
+
+.pf-hide-toggle:focus-visible {
+  outline: 2px solid var(--pf-ink);
+  outline-offset: 2px;
+}
+
 .pf-dock {
   position: sticky;
   bottom: 0;
@@ -214,6 +250,7 @@
   .pf-caret,
   .pf-field,
   .pf-handle,
+  .pf-hide-toggle,
   .pf-record {
     transition: none;
   }

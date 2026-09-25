@@ -82,6 +82,7 @@ export default defineSchema({
     dateRange: v.string(),
     description: v.union(v.string(), v.null()),
     url: v.union(v.string(), v.null()),
+    hidden: v.optional(v.boolean()),
   }).index("order", ["order"]),
 
   experience: defineTable({
@@ -93,6 +94,7 @@ export default defineSchema({
     dateRange: v.string(),
     details: v.array(v.string()),
     url: v.union(v.string(), v.null()),
+    hidden: v.optional(v.boolean()),
   }).index("order", ["order"]),
 
   youtubeVideos: defineTable({
@@ -100,6 +102,7 @@ export default defineSchema({
     title: v.string(),
     url: v.string(),
     thumbnail: v.optional(imageRef),
+    hidden: v.optional(v.boolean()),
   }).index("order", ["order"]),
 
   articles: defineTable({
@@ -113,6 +116,7 @@ export default defineSchema({
     views: v.number(),
     pinned: v.optional(v.boolean()),
     excerpt: v.union(v.string(), v.null()),
+    hidden: v.optional(v.boolean()),
   })
     .index("order", ["order"])
     .index("slug", ["slug"])
@@ -153,6 +157,7 @@ export default defineSchema({
     link: v.string(),
     logo: v.optional(imageRef),
     tags: v.array(v.string()),
+    hidden: v.optional(v.boolean()),
   }).index("order", ["order"]),
 
   tools: defineTable({
@@ -161,6 +166,7 @@ export default defineSchema({
     category: v.string(),
     url: v.string(),
     icon: v.optional(imageRef),
+    hidden: v.optional(v.boolean()),
   }).index("order", ["order"]),
 
   music: defineTable({
@@ -168,6 +174,7 @@ export default defineSchema({
     url: v.string(),
     title: v.optional(v.string()),
     artist: v.optional(v.string()),
+    hidden: v.optional(v.boolean()),
   }).index("order", ["order"]),
 
   openSource: defineTable({
@@ -180,6 +187,7 @@ export default defineSchema({
     state: v.optional(v.string()),
     date: v.string(),
     stars: v.optional(v.number()),
+    hidden: v.optional(v.boolean()),
   }).index("order", ["order"]),
 
   awards: defineTable({
@@ -190,6 +198,7 @@ export default defineSchema({
     date: v.string(),
     description: v.string(),
     url: v.union(v.string(), v.null()),
+    hidden: v.optional(v.boolean()),
   }).index("order", ["order"]),
 
   recommendations: defineTable({
@@ -202,6 +211,7 @@ export default defineSchema({
       bio: v.string(),
       image: v.optional(imageRef),
     }),
+    hidden: v.optional(v.boolean()),
   }).index("order", ["order"]),
 
   subscribers: defineTable({

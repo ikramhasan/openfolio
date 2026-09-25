@@ -5,6 +5,7 @@ import { getPath } from "../_lib/paths";
 import type { Block } from "../_lib/schema";
 import { AboutBioEditor } from "./about-bio-editor";
 import { FieldInput } from "./fields";
+import { HideToggle } from "./hide-toggle";
 import { RecordsEditor } from "./record-list";
 import { SortableList, SortableRow } from "./sortable";
 
@@ -44,8 +45,15 @@ function FieldsEditor({
 }) {
   return (
     <fieldset className="mt-10 first:mt-0">
-      <legend className="pf-rule pf-column mb-4 w-full border-b pb-2">
-        {block.label}
+      <legend className="pf-rule mb-4 flex w-full items-baseline justify-between gap-x-4 border-b pb-2">
+        <span className="pf-column">{block.label}</span>
+
+        {block.sectionToggle ? (
+          <HideToggle
+            path={`sections.${block.sectionToggle}.hidden`}
+            label={`the ${block.label.toLowerCase()} section`}
+          />
+        ) : null}
       </legend>
 
       <div className="grid gap-x-6 gap-y-5 sm:grid-cols-2">

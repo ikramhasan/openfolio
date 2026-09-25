@@ -141,7 +141,9 @@ export async function routedSections(): Promise<RoutedSection[]> {
   const seen = new Set([...lead, ...ordered].map((entry) => entry.id));
   const unsequenced = REGISTRY.filter((entry) => !seen.has(entry.id));
 
-  const sequence = [...lead, ...ordered, ...unsequenced];
+  const sequence = [...lead, ...ordered, ...unsequenced].filter(
+    (entry) => !nav.byKey[entry.id]?.hidden,
+  );
 
   if (process.env.NODE_ENV !== "production") {
     warnOnGaps(nav, sequence);
