@@ -7,6 +7,7 @@ import { useDraft } from "../_lib/draft";
 import { getPath, move } from "../_lib/paths";
 import type { Block } from "../_lib/schema";
 import { FieldInput } from "./fields";
+import { HideToggle } from "./hide-toggle";
 import { SortableList, SortableRow } from "./sortable";
 
 type RecordsBlock = Extract<Block, { kind: "records" }>;
@@ -149,13 +150,14 @@ function Record({
   const items = draft.readList(block.path);
   const item = items[index];
   const summary = summaryOf(block, item);
+  const hidden = Boolean(getPath(item, "hidden"));
 
   useEffect(() => {
     if (confirming) confirmRef.current?.focus();
   }, [confirming]);
 
   return (
-    <div className="pf-record">
+    <div className="pf-record" data-hidden={hidden || undefined}>
       <div className="flex items-center gap-1 py-1.5">
         {handle}
 
@@ -174,6 +176,10 @@ function Record({
             ▾
           </span>
         </button>
+
+        {"hidden" in block.record.blank ? (
+          <HideToggle path={`${block.path}.${index}.hidden`} label={summary} />
+        ) : null}
 
         {block.page ? <PageLink block={block} index={index} /> : null}
 

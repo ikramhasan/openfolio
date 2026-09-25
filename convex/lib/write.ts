@@ -71,12 +71,13 @@ export async function writeHeaders(
   next: Wire,
 ): Promise<void> {
   for (const key of SECTION_KEYS) {
-    const { title, note, navLabel } = next.sections[key];
+    const { title, note, navLabel, hidden } = next.sections[key];
     const row = {
       key,
       title,
       ...(note ? { note } : {}),
       ...(navLabel ? { navLabel } : {}),
+      ...(hidden ? { hidden } : {}),
     };
 
     const existing = await ctx.db
@@ -196,6 +197,7 @@ export async function writeSection(
           dateRange: item.dateRange,
           description: item.description,
           url: item.url,
+          ...(item.hidden ? { hidden: item.hidden } : {}),
         })),
       );
       return;
@@ -213,6 +215,7 @@ export async function writeSection(
           dateRange: item.dateRange,
           details: item.details,
           url: item.url,
+          ...(item.hidden ? { hidden: item.hidden } : {}),
         })),
       );
       return;
@@ -226,6 +229,7 @@ export async function writeSection(
           title: item.title,
           url: item.url,
           thumbnail: optionalImage(item.thumbnail),
+          ...(item.hidden ? { hidden: item.hidden } : {}),
         })),
       );
       return;
@@ -247,6 +251,7 @@ export async function writeSection(
           views: item.views,
           ...(item.pinned === undefined ? {} : { pinned: item.pinned }),
           excerpt: item.excerpt,
+          ...(item.hidden ? { hidden: item.hidden } : {}),
         })),
       );
 
@@ -265,6 +270,7 @@ export async function writeSection(
           link: item.link,
           logo: optionalImage(item.logo),
           tags: item.tags,
+          ...(item.hidden ? { hidden: item.hidden } : {}),
         })),
       );
       return;
@@ -279,6 +285,7 @@ export async function writeSection(
           category: item.category,
           url: item.url,
           icon: optionalImage(item.icon),
+          ...(item.hidden ? { hidden: item.hidden } : {}),
         })),
       );
       return;
@@ -292,6 +299,7 @@ export async function writeSection(
           url: item.url,
           title: item.title,
           artist: item.artist,
+          ...(item.hidden ? { hidden: item.hidden } : {}),
         })),
       );
       return;
@@ -310,6 +318,7 @@ export async function writeSection(
           state: item.state,
           date: item.date,
           stars: item.stars,
+          ...(item.hidden ? { hidden: item.hidden } : {}),
         })),
       );
       return;
@@ -326,6 +335,7 @@ export async function writeSection(
           date: item.date,
           description: item.description,
           url: item.url,
+          ...(item.hidden ? { hidden: item.hidden } : {}),
         })),
       );
       return;
@@ -344,6 +354,7 @@ export async function writeSection(
             bio: item.author.bio,
             image: optionalImage(item.author.image),
           },
+          ...(item.hidden ? { hidden: item.hidden } : {}),
         })),
       );
       return;
