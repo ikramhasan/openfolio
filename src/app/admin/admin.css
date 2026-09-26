@@ -146,6 +146,34 @@
   transition: transform 160ms ease-out;
 }
 
+.pf-fold {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  align-items: baseline;
+  gap: 0.75rem;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+.pf-fold > .pf-column {
+  flex: none;
+  transition: color 150ms ease;
+}
+
+.pf-fold:focus-visible {
+  outline: 2px solid var(--pf-ink);
+  outline-offset: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pf-fold:hover .pf-caret,
+  .pf-fold:hover > .pf-column {
+    color: var(--pf-ink);
+  }
+}
+
 [aria-expanded="true"] > .pf-caret {
   transform: rotate(180deg);
 }
@@ -249,6 +277,7 @@
   .pf-button-quiet,
   .pf-caret,
   .pf-field,
+  .pf-fold .pf-column,
   .pf-handle,
   .pf-hide-toggle,
   .pf-record {

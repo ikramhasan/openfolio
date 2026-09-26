@@ -1,5 +1,6 @@
 "use client";
 
+import { useId, useState } from "react";
 import { useDraft } from "../_lib/draft";
 import { getPath } from "../_lib/paths";
 import type { Block } from "../_lib/schema";
@@ -42,24 +43,70 @@ function FieldsEditor({
 }: {
   block: Extract<Block, { kind: "fields" }>;
 }) {
-  return (
-    <fieldset className="mt-10 first:mt-0">
-      {block.label ? (
-        <legend className="pf-rule pf-column mb-4 w-full border-b pb-2">
-          {block.label}
-        </legend>
-      ) : null}
+  const draft = useDraft();
+  const bodyId = useId();
+  const [open, setOpen] = useState(false);
 
-      <div className="grid gap-x-6 gap-y-5 sm:grid-cols-2">
-        {block.fields.map((field) => (
-          <FieldInput
-            key={field.key}
-            field={field}
-            path={`${block.base}.${field.key}`}
-          />
-        ))}
-      </div>
-    </fieldset>
+  const grid = (
+    <div className="grid gap-x-6 gap-y-5 sm:grid-cols-2">
+      {block.fields.map((field) => (
+        <FieldInput
+          key={field.key}
+          field={field}
+          path={`${block.base}.${field.key}`}
+        />
+      ))}
+    </div>
+  );
+
+  if (!block.collapsible) {
+    return (
+      <fieldset className="mt-10 first:mt-0">
+        {block.label ? (
+          <legend className="pf-rule pf-column mb-4 w-full border-b pb-2">
+            {block.label}
+          </legend>
+        ) : null}
+
+        {grid}
+      </fieldset>
+    );
+  }
+
+  const summary = String(
+    draft.read(`${block.base}.${block.fields[0].key}`) ?? "",
+  ).trim();
+
+  return (
+    <section className="mt-10 first:mt-0">
+      <h3 className="pf-rule border-b pb-2">
+        <button
+          type="button"
+          onClick={() => setOpen(!open)}
+          aria-expanded={open}
+          aria-controls={open ? bodyId : undefined}
+          className="pf-fold"
+        >
+          <span className="pf-column">{block.label}</span>
+
+          {open ? null : (
+            <span className="pf-meta pf-faint min-w-0 flex-1 truncate">
+              {summary}
+            </span>
+          )}
+
+          <span aria-hidden="true" className="pf-caret">
+            ▾
+          </span>
+        </button>
+      </h3>
+
+      {open ? (
+        <div id={bodyId} className="pt-5">
+          {grid}
+        </div>
+      ) : null}
+    </section>
   );
 }
 

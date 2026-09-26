@@ -62,6 +62,7 @@ export type Block =
       base: string;
       fields: Field[];
       sectionToggle?: string;
+      collapsible?: boolean;
     }
   | { kind: "richText"; label: string; note?: string }
   | {
@@ -93,7 +94,7 @@ export type AdminGroup = {
 };
 
 const HEADING_FIELDS: Field[] = [
-  { key: "title", label: "Heading", kind: "text" },
+  { key: "title", label: "Title", kind: "text" },
   {
     key: "note",
     label: "Subtitle",
@@ -112,9 +113,11 @@ const HEADING_FIELDS: Field[] = [
 function heading(id: string): Block {
   return {
     kind: "fields",
+    label: "Heading",
     base: `sections.${id}`,
     fields: HEADING_FIELDS,
     sectionToggle: id,
+    collapsible: true,
   };
 }
 
@@ -145,6 +148,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
         kind: "fields",
         label: "Site",
         base: "site",
+        collapsible: true,
         fields: [
           { key: "title", label: "Browser title", kind: "text", wide: true },
           {
@@ -382,15 +386,6 @@ export const ADMIN_GROUPS: AdminGroup[] = [
     note: "Posts shown newest first, either written here or linked out.",
     blocks: [
       heading("articles"),
-      {
-        kind: "fields",
-        label: "View all",
-        base: "sections.articles.viewAll",
-        fields: [
-          { key: "label", label: "Label", kind: "text" },
-          { key: "url", label: "URL", kind: "url" },
-        ],
-      },
       {
         kind: "records",
         label: "Posts",
