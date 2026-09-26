@@ -11,7 +11,7 @@ type PanelProps = {
 export function Panel({ title, note, aside, lead, children }: PanelProps) {
   if (lead) {
     return (
-      <section className="pf-rule pf-panel-enter border-t pt-6">
+      <section className="pf-panel-enter pt-12">
         <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
           <h2 className="pf-section-title">{title}</h2>
           {aside}
@@ -25,7 +25,7 @@ export function Panel({ title, note, aside, lead, children }: PanelProps) {
   }
 
   return (
-    <section className="pf-panel-enter pt-8 lg:pt-14 xl:pt-16">
+    <section className="pf-panel-enter pt-8 lg:pt-16">
       <header>
         <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
           <h1 className="pf-page-title">{title}</h1>
@@ -37,7 +37,7 @@ export function Panel({ title, note, aside, lead, children }: PanelProps) {
         ) : null}
       </header>
 
-      <div className="pf-rule mt-7 border-t pt-7">{children}</div>
+      <div className="mt-10">{children}</div>
     </section>
   );
 }

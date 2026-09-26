@@ -18,7 +18,7 @@ export async function Identity() {
   });
 
   return (
-    <div className="hidden min-w-0 pb-7 lg:block">
+    <div className="hidden min-w-0 pt-[7px] pb-7 lg:block">
       <span
         role="img"
         aria-label={title}
