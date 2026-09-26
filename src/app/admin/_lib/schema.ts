@@ -12,7 +12,6 @@ import MusicNote01Icon from "@hugeicons/core-free-icons/MusicNote01Icon";
 import QuoteUpIcon from "@hugeicons/core-free-icons/QuoteUpIcon";
 import Sorting04Icon from "@hugeicons/core-free-icons/Sorting04Icon";
 import ToolsIcon from "@hugeicons/core-free-icons/ToolsIcon";
-import UserCircleIcon from "@hugeicons/core-free-icons/UserCircleIcon";
 import YoutubeIcon from "@hugeicons/core-free-icons/YoutubeIcon";
 import type { IconSvgElement } from "@hugeicons/react";
 import { WRITE_BASE, type WritableSection } from "../../_components/writing";
@@ -142,7 +141,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
     label: "Profile",
     icon: IdCardIcon,
     title: "Profile",
-    note: "The masthead and the links that follow you everywhere.",
+    note: "The masthead, the about prose, and the site metadata behind them.",
     blocks: [
       {
         kind: "fields",
@@ -159,6 +158,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
           },
         ],
       },
+      heading("about"),
       {
         kind: "fields",
         label: "Masthead",
@@ -181,15 +181,12 @@ export const ADMIN_GROUPS: AdminGroup[] = [
           },
         ],
       },
+      {
+        kind: "richText",
+        label: "About",
+        note: "Shown exactly as written. Use the website chip to link a company inline.",
+      },
     ],
-  },
-  {
-    id: "about",
-    label: "About",
-    icon: UserCircleIcon,
-    title: "About",
-    note: "Rich text, shown exactly as written. Use the website chip to link a company inline.",
-    blocks: [heading("about"), { kind: "richText", label: "Bio" }],
   },
   {
     id: "experience",

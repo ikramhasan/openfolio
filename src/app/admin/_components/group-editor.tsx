@@ -7,6 +7,7 @@ import type { Block } from "../_lib/schema";
 import { AboutBioEditor } from "./about-bio-editor";
 import { FieldInput } from "./fields";
 import { RecordsEditor } from "./record-list";
+import { SectionToggle } from "./section-toggle";
 import { SortableList, SortableRow } from "./sortable";
 
 export function GroupEditor({
@@ -79,27 +80,33 @@ function FieldsEditor({
 
   return (
     <section className="mt-10 first:mt-0">
-      <h3 className="pf-rule border-b pb-2">
-        <button
-          type="button"
-          onClick={() => setOpen(!open)}
-          aria-expanded={open}
-          aria-controls={open ? bodyId : undefined}
-          className="pf-fold"
-        >
-          <span className="pf-column">{block.label}</span>
+      <div className="pf-rule flex items-center gap-2 border-b pb-2">
+        <h3 className="min-w-0 flex-1">
+          <button
+            type="button"
+            onClick={() => setOpen(!open)}
+            aria-expanded={open}
+            aria-controls={open ? bodyId : undefined}
+            className="pf-fold"
+          >
+            <span className="pf-column">{block.label}</span>
 
-          {open ? null : (
-            <span className="pf-meta pf-faint min-w-0 flex-1 truncate">
-              {summary}
+            {open ? null : (
+              <span className="pf-meta pf-faint min-w-0 flex-1 truncate">
+                {summary}
+              </span>
+            )}
+
+            <span aria-hidden="true" className="pf-caret">
+              ▾
             </span>
-          )}
+          </button>
+        </h3>
 
-          <span aria-hidden="true" className="pf-caret">
-            ▾
-          </span>
-        </button>
-      </h3>
+        {block.sectionToggle ? (
+          <SectionToggle section={block.sectionToggle} />
+        ) : null}
+      </div>
 
       {open ? (
         <div id={bodyId} className="pt-5">
