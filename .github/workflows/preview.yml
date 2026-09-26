@@ -33,22 +33,36 @@ jobs:
         run: pnpm exec next typegen && pnpm exec tsc --noEmit
 
       # Pushes convex/ to a preview backend named after this PR's branch and
-      # writes NEXT_PUBLIC_CONVEX_URL / NEXT_PUBLIC_CONVEX_SITE_URL into
-      # .env.local. No --cmd here: the backend must have content:nav (etc.)
-      # available *before* `next build` runs generateStaticParams, which
-      # queries it. Reusing the deployment (--preview-name, not
-      # --preview-create) keeps this preview's data across pushes to the
-      # same PR instead of wiping it every run.
+      # captures the deployment URL so we can inject NEXT_PUBLIC_CONVEX_URL
+      # into the Vercel build below (vercel build reads only
+      # .vercel/.env.preview.local, not any .env file convex deploy writes,
+      # and this project's dashboard has no preview values for these vars).
+      # No --cmd here: the backend must have content:nav (etc.) available
+      # *before* `next build` runs generateStaticParams, which queries it.
+      # Reusing the deployment (--preview-name, not --preview-create) keeps
+      # this preview's data across pushes to the same PR instead of wiping
+      # it every run.
       - name: Push Convex functions to preview deployment
+        id: convex
         env:
           CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY_PREVIEW }}
-        run: npx convex deploy --preview-name "pr-${{ github.event.pull_request.number }}"
+        run: |
+          npx convex deploy --preview-name "pr-${{ github.event.pull_request.number }}"
+          url=$(grep -m1 '^NEXT_PUBLIC_CONVEX_URL=' .env.local | cut -d= -f2-)
+          echo "url=$url" >> "$GITHUB_OUTPUT"
 
       - name: Pull Vercel project settings
         run: npx vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      # This project has no preview values for these in the Vercel dashboard,
+      # so vercel pull never writes them. Append what convex deploy just gave
+      # us into the file vercel build actually reads.
+      - name: Inject Convex URL into Vercel build env
+        run: |
+          echo "NEXT_PUBLIC_CONVEX_URL=${{ steps.convex.outputs.url }}" >> .vercel/.env.preview.local
 
       - name: Build
         run: npx vercel build --token=${{ secrets.VERCEL_TOKEN }}
