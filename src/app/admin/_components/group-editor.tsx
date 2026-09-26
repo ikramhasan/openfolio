@@ -5,7 +5,6 @@ import { getPath } from "../_lib/paths";
 import type { Block } from "../_lib/schema";
 import { AboutBioEditor } from "./about-bio-editor";
 import { FieldInput } from "./fields";
-import { HideToggle } from "./hide-toggle";
 import { RecordsEditor } from "./record-list";
 import { SortableList, SortableRow } from "./sortable";
 
@@ -20,7 +19,7 @@ export function GroupEditor({
     <div>
       {blocks.map((block) =>
         block.kind === "fields" ? (
-          <FieldsEditor key={`${block.base}.${block.label}`} block={block} />
+          <FieldsEditor key={block.base} block={block} />
         ) : block.kind === "richText" ? (
           <AboutBioEditor
             key={block.label}
@@ -45,16 +44,11 @@ function FieldsEditor({
 }) {
   return (
     <fieldset className="mt-10 first:mt-0">
-      <legend className="pf-rule mb-4 flex w-full items-baseline justify-between gap-x-4 border-b pb-2">
-        <span className="pf-column">{block.label}</span>
-
-        {block.sectionToggle ? (
-          <HideToggle
-            path={`sections.${block.sectionToggle}.hidden`}
-            label={`the ${block.label.toLowerCase()} section`}
-          />
-        ) : null}
-      </legend>
+      {block.label ? (
+        <legend className="pf-rule pf-column mb-4 w-full border-b pb-2">
+          {block.label}
+        </legend>
+      ) : null}
 
       <div className="grid gap-x-6 gap-y-5 sm:grid-cols-2">
         {block.fields.map((field) => (

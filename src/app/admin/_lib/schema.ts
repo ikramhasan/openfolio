@@ -57,7 +57,7 @@ function writeRoute(section: WritableSection): RecordPage {
 export type Block =
   | {
       kind: "fields";
-      label: string;
+      label?: string;
       base: string;
       fields: Field[];
       sectionToggle?: string;
@@ -111,7 +111,6 @@ const HEADING_FIELDS: Field[] = [
 function heading(id: string): Block {
   return {
     kind: "fields",
-    label: "Heading",
     base: `sections.${id}`,
     fields: HEADING_FIELDS,
     sectionToggle: id,
