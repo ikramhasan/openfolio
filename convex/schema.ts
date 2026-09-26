@@ -35,6 +35,7 @@ export default defineSchema({
   intro: defineTable({
     bio: v.string(),
     profileImage: v.optional(imageRef),
+    resume: v.optional(imageRef),
   }),
 
   aboutBio: defineTable({

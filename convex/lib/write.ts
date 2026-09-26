@@ -144,6 +144,7 @@ export async function writeSection(
       await putSingleton(ctx, "intro", {
         bio: section.bio,
         profileImage: optionalImage(section.profileImage),
+        resume: optionalImage(section.resume),
       });
 
       await replaceSocialLinks(ctx, "intro", section.socialLinks);

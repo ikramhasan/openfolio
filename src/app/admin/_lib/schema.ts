@@ -21,6 +21,7 @@ export type FieldKind =
   | "textarea"
   | "url"
   | "image"
+  | "file"
   | "number"
   | "date"
   | "tags"
@@ -37,6 +38,7 @@ export type Field = {
   fill?: "github";
   probeSize?: boolean;
   square?: boolean;
+  accept?: string;
 };
 
 export type RecordSchema = {
@@ -178,6 +180,14 @@ export const ADMIN_GROUPS: AdminGroup[] = [
             kind: "textarea",
             wide: true,
             hint: "One sentence.",
+          },
+          {
+            key: "resume",
+            label: "Resume",
+            kind: "file",
+            wide: true,
+            accept: "application/pdf",
+            hint: "A PDF. Adds a View resume button to the masthead, linking to /cv. Clear the field to remove it.",
           },
         ],
       },

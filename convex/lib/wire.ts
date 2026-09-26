@@ -143,6 +143,7 @@ export const wireIntro = v.object({
   ...header,
   bio: v.string(),
   profileImage: wireImage,
+  resume: wireImage,
   socialLinks: v.array(wireSocialLink),
 });
 

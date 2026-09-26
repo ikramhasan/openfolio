@@ -138,6 +138,10 @@ export function FieldInput({
         />
       ) : null}
 
+      {field.kind === "file" ? (
+        <Upload path={path} label={field.label} accept={field.accept} />
+      ) : null}
+
       {field.fill === "github" ? (
         <GitHubFill path={path} base={recordBase(path, field)} />
       ) : null}
@@ -262,11 +266,13 @@ function Upload({
   label,
   sizeBase,
   square,
+  accept: mime,
 }: {
   path: string;
   label: string;
   sizeBase?: string;
   square?: boolean;
+  accept?: string;
 }) {
   const draft = useDraft();
   const input = useRef<HTMLInputElement>(null);
@@ -281,8 +287,12 @@ function Upload({
   function accept(file: File) {
     setError(null);
 
-    if (!file.type.startsWith("image/")) {
-      setError("That is not an image.");
+    if (mime ? file.type !== mime : !file.type.startsWith("image/")) {
+      setError(
+        mime === "application/pdf"
+          ? "That is not a PDF."
+          : "That is not an image.",
+      );
       clearInput();
       return;
     }
@@ -343,7 +353,7 @@ function Upload({
       <input
         ref={input}
         type="file"
-        accept="image/*"
+        accept={mime ?? "image/*"}
         aria-label={`Upload ${label.toLowerCase()}`}
         disabled={state === "busy"}
         onChange={(event) => {
