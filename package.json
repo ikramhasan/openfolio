@@ -63,6 +63,7 @@
     "@radix-ui/react-toolbar": "^1.1.19",
     "@radix-ui/react-tooltip": "^1.2.16",
     "@udecode/cn": "^52.3.4",
+    "@vercel/speed-insights": "^2.0.0",
     "ai": "7",
     "class-variance-authority": "^0.7.1",
     "cmdk": "^1.1.1",
