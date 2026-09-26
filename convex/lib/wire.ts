@@ -166,7 +166,6 @@ export const wireVideosSection = v.object({
 export const wireArticlesSection = v.object({
   ...header,
   items: v.array(wireArticle),
-  viewAll: v.object({ label: v.string(), url: v.string() }),
 });
 
 export const wireProjectsSection = v.object({

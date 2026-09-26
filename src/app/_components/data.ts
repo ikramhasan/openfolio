@@ -25,20 +25,6 @@ export function sortedContributions(
   );
 }
 
-export function blogUrl(section: ArticlesSection): string | null {
-  const authored = section.viewAll.url;
-  if (/^https?:\/\//.test(authored)) return authored;
-
-  const sample = section.items[0]?.url;
-  if (!sample) return null;
-
-  try {
-    return new URL(sample).origin;
-  } catch {
-    return null;
-  }
-}
-
 const MONTHS = [
   "Jan",
   "Feb",

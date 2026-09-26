@@ -113,10 +113,6 @@ export default defineSchema({
     .index("slug", ["slug"])
     .index("publishedAt", ["publishedAt"]),
 
-  articlesMeta: defineTable({
-    viewAll: v.object({ label: v.string(), url: v.string() }),
-  }),
-
   articleBodies: defineTable({
     slug: v.string(),
     value: v.string(),

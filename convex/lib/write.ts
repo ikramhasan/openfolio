@@ -5,13 +5,7 @@ import { SECTION_KEYS, type SectionKey, type wirePortfolio } from "./wire";
 
 export type Wire = typeof wirePortfolio.type;
 
-type SingletonTable =
-  | "site"
-  | "intro"
-  | "footer"
-  | "connect"
-  | "articlesMeta"
-  | "sectionOrder";
+type SingletonTable = "site" | "intro" | "footer" | "connect" | "sectionOrder";
 
 export async function putSingleton<T extends SingletonTable>(
   ctx: MutationCtx,
@@ -243,8 +237,6 @@ export async function writeSection(
           ...(item.hidden ? { hidden: item.hidden } : {}),
         })),
       );
-
-      await putSingleton(ctx, "articlesMeta", { viewAll: section.viewAll });
       return;
     }
 

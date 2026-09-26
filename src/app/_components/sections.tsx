@@ -13,7 +13,7 @@ import YoutubeIcon from "@hugeicons/core-free-icons/YoutubeIcon";
 import type { IconSvgElement } from "@hugeicons/react";
 import type { ReactNode } from "react";
 import { About } from "./about";
-import { Articles, ArticlesAside } from "./articles";
+import { Articles } from "./articles";
 import { Awards } from "./awards";
 import { type CacheKey, getNav, tagFor } from "./content";
 import { Education } from "./education";
@@ -77,7 +77,6 @@ const REGISTRY: SectionEntry[] = [
   {
     id: "articles",
     body: <Articles />,
-    aside: <ArticlesAside />,
     reads: ["articles"],
     icon: Doc01Icon,
   },

@@ -1,5 +1,5 @@
 import { getArticles, getWritten } from "./content";
-import { blogUrl, formatCount, shortDate, sortedArticles } from "./data";
+import { formatCount, shortDate, sortedArticles } from "./data";
 import { DateCell, TableHead, TableLinkRow, TableList } from "./table";
 import { readPath, slugOf } from "./writing";
 
@@ -44,23 +44,5 @@ export async function Articles() {
         })}
       </TableList>
     </div>
-  );
-}
-
-export async function ArticlesAside() {
-  const section = await getArticles();
-  const href = blogUrl(section);
-
-  if (!href) return null;
-
-  return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noreferrer"
-      className="pf-link-quiet pf-meta shrink-0"
-    >
-      {section.viewAll.label} ↗
-    </a>
   );
 }

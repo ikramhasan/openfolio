@@ -56,7 +56,7 @@ export async function headers(ctx: QueryCtx): Promise<{
 }
 
 export async function singleton<
-  T extends "site" | "intro" | "footer" | "connect" | "articlesMeta",
+  T extends "site" | "intro" | "footer" | "connect",
 >(ctx: QueryCtx, table: T): Promise<Doc<T> | null> {
   return (await ctx.db.query(table).first()) as Doc<T> | null;
 }
@@ -302,12 +302,9 @@ export async function connect(ctx: QueryCtx) {
 }
 
 export async function articlesSection(ctx: QueryCtx, image: RenderImage) {
-  const meta = await singleton(ctx, "articlesMeta");
-
   return {
     ...(await header(ctx, "articles")),
     items: await articles(ctx, image),
-    viewAll: meta?.viewAll ?? { label: "", url: "" },
   };
 }
 
