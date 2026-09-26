@@ -372,19 +372,21 @@ html[data-theme="dark"] body {
   background-color: #1f1f1f;
 }
 
-.pf-signature {
-  --pf-signature-image: url("/signature.svg");
-  width: 11.5rem;
-  aspect-ratio: 2748 / 631;
-  background-color: var(--pf-ink);
-  -webkit-mask: var(--pf-signature-image) no-repeat center / contain;
-  mask: var(--pf-signature-image) no-repeat center / contain;
+.pf-handwriting {
+  color: var(--pf-ink);
+}
+
+.pf-handwriting svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  overflow: visible;
 }
 
 @media (forced-colors: active) {
-  .pf-signature {
+  .pf-handwriting {
     forced-color-adjust: none;
-    background-color: CanvasText;
+    color: CanvasText;
   }
 }
 
@@ -660,6 +662,13 @@ html[data-theme="dark"] .pf-theme-icon[data-value="dark"] {
   .pf-panel-enter,
   .pf-admin-enter {
     animation: none;
+  }
+
+  .pf-handwriting svg g,
+  .pf-handwriting svg path {
+    animation: none;
+    stroke-dashoffset: 0;
+    opacity: 1;
   }
 }
 body {
