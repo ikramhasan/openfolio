@@ -115,6 +115,16 @@ export const wireRecommendation = v.object({
   hidden: v.boolean(),
 });
 
+export const wirePhoto = v.object({
+  order: v.number(),
+  url: wireImage,
+  alt: v.string(),
+  title: v.optional(v.string()),
+  width: v.number(),
+  height: v.number(),
+  hidden: v.boolean(),
+});
+
 export const wireSkill = v.object({
   order: v.number(),
   icon: v.string(),
@@ -134,7 +144,6 @@ export const wireIntro = v.object({
   ...header,
   bio: v.string(),
   profileImage: wireImage,
-  headingImages: v.array(v.object({ url: wireImage, alt: v.string() })),
   socialLinks: v.array(wireSocialLink),
   actions: v.array(actionValidator),
 });
@@ -170,6 +179,11 @@ export const wireProjectsSection = v.object({
 export const wireToolsSection = v.object({
   ...header,
   items: v.array(wireTool),
+});
+
+export const wirePhotosSection = v.object({
+  ...header,
+  items: v.array(wirePhoto),
 });
 
 export const wireMusicSection = v.object({
@@ -225,6 +239,7 @@ export const wirePortfolio = v.object({
     youtubeVideos: wireVideosSection,
     articles: wireArticlesSection,
     projects: wireProjectsSection,
+    photos: wirePhotosSection,
     tools: wireToolsSection,
     music: wireMusicSection,
     openSource: wireOpenSourceSection,
@@ -244,6 +259,7 @@ export const SECTION_KEYS = [
   "youtubeVideos",
   "articles",
   "projects",
+  "photos",
   "tools",
   "music",
   "openSource",

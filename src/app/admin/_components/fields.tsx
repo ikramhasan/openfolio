@@ -108,7 +108,13 @@ export function FieldInput({
             inputMode={field.kind === "number" ? "numeric" : undefined}
             aria-describedby={describedBy}
             onChange={(event) => commit(event.target.value)}
-            onBlur={() => draft.setField(path, tidy(field.kind, value))}
+            onBlur={() => {
+              draft.setField(path, tidy(field.kind, value));
+
+              if (field.kind === "image" && field.probeSize) {
+                probeExternalSize(draft, text, recordBase(path, field));
+              }
+            }}
             className="pf-field pf-input min-w-0 flex-1"
           />
         )}
@@ -123,7 +129,11 @@ export function FieldInput({
       ) : null}
 
       {field.kind === "image" ? (
-        <Upload path={path} label={field.label} />
+        <Upload
+          path={path}
+          label={field.label}
+          sizeBase={field.probeSize ? recordBase(path, field) : undefined}
+        />
       ) : null}
 
       {field.fill === "github" ? (
@@ -145,6 +155,24 @@ function siblingPath(path: string, field: Field): string {
 
 function recordBase(path: string, field: Field): string {
   return path.slice(0, path.length - field.key.length);
+}
+
+function probeExternalSize(
+  draft: ReturnType<typeof useDraft>,
+  url: string,
+  base: string,
+): void {
+  const trimmed = url.trim();
+  if (trimmed === "" || trimmed.startsWith("storage:")) return;
+
+  const image = new window.Image();
+
+  image.onload = () => {
+    draft.setField(`${base}width`, image.naturalWidth);
+    draft.setField(`${base}height`, image.naturalHeight);
+  };
+
+  image.src = trimmed;
 }
 
 function GitHubFill({ path, base }: { path: string; base: string }) {
@@ -227,7 +255,15 @@ function SiteIcon({ path, source }: { path: string; source: string }) {
 
 const MAX_BYTES = 8 * 1024 * 1024;
 
-function Upload({ path, label }: { path: string; label: string }) {
+function Upload({
+  path,
+  label,
+  sizeBase,
+}: {
+  path: string;
+  label: string;
+  sizeBase?: string;
+}) {
   const draft = useDraft();
   const input = useRef<HTMLInputElement>(null);
   const [state, setState] = useState<"idle" | "busy">("idle");
@@ -249,10 +285,13 @@ function Upload({ path, label }: { path: string; label: string }) {
     setState("busy");
 
     try {
-      const url = await createUploadUrl();
-      if (!url) throw new Error("no upload url");
+      const [target, dimensions] = await Promise.all([
+        createUploadUrl(),
+        sizeBase ? readImageSize(file) : Promise.resolve(undefined),
+      ]);
+      if (!target) throw new Error("no upload url");
 
-      const response = await fetch(url, {
+      const response = await fetch(target, {
         method: "POST",
         headers: { "Content-Type": file.type },
         body: file,
@@ -265,6 +304,11 @@ function Upload({ path, label }: { path: string; label: string }) {
 
       draft.registerUpload(token, URL.createObjectURL(file));
       draft.setField(path, token);
+
+      if (sizeBase && dimensions) {
+        draft.setField(`${sizeBase}width`, dimensions.width);
+        draft.setField(`${sizeBase}height`, dimensions.height);
+      }
     } catch {
       setError("Upload failed. Try again.");
     } finally {
@@ -309,4 +353,25 @@ function Thumbnail({ token }: { token: string }) {
       ) : null}
     </span>
   );
+}
+
+function readImageSize(
+  file: File,
+): Promise<{ width: number; height: number }> {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const image = new window.Image();
+
+    image.onload = () => {
+      URL.revokeObjectURL(url);
+      resolve({ width: image.naturalWidth, height: image.naturalHeight });
+    };
+
+    image.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error("could not read image dimensions"));
+    };
+
+    image.src = url;
+  });
 }

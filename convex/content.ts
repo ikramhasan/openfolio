@@ -12,6 +12,7 @@ import {
   wireIntro,
   wireMusicSection,
   wireOpenSourceSection,
+  wirePhotosSection,
   wireProjectsSection,
   wireRecommendationsSection,
   wireSite,
@@ -110,6 +111,15 @@ export const projects = query({
   handler: async (ctx) => ({
     ...(await project.header(ctx, "projects")),
     items: visible(await project.projects(ctx, project.renderForSite(ctx))),
+  }),
+});
+
+export const photos = query({
+  args: {},
+  returns: wirePhotosSection,
+  handler: async (ctx) => ({
+    ...(await project.header(ctx, "photos")),
+    items: visible(await project.photos(ctx, project.renderForSite(ctx))),
   }),
 });
 

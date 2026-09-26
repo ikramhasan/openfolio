@@ -154,15 +154,6 @@ export async function writeSection(
         actions: section.actions,
       });
 
-      await replaceList(
-        ctx,
-        "headingImages",
-        section.headingImages.flatMap((entry, order) => {
-          const ref = parseImage(entry.url);
-          return ref ? [{ order, image: ref, alt: entry.alt }] : [];
-        }),
-      );
-
       await replaceSocialLinks(ctx, "intro", section.socialLinks);
       return;
     }
@@ -272,6 +263,29 @@ export async function writeSection(
           tags: item.tags,
           ...(item.hidden ? { hidden: item.hidden } : {}),
         })),
+      );
+      return;
+
+    case "photos":
+      await replaceList(
+        ctx,
+        "photos",
+        next.sections.photos.items.flatMap((item, order) => {
+          const ref = parseImage(item.url);
+          if (!ref) return [];
+
+          return [
+            {
+              order,
+              image: ref,
+              alt: item.alt,
+              ...(item.title ? { title: item.title } : {}),
+              width: item.width,
+              height: item.height,
+              ...(item.hidden ? { hidden: item.hidden } : {}),
+            },
+          ];
+        }),
       );
       return;
 
