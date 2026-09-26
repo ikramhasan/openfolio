@@ -1,11 +1,4 @@
-import type {
-  Action,
-  ArticlesSection,
-  OpenSourceSection,
-  SocialLink,
-} from "./types";
-
-export type Link = { label: string; url: string };
+import type { ArticlesSection, OpenSourceSection, SocialLink } from "./types";
 
 export function byOrder<T extends { order: number }>(items: T[]): T[] {
   return [...items].sort((a, b) => a.order - b.order);
@@ -30,23 +23,6 @@ export function sortedContributions(
   return [...items].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
   );
-}
-
-function actionLink(action: Action): Link | null {
-  const calendar = action.calendar;
-
-  if (calendar?.username && calendar.namespace) {
-    return {
-      label: action.label,
-      url: `https://cal.com/${calendar.username}/${calendar.namespace}`,
-    };
-  }
-
-  return action.url ? { label: action.label, url: action.url } : null;
-}
-
-export function actionLinks(actions: Action[]): Link[] {
-  return actions.map(actionLink).filter((link): link is Link => link !== null);
 }
 
 export function blogUrl(section: ArticlesSection): string | null {

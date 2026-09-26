@@ -1,6 +1,6 @@
 import { subscribeToNewsletter } from "../_actions/newsletter";
 import { getConnect, getFooter } from "./content";
-import { actionLinks, sortedLinks } from "./data";
+import { sortedLinks } from "./data";
 import { Newsletter } from "./newsletter";
 import { Signature } from "./signature";
 
@@ -9,7 +9,6 @@ export async function Footer() {
   const { newsletter } = await getConnect();
 
   const links = sortedLinks(footer.socialLinks);
-  const actions = actionLinks(footer.actions);
 
   return (
     <footer className="pf-rule mt-16 border-t pt-9 pb-14">
@@ -28,19 +27,6 @@ export async function Footer() {
                 : { target: "_blank", rel: "noreferrer" })}
             >
               {link.title}
-            </a>
-          </li>
-        ))}
-
-        {actions.map((action) => (
-          <li key={action.url}>
-            <a
-              href={action.url}
-              target="_blank"
-              rel="noreferrer"
-              className="pf-link-quiet"
-            >
-              {action.label}
             </a>
           </li>
         ))}

@@ -21,15 +21,6 @@ export const wireSocialLink = v.object({
   url: v.string(),
 });
 
-export const actionValidator = v.object({
-  label: v.string(),
-  type: v.optional(v.string()),
-  url: v.union(v.string(), v.null()),
-  calendar: v.optional(
-    v.object({ namespace: v.string(), username: v.string() }),
-  ),
-});
-
 export const sectionHeaderFields = {
   key: v.string(),
   title: v.string(),

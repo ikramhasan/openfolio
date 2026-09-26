@@ -1,6 +1,5 @@
 import { v } from "convex/values";
 import {
-  actionValidator,
   newsletterCopy,
   wireImage,
   wireSectionHeader,
@@ -145,7 +144,6 @@ export const wireIntro = v.object({
   bio: v.string(),
   profileImage: wireImage,
   socialLinks: v.array(wireSocialLink),
-  actions: v.array(actionValidator),
 });
 
 export const wireAbout = v.object({ ...header });
@@ -223,7 +221,6 @@ export const wireFooter = v.object({
     image: wireImage,
   }),
   socialLinks: v.array(wireSocialLink),
-  actions: v.array(actionValidator),
   copyright: v.string(),
 });
 

@@ -2,7 +2,6 @@ import { authTables } from "@convex-dev/auth/server";
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 import {
-  actionValidator,
   imageRef,
   newsletterCopy,
   sectionHeaderFields,
@@ -36,7 +35,6 @@ export default defineSchema({
   intro: defineTable({
     bio: v.string(),
     profileImage: v.optional(imageRef),
-    actions: v.array(actionValidator),
   }),
 
   aboutBio: defineTable({
@@ -52,7 +50,6 @@ export default defineSchema({
   footer: defineTable({
     signature: signatureValidator,
     copyright: v.string(),
-    actions: v.array(actionValidator),
   }),
 
   connect: defineTable({

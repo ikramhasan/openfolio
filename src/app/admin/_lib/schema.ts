@@ -133,28 +133,6 @@ const LINK_RECORD: RecordSchema = {
   blank: { order: 0, site: "", title: "", url: "" },
 };
 
-const ACTION_RECORD: RecordSchema = {
-  summaryKey: "label",
-  fields: [
-    { key: "label", label: "Label", kind: "text" },
-    {
-      key: "type",
-      label: "Type",
-      kind: "text",
-      hint: "`calendar` books a Cal.com meeting instead of opening a URL.",
-    },
-    { key: "url", label: "URL", kind: "url", wide: true },
-    { key: "calendar.username", label: "Cal.com user", kind: "text" },
-    { key: "calendar.namespace", label: "Cal.com event", kind: "text" },
-  ],
-  blank: {
-    label: "",
-    type: "",
-    url: "",
-    calendar: { namespace: "", username: "" },
-  },
-};
-
 export const ADMIN_GROUPS: AdminGroup[] = [
   {
     id: "profile",
@@ -725,7 +703,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
     label: "Contact",
     icon: Mail01Icon,
     title: "Contact",
-    note: "The links at the foot of every page — networks first, then actions.",
+    note: "The links at the foot of every page.",
     blocks: [
       {
         kind: "records",
@@ -734,13 +712,6 @@ export const ADMIN_GROUPS: AdminGroup[] = [
         addLabel: "Add link",
         orderKey: "order",
         record: LINK_RECORD,
-      },
-      {
-        kind: "records",
-        label: "Actions",
-        path: "footer.actions",
-        addLabel: "Add action",
-        record: ACTION_RECORD,
       },
     ],
   },

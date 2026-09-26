@@ -289,7 +289,6 @@ export async function intro(ctx: QueryCtx, image: RenderImage) {
     bio: row?.bio ?? "",
     profileImage: await image(row?.profileImage),
     socialLinks: await socialLinks(ctx, "intro"),
-    actions: row?.actions ?? [],
   };
 }
 
@@ -322,7 +321,6 @@ export async function footer(ctx: QueryCtx, image: RenderImage) {
       image: await image(row?.signature.image),
     },
     socialLinks: await socialLinks(ctx, "footer"),
-    actions: row?.actions ?? [],
     copyright: row?.copyright ?? "",
   };
 }

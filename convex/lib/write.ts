@@ -93,7 +93,7 @@ export async function writeHeaders(
 }
 
 export async function writeFooter(ctx: MutationCtx, next: Wire): Promise<void> {
-  const { signature, socialLinks, actions, copyright } = next.footer;
+  const { signature, socialLinks, copyright } = next.footer;
 
   await putSingleton(ctx, "footer", {
     signature: {
@@ -102,7 +102,6 @@ export async function writeFooter(ctx: MutationCtx, next: Wire): Promise<void> {
       image: optionalImage(signature.image),
     },
     copyright,
-    actions,
   });
 
   await replaceSocialLinks(ctx, "footer", socialLinks);
@@ -151,7 +150,6 @@ export async function writeSection(
       await putSingleton(ctx, "intro", {
         bio: section.bio,
         profileImage: optionalImage(section.profileImage),
-        actions: section.actions,
       });
 
       await replaceSocialLinks(ctx, "intro", section.socialLinks);

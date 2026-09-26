@@ -31,7 +31,6 @@ export type Tool = ToolsSection["items"][number];
 export type Track = MusicSection["items"][number];
 export type Contribution = OpenSourceSection["items"][number];
 export type SocialLink = Footer["socialLinks"][number];
-export type Action = Footer["actions"][number];
 export type NewsletterCopy = ConnectSection["newsletter"];
 
 export type Portfolio = typeof wirePortfolio.type;
