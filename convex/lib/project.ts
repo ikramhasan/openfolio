@@ -55,9 +55,10 @@ export async function headers(ctx: QueryCtx): Promise<{
   };
 }
 
-export async function singleton<
-  T extends "site" | "intro" | "footer" | "connect",
->(ctx: QueryCtx, table: T): Promise<Doc<T> | null> {
+export async function singleton<T extends "site" | "intro" | "connect">(
+  ctx: QueryCtx,
+  table: T,
+): Promise<Doc<T> | null> {
   return (await ctx.db.query(table).first()) as Doc<T> | null;
 }
 
@@ -309,17 +310,9 @@ export async function articlesSection(ctx: QueryCtx, image: RenderImage) {
   };
 }
 
-export async function footer(ctx: QueryCtx, image: RenderImage) {
-  const row = await singleton(ctx, "footer");
-
+export async function footer(ctx: QueryCtx) {
   return {
-    signature: {
-      type: row?.signature.type ?? "svg",
-      owner: row?.signature.owner ?? "",
-      image: await image(row?.signature.image),
-    },
     socialLinks: await socialLinks(ctx, "footer"),
-    copyright: row?.copyright ?? "",
   };
 }
 
@@ -388,6 +381,6 @@ export async function portfolio(ctx: QueryCtx, image: RenderImage) {
       },
       connect: await connect(ctx),
     },
-    footer: await footer(ctx, image),
+    footer: await footer(ctx),
   };
 }

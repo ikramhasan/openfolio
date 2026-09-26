@@ -215,13 +215,7 @@ export const wireConnectSection = v.object({
 });
 
 export const wireFooter = v.object({
-  signature: v.object({
-    type: v.string(),
-    owner: v.string(),
-    image: wireImage,
-  }),
   socialLinks: v.array(wireSocialLink),
-  copyright: v.string(),
 });
 
 export const wirePortfolio = v.object({

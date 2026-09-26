@@ -5,7 +5,6 @@ import {
   imageRef,
   newsletterCopy,
   sectionHeaderFields,
-  signatureValidator,
   socialLinkFields,
 } from "./lib/validators";
 
@@ -47,11 +46,6 @@ export default defineSchema({
     ...socialLinkFields,
     placement: v.union(v.literal("intro"), v.literal("footer")),
   }).index("placement_order", ["placement", "order"]),
-
-  footer: defineTable({
-    signature: signatureValidator,
-    copyright: v.string(),
-  }),
 
   connect: defineTable({
     newsletter: newsletterCopy,

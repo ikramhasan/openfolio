@@ -64,9 +64,6 @@ async function referencedStorageIds(
   refs.push(intro?.profileImage);
   refs.push(intro?.resume);
 
-  const footer = await ctx.db.query("footer").first();
-  refs.push(footer?.signature.image);
-
   for (const row of await ctx.db.query("photos").collect()) {
     refs.push(row.image);
   }

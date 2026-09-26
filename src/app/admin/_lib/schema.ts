@@ -6,7 +6,6 @@ import GitForkIcon from "@hugeicons/core-free-icons/GitForkIcon";
 import GraduationCapIcon from "@hugeicons/core-free-icons/GraduationCapIcon";
 import IdCardIcon from "@hugeicons/core-free-icons/IdCardIcon";
 import Image02Icon from "@hugeicons/core-free-icons/Image02Icon";
-import LayoutBottomIcon from "@hugeicons/core-free-icons/LayoutBottomIcon";
 import Mail01Icon from "@hugeicons/core-free-icons/Mail01Icon";
 import MusicNote01Icon from "@hugeicons/core-free-icons/MusicNote01Icon";
 import QuoteUpIcon from "@hugeicons/core-free-icons/QuoteUpIcon";
@@ -714,42 +713,6 @@ export const ADMIN_GROUPS: AdminGroup[] = [
         addLabel: "Add link",
         orderKey: "order",
         record: LINK_RECORD,
-      },
-    ],
-  },
-  {
-    id: "footer",
-    label: "Footer",
-    icon: LayoutBottomIcon,
-    title: "Footer",
-    note: "The signature and the small print beneath it.",
-    blocks: [
-      {
-        kind: "fields",
-        label: "Signature",
-        base: "footer.signature",
-        fields: [
-          {
-            key: "owner",
-            label: "Signed by",
-            kind: "text",
-            hint: "Read out to screen readers.",
-          },
-          {
-            key: "image",
-            label: "Signature file",
-            kind: "image",
-            hint: "Drawn as a mask, so any solid SVG takes the ink colour.",
-          },
-        ],
-      },
-      {
-        kind: "fields",
-        label: "Small print",
-        base: "footer",
-        fields: [
-          { key: "copyright", label: "Copyright", kind: "text", wide: true },
-        ],
       },
     ],
   },

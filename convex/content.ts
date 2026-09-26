@@ -188,5 +188,5 @@ export const connect = query({
 export const footer = query({
   args: {},
   returns: wireFooter,
-  handler: (ctx) => project.footer(ctx, project.renderForSite(ctx)),
+  handler: (ctx) => project.footer(ctx),
 });

@@ -5,7 +5,7 @@ import { SECTION_KEYS, type SectionKey, type wirePortfolio } from "./wire";
 
 export type Wire = typeof wirePortfolio.type;
 
-type SingletonTable = "site" | "intro" | "footer" | "connect" | "sectionOrder";
+type SingletonTable = "site" | "intro" | "connect" | "sectionOrder";
 
 export async function putSingleton<T extends SingletonTable>(
   ctx: MutationCtx,
@@ -87,18 +87,7 @@ export async function writeHeaders(
 }
 
 export async function writeFooter(ctx: MutationCtx, next: Wire): Promise<void> {
-  const { signature, socialLinks, copyright } = next.footer;
-
-  await putSingleton(ctx, "footer", {
-    signature: {
-      type: signature.type,
-      owner: signature.owner,
-      image: optionalImage(signature.image),
-    },
-    copyright,
-  });
-
-  await replaceSocialLinks(ctx, "footer", socialLinks);
+  await replaceSocialLinks(ctx, "footer", next.footer.socialLinks);
 }
 
 async function replaceSocialLinks(

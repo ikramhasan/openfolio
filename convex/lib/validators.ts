@@ -47,9 +47,3 @@ export const newsletterCopy = v.object({
     error: v.string(),
   }),
 });
-
-export const signatureValidator = v.object({
-  type: v.string(),
-  owner: v.string(),
-  image: v.optional(imageRef),
-});
