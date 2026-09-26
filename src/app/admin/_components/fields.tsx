@@ -5,6 +5,7 @@ import { faviconUrl, formatCount } from "../../_components/data";
 import { createUploadUrl, lookupContribution } from "../_lib/actions";
 import { useDraft } from "../_lib/draft";
 import type { Field, FieldKind } from "../_lib/schema";
+import { SquareCrop } from "./square-crop";
 
 function toInput(kind: FieldKind, value: unknown): string {
   if (value === null || value === undefined) return "";
@@ -132,6 +133,7 @@ export function FieldInput({
         <Upload
           path={path}
           label={field.label}
+          square={field.square}
           sizeBase={field.probeSize ? recordBase(path, field) : undefined}
         />
       ) : null}
@@ -259,29 +261,48 @@ function Upload({
   path,
   label,
   sizeBase,
+  square,
 }: {
   path: string;
   label: string;
   sizeBase?: string;
+  square?: boolean;
 }) {
   const draft = useDraft();
   const input = useRef<HTMLInputElement>(null);
   const [state, setState] = useState<"idle" | "busy">("idle");
   const [error, setError] = useState<string | null>(null);
+  const [pending, setPending] = useState<File | null>(null);
 
-  async function upload(file: File) {
+  function clearInput() {
+    if (input.current) input.current.value = "";
+  }
+
+  function accept(file: File) {
     setError(null);
 
     if (!file.type.startsWith("image/")) {
       setError("That is not an image.");
+      clearInput();
       return;
     }
 
     if (file.size > MAX_BYTES) {
       setError("Too large — 8 MB is the limit.");
+      clearInput();
       return;
     }
 
+    if (square) {
+      setPending(file);
+      return;
+    }
+
+    void upload(file);
+  }
+
+  async function upload(file: File) {
+    setError(null);
     setState("busy");
 
     try {
@@ -313,7 +334,7 @@ function Upload({
       setError("Upload failed. Try again.");
     } finally {
       setState("idle");
-      if (input.current) input.current.value = "";
+      clearInput();
     }
   }
 
@@ -327,7 +348,7 @@ function Upload({
         disabled={state === "busy"}
         onChange={(event) => {
           const file = event.target.files?.[0];
-          if (file) void upload(file);
+          if (file) accept(file);
         }}
         className="pf-meta pf-faint min-w-0 max-w-full"
       />
@@ -337,6 +358,20 @@ function Upload({
       ) : null}
 
       {error ? <output className="pf-meta pf-strong">{error}</output> : null}
+
+      {pending ? (
+        <SquareCrop
+          file={pending}
+          onCancel={() => {
+            setPending(null);
+            clearInput();
+          }}
+          onConfirm={(cropped) => {
+            setPending(null);
+            void upload(cropped);
+          }}
+        />
+      ) : null}
     </div>
   );
 }
@@ -355,9 +390,7 @@ function Thumbnail({ token }: { token: string }) {
   );
 }
 
-function readImageSize(
-  file: File,
-): Promise<{ width: number; height: number }> {
+function readImageSize(file: File): Promise<{ width: number; height: number }> {
   return new Promise((resolve, reject) => {
     const url = URL.createObjectURL(file);
     const image = new window.Image();

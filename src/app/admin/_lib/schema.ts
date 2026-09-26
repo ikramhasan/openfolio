@@ -37,6 +37,7 @@ export type Field = {
   suggest?: boolean;
   fill?: "github";
   probeSize?: boolean;
+  square?: boolean;
 };
 
 export type RecordSchema = {
@@ -182,13 +183,19 @@ export const ADMIN_GROUPS: AdminGroup[] = [
         base: "sections.intro",
         fields: [
           { key: "title", label: "Name", kind: "text" },
-          { key: "profileImage", label: "Portrait", kind: "image" },
+          {
+            key: "profileImage",
+            label: "Portrait",
+            kind: "image",
+            square: true,
+            hint: "Cropped to a square on upload, so it also works as the site icon.",
+          },
           {
             key: "bio",
             label: "Bio",
             kind: "textarea",
             wide: true,
-            hint: "One sentence. The site adds the full stop.",
+            hint: "One sentence.",
           },
         ],
       },

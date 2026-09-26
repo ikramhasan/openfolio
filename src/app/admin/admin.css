@@ -263,6 +263,62 @@
   .pf-dock {
     animation: none;
   }
+
+  .pf-crop-backdrop,
+  .pf-crop-panel {
+    animation: none;
+  }
+}
+
+.pf-crop-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background-color: oklch(0 0 0 / 0.5);
+  animation: pf-crop-fade 140ms ease-out;
+}
+
+.pf-crop-panel {
+  width: 100%;
+  max-width: 26rem;
+  padding: 1.25rem;
+  background-color: var(--pf-bg);
+  border: 1px solid var(--pf-rule);
+  border-radius: 10px;
+  animation: pf-crop-rise 160ms ease-out;
+}
+
+.pf-crop-stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 8px;
+  background-color: color-mix(in srgb, var(--pf-ink) 8%, transparent);
+}
+
+@keyframes pf-crop-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pf-crop-rise {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .pf-focus:focus-visible {

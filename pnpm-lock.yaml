@@ -218,6 +218,9 @@ dependencies:
   react-dom:
     specifier: 19.2.8
     version: 19.2.8(react@19.2.8)
+  react-easy-crop:
+    specifier: 6.2.3
+    version: 6.2.3(react-dom@19.2.8)(react@19.2.8)
   react-lite-youtube-embed:
     specifier: ^3.7.0
     version: 3.7.0(react-dom@19.2.8)(react@19.2.8)
@@ -7707,6 +7710,10 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: false
 
+  /normalize-wheel@1.0.1:
+    resolution: {integrity: sha512-1OnlAPZ3zgrk8B91HyRj+eVv+kS5u+Z0SCsak6Xil/kmgEia50ga7zfkumayonZrImffAxPU/5WcyGhzetHNPA==}
+    dev: false
+
   /nth-check@2.1.1:
     resolution: {integrity: sha512-lqjrjmaOoAnWfMmBPL+XNnynZh2+swxiX3WUE0s4yEHI6m+AwrK2UZOimIRl3X/4QctVqS8AiZjFqyOGrMXb/w==}
     dependencies:
@@ -8145,6 +8152,17 @@ packages:
     dependencies:
       react: 19.2.8
       scheduler: 0.27.0
+    dev: false
+
+  /react-easy-crop@6.2.3(react-dom@19.2.8)(react@19.2.8):
+    resolution: {integrity: sha512-ebimG3OGlzizjxEZ77Cj9CVLcg5vDZ6QVz8ud1rx4WmsCDWHIROEhgMi0GpJ/jKAuwHrH0M+QZUK4hyvxbYhOA==}
+    peerDependencies:
+      react: '>=16.4.0'
+      react-dom: '>=16.4.0'
+    dependencies:
+      normalize-wheel: 1.0.1
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
     dev: false
 
   /react-is@16.13.1:
