@@ -55,6 +55,12 @@ export type RecordSchema = {
   blank: Record<string, unknown>;
 };
 
+export type BulkUpload = {
+  key: string;
+  label: string;
+  probeSize?: boolean;
+};
+
 export type RecordPage = {
   basePath: string;
   label: string;
@@ -85,6 +91,7 @@ export type Block =
       orderKey?: string;
       sortable?: false;
       page?: RecordPage;
+      bulkUpload?: BulkUpload;
     }
   | {
       kind: "order";
@@ -471,6 +478,8 @@ export const ADMIN_GROUPS: AdminGroup[] = [
         path: "sections.photos.items",
         addLabel: "Add photograph",
         orderKey: "order",
+        bulkUpload: { key: "url", label: "Upload photos", probeSize: true },
+        note: "Upload photos adds several at once. Give each one alt text after.",
         record: {
           summaryKey: "alt",
           metaKeys: ["title"],

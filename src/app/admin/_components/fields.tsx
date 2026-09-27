@@ -2,9 +2,10 @@
 
 import { type ReactNode, useId, useRef, useState } from "react";
 import { faviconUrl, formatCount } from "../../_components/data";
-import { createUploadUrl, lookupContribution } from "../_lib/actions";
+import { lookupContribution } from "../_lib/actions";
 import { useDraft } from "../_lib/draft";
 import type { Field, FieldKind } from "../_lib/schema";
+import { MAX_BYTES, readImageSize, uploadFile } from "../_lib/upload";
 import { SquareCrop } from "./square-crop";
 
 function toInput(kind: FieldKind, value: unknown): string {
@@ -278,8 +279,6 @@ function SiteIcon({ path, source }: { path: string; source: string }) {
   );
 }
 
-const MAX_BYTES = 8 * 1024 * 1024;
-
 function Upload({
   path,
   label,
@@ -337,22 +336,10 @@ function Upload({
     setState("busy");
 
     try {
-      const [target, dimensions] = await Promise.all([
-        createUploadUrl(),
+      const [token, dimensions] = await Promise.all([
+        uploadFile(file),
         sizeBase ? readImageSize(file) : Promise.resolve(undefined),
       ]);
-      if (!target) throw new Error("no upload url");
-
-      const response = await fetch(target, {
-        method: "POST",
-        headers: { "Content-Type": file.type },
-        body: file,
-      });
-
-      if (!response.ok) throw new Error(`upload failed: ${response.status}`);
-
-      const { storageId } = (await response.json()) as { storageId: string };
-      const token = `storage:${storageId}`;
 
       draft.registerUpload(token, URL.createObjectURL(file));
       draft.setField(path, token);
@@ -432,23 +419,4 @@ function Thumbnail({ token }: { token: string }) {
       ) : null}
     </span>
   );
-}
-
-function readImageSize(file: File): Promise<{ width: number; height: number }> {
-  return new Promise((resolve, reject) => {
-    const url = URL.createObjectURL(file);
-    const image = new window.Image();
-
-    image.onload = () => {
-      URL.revokeObjectURL(url);
-      resolve({ width: image.naturalWidth, height: image.naturalHeight });
-    };
-
-    image.onerror = () => {
-      URL.revokeObjectURL(url);
-      reject(new Error("could not read image dimensions"));
-    };
-
-    image.src = url;
-  });
 }

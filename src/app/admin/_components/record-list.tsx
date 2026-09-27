@@ -7,8 +7,9 @@ import { type ReactNode, useEffect, useId, useRef, useState } from "react";
 import { faviconUrl, hostOf } from "../../_components/data";
 import { slugOf } from "../../_components/writing";
 import { useDraft } from "../_lib/draft";
-import { getPath, move } from "../_lib/paths";
-import type { Block } from "../_lib/schema";
+import { getPath, move, setPath } from "../_lib/paths";
+import type { Block, BulkUpload } from "../_lib/schema";
+import { MAX_BYTES, readImageSize, uploadFile } from "../_lib/upload";
 import { dayDate } from "./day-date";
 import { FieldInput } from "./fields";
 import { GroupHeader } from "./group-header";
@@ -40,6 +41,20 @@ export function RecordsEditor({ block }: { block: RecordsBlock }) {
     setRowKeys([...keys, key]);
     setConfirmKey(null);
     setOpenKey(key);
+  }
+
+  function addMany(records: unknown[]) {
+    if (records.length === 0) return;
+
+    const first = keys.reduce((highest, at) => Math.max(highest, at), -1) + 1;
+
+    for (const record of records) {
+      draft.addRecord(block.path, record, options);
+    }
+
+    setRowKeys([...keys, ...keysFor(records.length).map((at) => first + at)]);
+    setConfirmKey(null);
+    setOpenKey(null);
   }
 
   function remove(index: number) {
@@ -82,9 +97,19 @@ export function RecordsEditor({ block }: { block: RecordsBlock }) {
         count={items.length}
         note={block.note}
         actions={
-          <button type="button" onClick={add} className="pf-button-quiet">
-            {block.addLabel}
-          </button>
+          <>
+            {block.bulkUpload ? (
+              <BulkUploader
+                bulk={block.bulkUpload}
+                blank={block.record.blank}
+                onDone={addMany}
+              />
+            ) : null}
+
+            <button type="button" onClick={add} className="pf-button-quiet">
+              {block.addLabel}
+            </button>
+          </>
         }
       />
 
@@ -110,6 +135,136 @@ export function RecordsEditor({ block }: { block: RecordsBlock }) {
         </ol>
       )}
     </section>
+  );
+}
+
+const PARALLEL_UPLOADS = 3;
+
+function BulkUploader({
+  bulk,
+  blank,
+  onDone,
+}: {
+  bulk: BulkUpload;
+  blank: Record<string, unknown>;
+  onDone: (records: unknown[]) => void;
+}) {
+  const draft = useDraft();
+  const input = useRef<HTMLInputElement>(null);
+  const [progress, setProgress] = useState<{
+    done: number;
+    total: number;
+  } | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
+
+  async function uploadOne(file: File): Promise<unknown> {
+    const [token, size] = await Promise.all([
+      uploadFile(file),
+      bulk.probeSize
+        ? readImageSize(file).catch(() => undefined)
+        : Promise.resolve(undefined),
+    ]);
+
+    draft.registerUpload(token, URL.createObjectURL(file));
+
+    let record: unknown = setPath(structuredClone(blank), bulk.key, token);
+    if (size) {
+      record = setPath(record, "width", size.width);
+      record = setPath(record, "height", size.height);
+    }
+
+    return record;
+  }
+
+  async function run(files: File[]) {
+    setMessage(null);
+
+    const accepted = files.filter(
+      (file) => file.type.startsWith("image/") && file.size <= MAX_BYTES,
+    );
+    const skipped = files.length - accepted.length;
+    const results: (unknown | null)[] = accepted.map(() => null);
+    let done = 0;
+    let next = 0;
+
+    setProgress({ done, total: accepted.length });
+
+    async function worker() {
+      while (next < accepted.length) {
+        const at = next++;
+
+        try {
+          results[at] = await uploadOne(accepted[at]);
+        } catch {
+          results[at] = null;
+        }
+
+        done += 1;
+        setProgress({ done, total: accepted.length });
+      }
+    }
+
+    await Promise.all(
+      Array.from({ length: Math.min(PARALLEL_UPLOADS, accepted.length) }, () =>
+        worker(),
+      ),
+    );
+
+    const records = results.filter((record) => record !== null);
+    const failed = accepted.length - records.length;
+
+    onDone(records);
+    setProgress(null);
+    if (input.current) input.current.value = "";
+
+    const problems = [
+      skipped > 0 ? `${skipped} skipped — not an image or over 8 MB` : "",
+      failed > 0 ? `${failed} failed to upload` : "",
+    ].filter(Boolean);
+
+    setMessage(
+      problems.length > 0
+        ? `Added ${records.length}. ${problems.join(", ")}.`
+        : null,
+    );
+  }
+
+  const busy = progress !== null;
+
+  return (
+    <>
+      {busy ? (
+        <output className="pf-meta pf-muted pf-figure">
+          Uploading {progress.done} of {progress.total}…
+        </output>
+      ) : message ? (
+        <output className="pf-meta pf-strong">{message}</output>
+      ) : null}
+
+      <input
+        ref={input}
+        type="file"
+        accept="image/*"
+        multiple
+        tabIndex={-1}
+        aria-hidden="true"
+        disabled={busy}
+        onChange={(event) => {
+          const files = Array.from(event.target.files ?? []);
+          if (files.length > 0) void run(files);
+        }}
+        className="sr-only"
+      />
+
+      <button
+        type="button"
+        disabled={busy}
+        onClick={() => input.current?.click()}
+        className="pf-button-quiet disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        {bulk.label}
+      </button>
+    </>
   );
 }
 
