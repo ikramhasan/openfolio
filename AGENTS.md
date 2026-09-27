@@ -11,3 +11,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 # Comments
 
 Do not add any comments in the codebase.
+
+# Design
+
+Follow `DESIGN.md` for any change to the public site's UI: tokens, type scale, components, motion, and the anti-patterns list.
