@@ -20,9 +20,9 @@ export function GroupHeader({
   return (
     <div
       ref={ref}
-      className={`pf-rule flex flex-wrap items-end justify-between gap-x-6 gap-y-3 border-b pb-3${sticky ? " pf-sticky-head" : ""}`}
+      className={`pf-rule flex flex-wrap items-end justify-between gap-x-6 gap-y-3 border-b pb-3 ${sticky ? "pf-sticky-head" : ""}`}
     >
-      <div className="min-w-0 flex-1">
+      <div className="min-w-0 flex-[1_1_16rem]">
         <h2 id={id} className="pf-section-title">
           {title}
           {count === undefined ? null : (
