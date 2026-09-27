@@ -1,21 +1,31 @@
-import { notFound } from "next/navigation";
+import { connection } from "next/server";
 import { getIntro } from "../_components/content";
 
 export async function resumeResponse(
   disposition: "inline" | "attachment",
 ): Promise<Response> {
+  await connection();
+
   const intro = await getIntro();
-  if (!intro.resume) notFound();
+  if (!intro.resume) return missing();
 
   const upstream = await fetch(intro.resume, { cache: "no-store" });
-  if (!upstream.ok || !upstream.body) notFound();
+  if (!upstream.ok || !upstream.body) return missing();
 
   return new Response(upstream.body, {
     headers: {
       "Content-Type": "application/pdf",
       "Content-Disposition": `${disposition}; filename="${filename(intro.title)}"`,
       "Cache-Control": "private, max-age=0, must-revalidate",
+      "X-Content-Type-Options": "nosniff",
     },
+  });
+}
+
+function missing(): Response {
+  return new Response("Not found", {
+    status: 404,
+    headers: { "Cache-Control": "no-store" },
   });
 }
 

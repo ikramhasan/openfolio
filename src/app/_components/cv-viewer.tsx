@@ -20,29 +20,40 @@ export function CvViewer({ owner }: { owner: string }) {
 
   return (
     <div className="pf-cv">
-      <div className="pf-cv-bar">
-        <Link href="/" className="pf-link-quiet pf-meta">
-          ← Back
-        </Link>
+      <header className="pf-cv-bar">
+        <div className="pf-cv-bar-inner">
+          <h1 className="pf-role-title flex min-w-0 flex-wrap items-baseline gap-x-2.5 text-balance">
+            <Link href="/" className="pf-cv-owner">
+              {owner}
+            </Link>
+            <span className="pf-faint shrink-0 font-normal">CV</span>
+          </h1>
 
-        <span className="pf-meta pf-faint truncate">{owner} — CV</span>
-      </div>
+          <div className="flex shrink-0 items-center gap-x-5">
+            <a
+              href="/cv/file"
+              target="_blank"
+              rel="noopener"
+              className="pf-link-quiet pf-meta hidden sm:inline"
+            >
+              Open in new tab
+            </a>
 
-      <iframe
-        ref={frame}
-        src="/cv/file"
-        title={`Curriculum vitae of ${owner}`}
-        className="pf-cv-frame"
-      />
+            <a href="/cv/download" className="pf-cta">
+              Download PDF
+            </a>
+          </div>
+        </div>
+      </header>
 
-      <a
-        href="/cv/download"
-        className="pf-cta pf-cv-download"
-        aria-label="Download the CV"
-      >
-        <span aria-hidden="true">↓</span>
-        Download
-      </a>
+      <main className="pf-cv-stage">
+        <iframe
+          ref={frame}
+          src="/cv/file"
+          title={`Curriculum vitae of ${owner}`}
+          className="pf-cv-frame"
+        />
+      </main>
     </div>
   );
 }
