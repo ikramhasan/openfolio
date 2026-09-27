@@ -1,25 +1,32 @@
+import Image from "next/image";
 import { getTools } from "./content";
-import { byOrder, groupByCategory, hostOf } from "./data";
-import { Mark } from "./mark";
+import { byOrder, faviconUrl, groupByCategory, hostOf } from "./data";
 import type { Tool } from "./types";
 
 export async function Tools() {
   const { items } = await getTools();
+
+  return <ToolShelf items={items} />;
+}
+
+export function ToolShelf({ items }: { items: Tool[] }) {
   const groups = groupByCategory(byOrder(items));
 
   return (
-    <div className="space-y-9">
+    <div className="space-y-10">
       {groups.map((group) => (
         <section key={group.name}>
-          <div className="pf-rule flex items-baseline justify-between gap-x-4 border-b pb-2">
-            <h3 className="pf-column">{group.name}</h3>
-            <span className="pf-column pf-figure">{group.items.length}</span>
-          </div>
+          <h2 className="pf-section-title flex items-baseline gap-2">
+            {group.name}
+            <span className="pf-meta pf-faint pf-figure font-normal">
+              {group.items.length}
+            </span>
+          </h2>
 
-          <ul className="pf-rule divide-y">
+          <ul className="-mx-3 mt-3 grid grid-cols-2 gap-x-2 gap-y-1 sm:grid-cols-3 lg:grid-cols-4">
             {group.items.map((tool) => (
-              <li key={tool.title}>
-                <Row tool={tool} />
+              <li key={tool.title} className="min-w-0">
+                <ToolTile tool={tool} />
               </li>
             ))}
           </ul>
@@ -29,31 +36,38 @@ export async function Tools() {
   );
 }
 
-function Row({ tool }: { tool: Tool }) {
+function ToolTile({ tool }: { tool: Tool }) {
+  const host = tool.url ? hostOf(tool.url) : null;
+  const icon = tool.icon || (tool.url ? faviconUrl(tool.url) : "");
+
   const body = (
     <>
-      <span className="shrink-0 translate-y-0.5">
-        <Mark src={tool.icon} />
+      <span className="pf-logo pf-app-icon relative block size-10 shrink-0">
+        {icon ? (
+          <Image
+            src={icon}
+            alt=""
+            fill
+            sizes="40px"
+            className="object-contain p-1.5"
+          />
+        ) : null}
       </span>
 
-      <span className="pf-title min-w-0 flex-1 truncate">{tool.title}</span>
-
-      {tool.url ? (
-        <span className="pf-meta pf-faint hidden min-w-0 shrink truncate sm:block">
-          {hostOf(tool.url)}
-        </span>
-      ) : null}
+      <span className="block min-w-0 pt-0.5">
+        <span className="pf-title block">{tool.title}</span>
+        {host ? (
+          <span className="pf-meta pf-faint block truncate">{host}</span>
+        ) : null}
+      </span>
     </>
   );
 
-  const shape = "pf-row -mx-3 flex items-baseline gap-x-3 px-3 py-3";
+  const shape = "pf-row flex items-start gap-3 p-3";
 
   return tool.url ? (
     <a href={tool.url} target="_blank" rel="noreferrer" className={shape}>
       {body}
-      <span aria-hidden="true" className="pf-row-arrow pf-meta shrink-0">
-        ↗
-      </span>
     </a>
   ) : (
     <div className={shape}>{body}</div>
