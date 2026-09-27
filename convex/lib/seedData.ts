@@ -1,6 +1,6 @@
 export const SEED_ADMIN = {
   name: "John Doe",
-  email: "john.doe@example.com",
+  email: "admin@example.com",
   password: "password",
 };
 

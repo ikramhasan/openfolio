@@ -57,7 +57,7 @@ and `convex deploy --cmd` runs the build before it pushes functions, so for prev
 the script pushes functions first and then builds.
 
 A new preview deployment is seeded by `seed:preview` with placeholder content for every
-section and an admin account: sign in at `/signin` as `john.doe@example.com` with the
+section and an admin account: sign in at `/signin` as `admin@example.com` with the
 password `password`. It runs only when Convex creates the preview deployment, and it does
 nothing on a deployment that already has content. Set the Convex deployment variables
 above as the project's default environment variables for preview deployments in the
