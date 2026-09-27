@@ -49,7 +49,7 @@ export function CvViewer({ owner }: { owner: string }) {
       <main className="pf-cv-stage">
         <iframe
           ref={frame}
-          src="/cv/file"
+          src="/cv/file#navpanes=0"
           title={`Curriculum vitae of ${owner}`}
           className="pf-cv-frame"
         />
