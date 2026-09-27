@@ -52,13 +52,16 @@ export function Newsletter({
   const isLoading = status === "loading";
 
   return (
-    <div className="max-w-lg">
-      <label htmlFor={inputId} className="pf-body block">
+    <div className="max-w-md">
+      <label htmlFor={inputId} className="pf-body mt-1 block">
         {copy.inputLabel}
       </label>
 
-      <form onSubmit={handleSubmit} noValidate className="mt-3.5">
-        <div className="flex flex-col gap-2 sm:flex-row">
+      <form onSubmit={handleSubmit} noValidate className="mt-4">
+        <div
+          className="pf-field flex items-center gap-1 rounded-[10px] border p-1"
+          data-invalid={status === "error" ? "true" : undefined}
+        >
           <input
             id={inputId}
             type="email"
@@ -75,12 +78,12 @@ export function Newsletter({
             placeholder={copy.placeholder}
             aria-invalid={status === "error"}
             aria-describedby={message ? `${inputId}-message` : undefined}
-            className="pf-input pf-rule min-w-0 flex-1 rounded-md border bg-transparent px-3 py-2 text-[0.875rem] focus:outline-none"
+            className="pf-input min-w-0 flex-1 bg-transparent px-2.5 py-1.5 text-[0.875rem] focus:outline-none"
           />
           <button
             type="submit"
             disabled={isLoading}
-            className="pf-button shrink-0 rounded-md px-4 py-2 text-[0.8125rem] font-medium disabled:opacity-60"
+            className="pf-button shrink-0 rounded-[7px] px-3.5 py-1.5 text-[0.8125rem] font-medium disabled:opacity-60"
           >
             {isLoading ? copy.loadingLabel : copy.submitLabel}
           </button>

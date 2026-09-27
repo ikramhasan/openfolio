@@ -699,6 +699,28 @@ html[data-theme="dark"] .pf-theme-icon[data-value="dark"] {
   display: block;
 }
 
+.pf-field {
+  border-color: var(--pf-rule);
+  transition: border-color 150ms ease;
+}
+
+.pf-field:focus-within {
+  border-color: color-mix(in srgb, var(--pf-ink) 45%, transparent);
+}
+
+.pf-field:has(.pf-input:focus-visible) {
+  outline: 2px solid var(--pf-ink);
+  outline-offset: 2px;
+}
+
+.pf-field[data-invalid="true"] {
+  border-color: var(--pf-ink);
+}
+
+.pf-field .pf-input:focus-visible {
+  outline: none;
+}
+
 .pf-input {
   color: var(--pf-ink);
 }
