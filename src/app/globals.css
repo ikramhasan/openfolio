@@ -42,6 +42,7 @@ body {
   --pf-rule: #e4e4e7;
   --pf-hover: #f4f4f5;
   --pf-mark-bg: transparent;
+  --pf-logo-bg: #ffffff;
   --pf-edge: oklch(0 0 0 / 0.1);
 
   background-color: var(--pf-bg);
@@ -67,6 +68,7 @@ body {
     --pf-rule: #2a2a2f;
     --pf-hover: #17171b;
     --pf-mark-bg: #f0f0ee;
+    --pf-logo-bg: #ecebe8;
     --pf-edge: oklch(1 0 0 / 0.1);
   }
 }
@@ -79,6 +81,7 @@ html[data-theme="dark"] body {
   --pf-rule: #2a2a2f;
   --pf-hover: #17171b;
   --pf-mark-bg: #f0f0ee;
+  --pf-logo-bg: #ecebe8;
   --pf-edge: oklch(1 0 0 / 0.1);
 }
 
@@ -274,6 +277,68 @@ html[data-theme="dark"] body {
 
 .pf-row:focus-visible .pf-row-arrow {
   opacity: 1;
+}
+
+.pf-logo {
+  overflow: hidden;
+  background-color: var(--pf-logo-bg);
+  outline: 1px solid var(--pf-edge);
+  outline-offset: -1px;
+}
+
+.pf-role-title {
+  font-size: 1rem;
+  line-height: 1.4;
+  font-weight: 560;
+  letter-spacing: -0.016em;
+  text-wrap: balance;
+}
+
+.pf-detail {
+  position: relative;
+  padding-left: 1rem;
+}
+
+.pf-detail::before {
+  content: "";
+  position: absolute;
+  top: 0.8em;
+  left: 0.125rem;
+  width: 0.4375rem;
+  height: 1px;
+  background-color: var(--pf-faint);
+}
+
+.pf-span {
+  border-radius: 3px;
+}
+
+.pf-span-bar {
+  background-color: color-mix(in srgb, var(--pf-ink) 20%, transparent);
+  transition: background-color 150ms ease;
+}
+
+.pf-span[data-current="true"] .pf-span-bar {
+  background-color: var(--pf-ink);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pf-span:hover .pf-span-bar {
+    background-color: color-mix(in srgb, var(--pf-ink) 60%, transparent);
+  }
+
+  .pf-span[data-current="true"]:hover .pf-span-bar {
+    background-color: var(--pf-ink);
+  }
+}
+
+.pf-span:focus-visible {
+  outline: 2px solid var(--pf-ink);
+  outline-offset: 3px;
+}
+
+.pf-tick {
+  background-color: var(--pf-rule);
 }
 
 .pf-mark {
@@ -667,6 +732,7 @@ html[data-theme="dark"] .pf-theme-icon[data-value="dark"] {
   .pf-admin,
   .pf-admin-arrow,
   .pf-cta,
+  .pf-span-bar,
   .pf-theme-option,
   .pf-theme-button,
   .pf-status {

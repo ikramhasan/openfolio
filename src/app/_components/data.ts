@@ -83,6 +83,54 @@ export function dateEndpoints(dateRange: string): [string, string | null] {
   return [start, end === start ? null : end];
 }
 
+export type MonthRange = { start: number; end: number | null };
+
+export function monthRange(dateRange: string): MonthRange | null {
+  const points = [
+    ...dateRange.matchAll(/([A-Za-z]+)[,\s]+(\d{4})|(\d{4})/g),
+  ].map((match) => {
+    const [, month, year, bareYear] = match;
+    const index = month
+      ? MONTHS.findIndex((name) =>
+          month.toLowerCase().startsWith(name.toLowerCase()),
+        )
+      : -1;
+
+    return {
+      year: Number(bareYear ?? year),
+      month: index === -1 ? null : index,
+    };
+  });
+
+  const first = points[0];
+  const last = points[points.length - 1];
+  if (!first || !last) return null;
+
+  const start = first.year * 12 + (first.month ?? 0);
+  if (/present|current|now/i.test(dateRange)) return { start, end: null };
+
+  return { start, end: Math.max(start, last.year * 12 + (last.month ?? 11)) };
+}
+
+export function monthLabel(index: number): string {
+  return `${MONTHS[index % 12]} ${Math.floor(index / 12)}`;
+}
+
+export function monthIndex(date: Date): number {
+  return date.getUTCFullYear() * 12 + date.getUTCMonth();
+}
+
+export function tenure(months: number): string {
+  const years = Math.floor(months / 12);
+  const rest = months % 12;
+  const parts = [
+    years ? `${years} ${years === 1 ? "yr" : "yrs"}` : "",
+    rest ? `${rest} ${rest === 1 ? "mo" : "mos"}` : "",
+  ];
+
+  return parts.filter(Boolean).join(" ");
+}
+
 export function rangeQualifier(dateRange: string): string | null {
   return dateRange.match(/\(([^)]+)\)/)?.[1] ?? null;
 }
