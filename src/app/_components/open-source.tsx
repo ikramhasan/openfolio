@@ -1,68 +1,150 @@
+import Image from "next/image";
 import { getOpenSource } from "./content";
-import { formatCount, repoParts, shortDate, sortedContributions } from "./data";
-import { Mark } from "./mark";
-import { DateCell, TableHead, TableLinkRow, TableList } from "./table";
+import { formatCount, repoParts, sortedContributions } from "./data";
+import type { OpenSourceSection } from "./types";
+
+type Contribution = OpenSourceSection["items"][number];
+
+const STATES: Record<string, string> = {
+  merged: "Merged",
+  open: "Open",
+  closed: "Closed",
+  draft: "Draft",
+};
+
+function fullDate(iso: string): string {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "";
+
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+}
+
+function repoUrl(item: Contribution): string | null {
+  const repo = item.repo.trim();
+  if (!repo.includes("/")) return null;
+
+  try {
+    const { origin } = new URL(item.url);
+    return `${origin}/${repo}`;
+  } catch {
+    return null;
+  }
+}
+
+function Status({ state }: { state: string }) {
+  const key = state.trim().toLowerCase();
+  if (!key) return null;
+
+  return (
+    <span
+      className="pf-status-chip inline-flex items-center gap-1.5"
+      data-state={key}
+    >
+      <span aria-hidden="true" className="pf-status-dot" />
+      {STATES[key] ?? state}
+    </span>
+  );
+}
+
+function Repository({ items }: { items: Contribution[] }) {
+  const [first] = items;
+  const { owner, name } = repoParts(first.repo);
+  const url = repoUrl(first);
+  const stars = Math.max(...items.map((item) => item.stars));
+
+  const label = (
+    <>
+      {owner ? <span className="pf-muted">{owner} / </span> : null}
+      {name}
+    </>
+  );
+
+  return (
+    <section className="pf-rule grid grid-cols-[1.75rem_minmax(0,1fr)] gap-x-3 border-t pt-6 pb-2">
+      <span className="pf-logo relative mt-px block size-7 rounded-full">
+        {first.avatar ? (
+          <Image
+            src={first.avatar}
+            alt=""
+            fill
+            sizes="28px"
+            className="object-cover"
+          />
+        ) : null}
+      </span>
+
+      <div className="min-w-0">
+        <h2 className="pf-title flex flex-wrap items-baseline justify-between gap-x-4">
+          {url ? (
+            <a
+              href={url}
+              target="_blank"
+              rel="noreferrer"
+              className="pf-repo-link"
+            >
+              {label}
+            </a>
+          ) : (
+            <span>{label}</span>
+          )}
+          {stars > 0 ? (
+            <span className="pf-meta pf-faint pf-figure font-normal">
+              {formatCount(stars)} stars
+            </span>
+          ) : null}
+        </h2>
+
+        <ol className="mt-1">
+          {items.map((item) => (
+            <li key={item.url || item.title}>
+              <a
+                href={item.url}
+                target="_blank"
+                rel="noreferrer"
+                className="pf-row -mx-3 flex items-baseline justify-between gap-x-6 px-3 py-3"
+              >
+                <span className="block min-w-0">
+                  <span className="pf-body pf-strong block">{item.title}</span>
+                  <span className="pf-meta pf-figure mt-1 flex flex-wrap items-center gap-x-3">
+                    <Status state={item.state} />
+                    <span className="pf-faint">{fullDate(item.date)}</span>
+                  </span>
+                </span>
+
+                {item.number > 0 ? (
+                  <span className="pf-meta pf-figure pf-faint shrink-0">
+                    #{item.number}
+                  </span>
+                ) : null}
+              </a>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+  );
+}
 
 export async function OpenSource() {
   const { items } = await getOpenSource();
 
+  const groups = new Map<string, Contribution[]>();
+  for (const item of sortedContributions(items)) {
+    if (item.title === "") continue;
+    const key = item.repo.trim().toLowerCase() || item.url;
+    groups.set(key, [...(groups.get(key) ?? []), item]);
+  }
+
   return (
     <div>
-      <TableHead left="Date" middle="Contribution" right="Ref" />
-
-      <TableList>
-        {sortedContributions(items)
-          .filter((item) => item.title !== "")
-          .map((item) => {
-            const repo = repoParts(item.repo);
-
-            const facts = [
-              item.state,
-              item.stars > 0 ? `${formatCount(item.stars)} stars` : "",
-            ].filter(Boolean);
-
-            return (
-              <TableLinkRow
-                key={item.url || item.title}
-                left={<DateCell from={shortDate(item.date)} />}
-                href={item.url}
-                right={
-                  item.number > 0 ? <span>#{item.number}</span> : undefined
-                }
-              >
-                <span className="flex items-baseline gap-2.5">
-                  <span className="translate-y-0.5">
-                    <Mark src={item.avatar} />
-                  </span>
-                  <span className="pf-title">{item.title}</span>
-                </span>
-
-                <span className="pf-meta mt-1.5 flex flex-wrap items-baseline gap-x-2">
-                  {repo.name ? (
-                    <span className="min-w-0 truncate">
-                      {repo.owner ? (
-                        <>
-                          {repo.owner}
-                          <span className="pf-faint"> / </span>
-                        </>
-                      ) : null}
-                      {repo.name}
-                    </span>
-                  ) : null}
-
-                  {facts.map((fact, index) => (
-                    <span key={fact} className="whitespace-nowrap">
-                      {repo.name || index > 0 ? (
-                        <span aria-hidden="true">· </span>
-                      ) : null}
-                      {fact}
-                    </span>
-                  ))}
-                </span>
-              </TableLinkRow>
-            );
-          })}
-      </TableList>
+      {[...groups.values()].map((group) => (
+        <Repository key={group[0].repo || group[0].url} items={group} />
+      ))}
     </div>
   );
 }

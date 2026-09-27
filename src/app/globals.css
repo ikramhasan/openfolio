@@ -326,6 +326,50 @@ html[data-theme="dark"] body {
   color: var(--pf-faint);
 }
 
+.pf-status-chip {
+  color: var(--pf-muted);
+}
+
+.pf-status-dot {
+  width: 0.4375rem;
+  height: 0.4375rem;
+  border-radius: 999px;
+  border: 1.5px solid currentColor;
+}
+
+.pf-status-chip[data-state="merged"] {
+  color: var(--pf-ink);
+}
+
+.pf-status-chip[data-state="merged"] .pf-status-dot {
+  background-color: currentColor;
+}
+
+.pf-status-chip[data-state="closed"] {
+  color: var(--pf-faint);
+}
+
+.pf-repo-link {
+  color: var(--pf-ink);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  text-decoration-color: transparent;
+  transition: text-decoration-color 150ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pf-repo-link:hover {
+    text-decoration-color: color-mix(in srgb, var(--pf-ink) 40%, transparent);
+  }
+}
+
+.pf-repo-link:focus-visible {
+  outline: 2px solid var(--pf-ink);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
 .pf-role-title {
   font-size: 1rem;
   line-height: 1.4;
