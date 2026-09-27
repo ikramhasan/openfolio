@@ -241,7 +241,6 @@ html[data-theme="dark"] body {
 .pf-row:focus-visible,
 .pf-skip:focus-visible,
 .pf-button:focus-visible,
-.pf-admin:focus-visible,
 .pf-theme-button:focus-visible,
 .pf-input:focus-visible {
   outline: 2px solid var(--pf-ink);
@@ -688,41 +687,6 @@ html[data-theme="dark"] body {
   }
 }
 
-.pf-admin {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  font-size: 0.75rem;
-  line-height: 1.3;
-  color: var(--pf-muted);
-  text-decoration: none;
-  white-space: nowrap;
-  padding: 0.375rem 0.6875rem;
-  border: 1px solid var(--pf-rule);
-  border-radius: 999px;
-  transition:
-    color 150ms ease,
-    background-color 140ms ease,
-    border-color 150ms ease;
-}
-
-.pf-admin-arrow {
-  color: var(--pf-faint);
-  transition: color 150ms ease;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .pf-admin:hover {
-    color: var(--pf-ink);
-    background-color: var(--pf-hover);
-    border-color: var(--pf-edge);
-  }
-
-  .pf-admin:hover .pf-admin-arrow {
-    color: var(--pf-ink);
-  }
-}
-
 .pf-theme {
   --pf-theme-cell: 1.75rem;
   padding: 0.1875rem;
@@ -1015,8 +979,6 @@ html:has(.pf-cv) {
   .pf-row,
   .pf-row-arrow,
   .pf-tab,
-  .pf-admin,
-  .pf-admin-arrow,
   .pf-cta,
   .pf-cv-owner,
   .pf-play,

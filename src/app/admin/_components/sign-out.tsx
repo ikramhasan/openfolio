@@ -18,7 +18,7 @@ export function SignOutButton() {
         await signOut();
         router.replace("/signin");
       }}
-      className="pf-admin pf-admin-enter disabled:opacity-60"
+      className="pf-link-quiet pf-meta cursor-pointer disabled:opacity-60"
     >
       {busy ? "Signing out…" : "Sign out"}
     </button>
