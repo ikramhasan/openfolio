@@ -1,13 +1,18 @@
 import { getAwards, getWritten } from "./content";
-import { byOrder, shortDate } from "./data";
-import {
-  DateCell,
-  TableHead,
-  TableLinkRow,
-  TableList,
-  TableRow,
-} from "./table";
+import { byOrder } from "./data";
+import { Entry, EntryList } from "./entry";
 import { readPath, slugOf } from "./writing";
+
+function monthYear(iso: string): string {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return iso;
+
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+}
 
 export async function Awards() {
   const [{ items }, written] = await Promise.all([
@@ -18,46 +23,30 @@ export async function Awards() {
   const native = new Set(written);
 
   return (
-    <div>
-      <TableHead left="Date" middle="Award" />
+    <EntryList>
+      {byOrder(items).map((award) => {
+        const slug = slugOf(award);
+        const here = native.has(slug);
 
-      <TableList>
-        {byOrder(items).map((award) => {
-          const slug = slugOf(award);
-          const here = native.has(slug);
-          const href = here ? readPath("awards", slug) : award.url;
-
-          const body = (
-            <>
-              <span className="pf-title block">{award.title}</span>
-
-              <span className="pf-meta mt-1 block">{award.organization}</span>
-
-              <span className="pf-body mt-2.5 block max-w-[72ch]">
-                {award.description.trim()}
-              </span>
-            </>
-          );
-
-          return href ? (
-            <TableLinkRow
-              key={award.title}
-              left={<DateCell from={shortDate(award.date)} />}
-              href={href}
+        return (
+          <li key={award.title}>
+            <Entry
+              logo={award.logo}
+              title={award.title}
+              org={award.organization}
+              when={monthYear(award.date)}
+              href={here ? readPath("awards", slug) : award.url}
               internal={here}
             >
-              {body}
-            </TableLinkRow>
-          ) : (
-            <TableRow
-              key={award.title}
-              left={<DateCell from={shortDate(award.date)} />}
-            >
-              {body}
-            </TableRow>
-          );
-        })}
-      </TableList>
-    </div>
+              {award.description.trim() ? (
+                <span className="pf-body block">
+                  {award.description.trim()}
+                </span>
+              ) : null}
+            </Entry>
+          </li>
+        );
+      })}
+    </EntryList>
   );
 }
