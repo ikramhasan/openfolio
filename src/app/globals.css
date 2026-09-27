@@ -290,17 +290,23 @@ html[data-theme="dark"] body {
   border-radius: 22.5%;
 }
 
+.pf-project[data-unmaintained="true"] > * {
+  opacity: 0.5;
+  transition: opacity 150ms ease;
+}
+
 .pf-project[data-unmaintained="true"] .pf-app-icon {
   filter: grayscale(1);
-  opacity: 0.5;
 }
 
-.pf-project[data-unmaintained="true"] .pf-role-title {
-  color: var(--pf-muted);
+@media (hover: hover) and (pointer: fine) {
+  .pf-project[data-unmaintained="true"] > :hover {
+    opacity: 0.85;
+  }
 }
 
-.pf-project[data-unmaintained="true"] .pf-body {
-  color: var(--pf-faint);
+.pf-project[data-unmaintained="true"] > :focus-visible {
+  opacity: 0.85;
 }
 
 .pf-role-title {
@@ -768,6 +774,7 @@ html[data-theme="dark"] .pf-theme-icon[data-value="dark"] {
   .pf-admin-arrow,
   .pf-cta,
   .pf-span-bar,
+  .pf-project > *,
   .pf-theme-option,
   .pf-theme-button,
   .pf-status {
