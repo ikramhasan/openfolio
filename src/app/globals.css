@@ -921,20 +921,66 @@ html[data-theme="dark"] .pf-theme-icon[data-value="dark"] {
   outline-offset: 2px;
 }
 
+html:has(.pf-cv) {
+  scrollbar-gutter: auto;
+}
+
 .pf-cv {
   display: flex;
-  flex: 1;
   flex-direction: column;
-  min-height: 0;
+  height: 100dvh;
+  overflow: hidden;
+  background-color: var(--pf-bg);
 }
 
 .pf-cv-bar {
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--pf-rule);
+  background-color: var(--pf-bg);
+}
+
+.pf-cv-bar-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
+  max-width: 72rem;
+  margin-inline: auto;
   padding: 0.875rem 1.5rem;
-  border-bottom: 1px solid var(--pf-rule);
+}
+
+@media (min-width: 640px) {
+  .pf-cv-bar-inner {
+    padding-inline: 2.5rem;
+  }
+}
+
+.pf-cv-owner {
+  color: var(--pf-ink);
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+  text-decoration-color: transparent;
+  transition: text-decoration-color 150ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pf-cv-owner:hover {
+    text-decoration-color: color-mix(in srgb, var(--pf-ink) 40%, transparent);
+  }
+}
+
+.pf-cv-owner:focus-visible {
+  outline: 2px solid var(--pf-ink);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+.pf-cv-stage {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  background-color: var(--pf-hover);
 }
 
 .pf-cv-frame {
@@ -942,23 +988,12 @@ html[data-theme="dark"] .pf-theme-icon[data-value="dark"] {
   width: 100%;
   min-height: 0;
   border: 0;
+  background-color: var(--pf-hover);
 }
 
-.pf-cv-download {
-  position: fixed;
-  right: 1.5rem;
-  bottom: 1.5rem;
-  z-index: 20;
-  gap: 0.4375rem;
-  box-shadow:
-    0 1px 2px oklch(0 0 0 / 0.1),
-    0 8px 24px -4px oklch(0 0 0 / 0.25);
-}
-
-@supports (bottom: env(safe-area-inset-bottom)) {
-  .pf-cv-download {
-    bottom: calc(1.5rem + env(safe-area-inset-bottom));
-  }
+.pf-cv-frame:focus-visible {
+  outline: 2px solid var(--pf-ink);
+  outline-offset: -2px;
 }
 
 .pf-skip {
@@ -983,6 +1018,7 @@ html[data-theme="dark"] .pf-theme-icon[data-value="dark"] {
   .pf-admin,
   .pf-admin-arrow,
   .pf-cta,
+  .pf-cv-owner,
   .pf-play,
   .pf-video-title,
   .pf-span-bar,
