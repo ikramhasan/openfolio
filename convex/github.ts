@@ -78,6 +78,8 @@ type Repo = {
   owner?: { avatar_url?: string };
 };
 
+type Pull = Item & { base?: { repo?: Repo } };
+
 async function read<T>(path: string): Promise<T> {
   const token = process.env.GITHUB_TOKEN;
 
@@ -93,9 +95,40 @@ async function read<T>(path: string): Promise<T> {
     throw new ConvexError("GitHub has nothing at that address.");
   }
 
-  if (response.status === 403 || response.status === 429) {
+  if (response.status === 401) {
     throw new ConvexError(
-      "GitHub is rate limiting this deployment. Try again shortly, or set GITHUB_TOKEN.",
+      "GitHub rejected GITHUB_TOKEN. It may be expired or revoked; set a fresh one on the Convex deployment.",
+    );
+  }
+
+  const limited =
+    response.status === 429 ||
+    (response.status === 403 &&
+      (response.headers.get("x-ratelimit-remaining") === "0" ||
+        response.headers.has("retry-after")));
+
+  if (limited) {
+    const reset = Number(response.headers.get("x-ratelimit-reset"));
+    const retry = Number(response.headers.get("retry-after"));
+    const wait = retry
+      ? Math.ceil(retry / 60)
+      : reset
+        ? Math.max(1, Math.ceil((reset * 1000 - Date.now()) / 60000))
+        : null;
+    const when = wait ? `in about ${wait} min` : "shortly";
+
+    throw new ConvexError(
+      token
+        ? `GitHub is rate limiting GITHUB_TOKEN. Try again ${when}.`
+        : `GitHub is rate limiting this deployment's shared IP. Try again ${when}, or set GITHUB_TOKEN on the Convex deployment.`,
+    );
+  }
+
+  if (response.status === 403) {
+    throw new ConvexError(
+      token
+        ? "GitHub refused access. GITHUB_TOKEN may lack access to that repository."
+        : "GitHub refused access to that repository.",
     );
   }
 
@@ -127,10 +160,8 @@ export const lookup = action({
 
     const base = `repos/${ref.owner}/${ref.name}`;
 
-    const [item, repo] = await Promise.all([
-      read<Item>(`${base}/${ref.kind}/${ref.number}`),
-      read<Repo>(base),
-    ]);
+    const item = await read<Pull>(`${base}/${ref.kind}/${ref.number}`);
+    const repo = item.base?.repo ?? (await read<Repo>(base));
 
     return {
       title: item.title ?? "",
