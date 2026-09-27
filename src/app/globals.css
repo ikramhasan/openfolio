@@ -294,6 +294,24 @@ html[data-theme="dark"] body {
   text-wrap: balance;
 }
 
+.pf-feature-title {
+  font-size: clamp(1.1875rem, 2vw, 1.375rem);
+  line-height: 1.3;
+  font-weight: 600;
+  letter-spacing: -0.022em;
+  text-wrap: balance;
+}
+
+.pf-cover {
+  background-color: var(--pf-hover);
+}
+
+.pf-cover img {
+  outline: 1px solid var(--pf-edge);
+  outline-offset: -1px;
+  border-radius: inherit;
+}
+
 .pf-detail {
   position: relative;
   padding-left: 1rem;
