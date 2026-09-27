@@ -1,5 +1,3 @@
-import Image from "next/image";
-import Link from "next/link";
 import type { CSSProperties } from "react";
 import { getExperience, getWritten } from "./content";
 import {
@@ -11,6 +9,7 @@ import {
   rangeQualifier,
   tenure,
 } from "./data";
+import { Entry, EntryList, Logo } from "./entry";
 import type { ExperienceSection } from "./types";
 import { readPath, slugOf } from "./writing";
 
@@ -26,16 +25,6 @@ type Role = {
 
 const LANE_HEIGHT = 30;
 const LABEL_EDGE = 88;
-
-function Logo({ src, className }: { src: string; className: string }) {
-  return (
-    <span className={`pf-logo relative block shrink-0 ${className}`}>
-      {src ? (
-        <Image src={src} alt="" fill sizes="32px" className="object-contain" />
-      ) : null}
-    </span>
-  );
-}
 
 function Ruler({ roles, now }: { roles: Role[]; now: number }) {
   const placed = [...roles].sort((a, b) => a.start - b.start);
@@ -118,7 +107,7 @@ function Ruler({ roles, now }: { roles: Role[]; now: number }) {
   );
 }
 
-function Entry({
+function RoleEntry({
   role,
   href,
   internal,
@@ -131,71 +120,32 @@ function Entry({
   const qualifier = rangeQualifier(item.dateRange);
   const length = role.current ? null : tenure(role.end - role.start);
   const note = [length, qualifier?.toLowerCase()].filter(Boolean).join(", ");
-
-  const body = (
-    <>
-      <Logo src={item.logo} className="mt-0.5 size-8 rounded-[9px]" />
-
-      <span className="grid min-w-0 gap-x-6 sm:grid-cols-[minmax(0,1fr)_auto]">
-        <span className="pf-role-title">
-          {item.title}
-          {href ? (
-            <span aria-hidden="true" className="pf-row-arrow pf-faint ml-1.5">
-              {internal ? "→" : "↗"}
-            </span>
-          ) : null}
-        </span>
-
-        <span className="pf-meta mt-0.5 flex flex-wrap gap-x-2.5 sm:col-start-1">
-          <span className="pf-strong">{item.company}</span>
-          <span className="pf-faint">{item.location.trim()}</span>
-        </span>
-
-        <span className="pf-meta pf-figure mt-2 flex flex-wrap gap-x-2.5 sm:col-start-2 sm:row-span-2 sm:row-start-1 sm:mt-0 sm:flex-col sm:items-end sm:gap-y-0.5 sm:pt-px">
-          <span className="whitespace-nowrap">
-            {monthLabel(role.start)} –{" "}
-            {role.current ? "Now" : monthLabel(role.end - 1)}
-          </span>
-          {note ? (
-            <span className="pf-faint whitespace-nowrap">{note}</span>
-          ) : null}
-        </span>
-
-        {item.details.length ? (
-          <span className="mt-3.5 block max-w-[68ch] space-y-1.5 sm:col-span-2">
-            {item.details.map((detail) => {
-              const text = cleanBullet(detail);
-              return (
-                <span key={text} className="pf-body pf-detail block">
-                  {text}
-                </span>
-              );
-            })}
-          </span>
-        ) : null}
-      </span>
-    </>
-  );
-
-  const className =
-    "pf-row -mx-3 grid grid-cols-[2rem_minmax(0,1fr)] gap-x-4 px-3 py-6 sm:gap-x-5";
-
-  if (!href) {
-    return <div className={className}>{body}</div>;
-  }
-
-  if (internal) {
-    return (
-      <Link href={href} className={className}>
-        {body}
-      </Link>
-    );
-  }
+  const until = role.current ? "Now" : monthLabel(role.end - 1);
 
   return (
-    <a href={href} target="_blank" rel="noreferrer" className={className}>
-      {body}
-    </a>
+    <Entry
+      logo={item.logo}
+      title={item.title}
+      org={item.company}
+      place={item.location.trim()}
+      when={`${monthLabel(role.start)} – ${until}`}
+      note={note}
+      href={href}
+      internal={internal}
+    >
+      {item.details.length ? (
+        <span className="block space-y-1.5">
+          {item.details.map((detail) => {
+            const text = cleanBullet(detail);
+            return (
+              <span key={text} className="pf-body pf-detail block">
+                {text}
+              </span>
+            );
+          })}
+        </span>
+      ) : null}
+    </Entry>
   );
 }
 
@@ -226,7 +176,7 @@ export async function Experience() {
     <div>
       {roles.length > 1 ? <Ruler roles={roles} now={now} /> : null}
 
-      <ol className="pf-rule divide-y border-t">
+      <EntryList>
         {roles.map((role) => {
           const slug = slugOf(role.item);
           const here = native.has(slug);
@@ -238,11 +188,11 @@ export async function Experience() {
               id={role.anchor}
               className="scroll-mt-6"
             >
-              <Entry role={role} href={href} internal={here} />
+              <RoleEntry role={role} href={href} internal={here} />
             </li>
           );
         })}
-      </ol>
+      </EntryList>
     </div>
   );
 }
