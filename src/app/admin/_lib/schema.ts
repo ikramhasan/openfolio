@@ -426,7 +426,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
         path: "sections.articles.items",
         addLabel: "Add post",
         sortable: false,
-        note: "Shown newest first by publish date — nothing to drag. Write gives a post its own page.",
+        note: "Shown newest first by publish date — nothing to drag. Pinned posts are featured at the top. Write gives a post its own page.",
         page: writeRoute("articles"),
         record: {
           summaryKey: "title",
@@ -457,6 +457,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
             publishedAt: "",
             readTimeMinutes: 1,
             views: 0,
+            pinned: false,
             excerpt: null,
             hidden: false,
           },

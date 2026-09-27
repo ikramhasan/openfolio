@@ -382,6 +382,10 @@
   color: var(--pf-muted);
 }
 
+.pf-hide-toggle[data-pinned] {
+  color: var(--pf-ink);
+}
+
 @media (hover: hover) and (pointer: fine) {
   .pf-hide-toggle:hover {
     color: var(--pf-ink);
@@ -392,6 +396,21 @@
 .pf-hide-toggle:focus-visible {
   outline: 2px solid var(--pf-ink);
   outline-offset: 2px;
+}
+
+.pf-sticky-head {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  margin-top: -0.75rem;
+  padding-top: 0.75rem;
+  background-color: var(--pf-bg);
+}
+
+@media (width < 64rem) {
+  .pf-sticky-head {
+    top: var(--pf-rail-height, 0px);
+  }
 }
 
 .pf-dock {
