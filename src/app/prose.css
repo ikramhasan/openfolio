@@ -695,18 +695,53 @@ html[data-theme="dark"] .pf-prose {
 }
 
 .pf-prose-chip-website {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.32em;
-  vertical-align: -0.14em;
+  display: inline;
+  padding: 0;
+  font-size: 1em;
+  white-space: nowrap;
+  background-color: transparent;
+  border: 0;
+  border-radius: 0.3em;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  text-decoration-color: color-mix(in srgb, var(--pf-ink) 30%, transparent);
   cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    box-shadow 150ms ease,
+    text-decoration-color 150ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pf-prose-chip-website:hover {
+    background-color: color-mix(in srgb, var(--pf-ink) 7%, transparent);
+    box-shadow: 0 0 0 0.22em color-mix(in srgb, var(--pf-ink) 7%, transparent);
+    text-decoration-color: var(--pf-ink);
+  }
+}
+
+.pf-prose-chip-website:focus-visible {
+  outline: 2px solid var(--pf-ink);
+  outline-offset: 0.3em;
 }
 
 .pf-prose-chip-website-icon {
-  width: 0.95em;
-  height: 0.95em;
-  border-radius: 2px;
-  object-fit: contain;
+  display: inline-block;
+  width: 1.05em;
+  height: 1.05em;
+  margin-right: 0.34em;
+  vertical-align: -0.2em;
+  border-radius: 0.28em;
+  outline: 1px solid var(--pf-edge);
+  outline-offset: -1px;
+  object-fit: cover;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pf-prose-chip-website {
+    transition: none;
+  }
 }
 
 .pf-prose-equation {
