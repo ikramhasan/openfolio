@@ -50,6 +50,14 @@ Web host: `NEXT_PUBLIC_CONVEX_URL`, `NEXT_PUBLIC_SITE_URL`, `REVALIDATE_SECRET`,
 features. A production build prerenders, so it needs a deployment that already has
 content.
 
+On Vercel, `vercel.json` runs `npm run build:vercel`, which wraps `next build` in
+`convex deploy`. Give Production a production deploy key and Preview a preview deploy
+key as `CONVEX_DEPLOY_KEY`. A preview branch gets a fresh, empty Convex deployment,
+and `convex deploy --cmd` runs the build before it pushes functions, so for previews
+the script pushes functions first and then builds. Set the Convex deployment variables
+above as the project's default environment variables for preview deployments in the
+Convex dashboard so sign-in works there.
+
 ## Screenshots
 
 ![About](docs/screenshots/about.png)
