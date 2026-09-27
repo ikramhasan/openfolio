@@ -372,6 +372,21 @@ html[data-theme="dark"] body {
   background-color: #1f1f1f;
 }
 
+.pf-embed-placeholder {
+  background-color: #1f1f1f;
+}
+
+.pf-embed-bone {
+  background-color: oklch(1 0 0 / 0.1);
+  animation: pf-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes pf-pulse {
+  50% {
+    opacity: 0.45;
+  }
+}
+
 .pf-handwriting {
   color: var(--pf-ink);
 }
@@ -660,7 +675,8 @@ html[data-theme="dark"] .pf-theme-icon[data-value="dark"] {
   }
 
   .pf-panel-enter,
-  .pf-admin-enter {
+  .pf-admin-enter,
+  .pf-embed-bone {
     animation: none;
   }
 
