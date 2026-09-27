@@ -25,11 +25,12 @@ export function AdminLink() {
   if (!signedIn) return null;
 
   return (
-    <Link href="/admin" prefetch={false} className="pf-admin pf-admin-enter">
+    <Link
+      href="/admin"
+      prefetch={false}
+      className="pf-link-quiet pf-meta pf-admin-enter"
+    >
       Admin
-      <span aria-hidden="true" className="pf-admin-arrow">
-        ↗
-      </span>
     </Link>
   );
 }

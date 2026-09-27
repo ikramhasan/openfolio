@@ -20,7 +20,13 @@ const NEXT: Record<Theme, Theme> = {
   dark: "system",
 };
 
-function Icon({ value }: { value: Theme }) {
+function Icon({
+  value,
+  className = "pf-theme-icon",
+}: {
+  value: Theme;
+  className?: string;
+}) {
   return (
     <svg
       aria-hidden="true"
@@ -32,7 +38,7 @@ function Icon({ value }: { value: Theme }) {
       strokeWidth="1.4"
       strokeLinecap="round"
       data-value={value}
-      className="pf-theme-icon"
+      className={className}
     >
       {value === "system" ? (
         <>
@@ -96,11 +102,18 @@ export function ThemeToggle() {
         ))}
       </button>
 
-      <fieldset className="pf-theme hidden lg:inline-flex">
+      <fieldset className="pf-theme relative hidden lg:inline-flex">
         <legend className="sr-only">Theme</legend>
 
+        <span aria-hidden="true" className="pf-theme-thumb" />
+
         {ORDER.map((value) => (
-          <label key={value} data-value={value} className="pf-theme-option">
+          <label
+            key={value}
+            data-value={value}
+            title={LABEL[value]}
+            className="pf-theme-option"
+          >
             <input
               type="radio"
               name="pf-theme"
@@ -109,7 +122,8 @@ export function ThemeToggle() {
               onChange={() => choose(value)}
               className="pf-theme-input"
             />
-            {LABEL[value]}
+            <Icon value={value} className="pf-theme-glyph" />
+            <span className="sr-only">{LABEL[value]}</span>
           </label>
         ))}
       </fieldset>

@@ -23,12 +23,14 @@ export function Rail({
   identity,
   label = "Portfolio sections",
   admin = false,
+  plain = false,
   actions,
 }: {
   items: NavItem[];
   identity?: ReactNode;
   label?: string;
   admin?: boolean;
+  plain?: boolean;
   actions?: ReactNode;
 }) {
   const pathname = usePathname();
@@ -182,18 +184,24 @@ export function Rail({
                   data-rail-href={item.href}
                   data-active={active}
                   aria-current={active ? "page" : undefined}
-                  className="pf-tab pf-meta shrink-0 whitespace-nowrap px-2.5 lg:-mx-2 lg:flex lg:items-center lg:gap-2.5 lg:px-2"
+                  className={
+                    plain
+                      ? "pf-tab pf-tab-plain pf-meta shrink-0 whitespace-nowrap px-2.5 lg:flex lg:items-center"
+                      : "pf-tab pf-meta shrink-0 whitespace-nowrap px-2.5 lg:-mx-2 lg:flex lg:items-center lg:gap-2.5 lg:px-2"
+                  }
                 >
-                  <span
-                    aria-hidden="true"
-                    className="pf-faint hidden lg:inline"
-                  >
-                    <HugeiconsIcon
-                      icon={item.icon}
-                      size={16}
-                      strokeWidth={1.5}
-                    />
-                  </span>
+                  {plain ? null : (
+                    <span
+                      aria-hidden="true"
+                      className="pf-faint hidden lg:inline"
+                    >
+                      <HugeiconsIcon
+                        icon={item.icon}
+                        size={16}
+                        strokeWidth={1.5}
+                      />
+                    </span>
+                  )}
                   <span>{item.label}</span>
                 </Link>
               </li>
@@ -202,7 +210,13 @@ export function Rail({
         </ul>
       </nav>
 
-      <div className="flex shrink-0 items-center gap-3 lg:mt-auto lg:-ml-0.5 lg:flex-col lg:items-start lg:gap-2.5">
+      <div
+        className={
+          plain
+            ? "flex shrink-0 items-center gap-3 lg:mt-auto lg:flex-col lg:items-start lg:gap-4"
+            : "flex shrink-0 items-center gap-3 lg:mt-auto lg:-ml-0.5 lg:flex-col lg:items-start lg:gap-2.5"
+        }
+      >
         {admin ? <AdminLink /> : null}
         {actions}
 
