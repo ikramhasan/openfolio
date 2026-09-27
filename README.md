@@ -39,6 +39,12 @@ private key, which starts with a dash.
 Convex deployment: `ADMIN_EMAIL`, `JWT_PRIVATE_KEY`, `JWKS`, `SITE_URL` (the site's
 origin, not the deployment's), optionally `GITHUB_TOKEN`.
 
+`GITHUB_TOKEN` lets the Open Source editor fetch pull requests and issues without
+hitting GitHub's shared-IP rate limit. Create a fine-grained token at
+github.com/settings/personal-access-tokens/new with "Public repositories" access and
+no extra permissions, then run `npx convex env set GITHUB_TOKEN=github_pat_...`
+(add `--prod` for the production deployment).
+
 Web host: `NEXT_PUBLIC_CONVEX_URL`, `NEXT_PUBLIC_SITE_URL`, `REVALIDATE_SECRET`,
 `CONVEX_DEPLOY_KEY`, optionally `GOOGLE_GENERATIVE_AI_API_KEY` for the editor's AI
 features. A production build prerenders, so it needs a deployment that already has
