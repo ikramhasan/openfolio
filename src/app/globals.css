@@ -309,6 +309,23 @@ html[data-theme="dark"] body {
   opacity: 0.85;
 }
 
+.pf-testimonial {
+  font-size: clamp(1rem, 1.3vw, 1.0625rem);
+  line-height: 1.72;
+  letter-spacing: -0.011em;
+  color: var(--pf-ink);
+}
+
+.pf-testimonial-mark {
+  position: absolute;
+  top: -0.3em;
+  right: 100%;
+  margin-right: 0.06em;
+  font-size: 1.6em;
+  line-height: 1.4;
+  color: var(--pf-faint);
+}
+
 .pf-role-title {
   font-size: 1rem;
   line-height: 1.4;
