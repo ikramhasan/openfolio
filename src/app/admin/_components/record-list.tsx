@@ -14,6 +14,7 @@ import { dayDate } from "./day-date";
 import { FieldInput } from "./fields";
 import { GroupHeader } from "./group-header";
 import { HideToggle } from "./hide-toggle";
+import { PinToggle } from "./pin-toggle";
 import { SortableList, SortableRow } from "./sortable";
 
 type RecordsBlock = Extract<Block, { kind: "records" }>;
@@ -27,6 +28,9 @@ export function RecordsEditor({ block }: { block: RecordsBlock }) {
   const [openKey, setOpenKey] = useState<number | null>(null);
   const [confirmKey, setConfirmKey] = useState<number | null>(null);
   const [rowKeys, setRowKeys] = useState(() => keysFor(items.length));
+  const [arrivingKey, setArrivingKey] = useState<number | null>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
 
   const keys =
     rowKeys.length === items.length ? rowKeys : keysFor(items.length);
@@ -41,7 +45,32 @@ export function RecordsEditor({ block }: { block: RecordsBlock }) {
     setRowKeys([...keys, key]);
     setConfirmKey(null);
     setOpenKey(key);
+    setArrivingKey(key);
   }
+
+  useEffect(() => {
+    if (arrivingKey === null) return;
+    setArrivingKey(null);
+
+    const record = listRef.current?.querySelector<HTMLElement>(
+      `[data-record-key="${arrivingKey}"]`,
+    );
+    if (!record) return;
+
+    const stuck = headerRef.current?.getBoundingClientRect().bottom ?? 0;
+    const reduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    window.scrollBy({
+      top: record.getBoundingClientRect().top - Math.max(stuck, 0) - 12,
+      behavior: reduced ? "auto" : "smooth",
+    });
+
+    record
+      .querySelector<HTMLElement>("input:not([type=file]), textarea")
+      ?.focus({ preventScroll: true });
+  }, [arrivingKey]);
 
   function addMany(records: unknown[]) {
     if (records.length === 0) return;
@@ -76,6 +105,7 @@ export function RecordsEditor({ block }: { block: RecordsBlock }) {
       <Record
         block={block}
         index={index}
+        recordKey={key}
         handle={handle}
         open={openKey === key}
         confirming={confirmKey === key}
@@ -92,6 +122,8 @@ export function RecordsEditor({ block }: { block: RecordsBlock }) {
   return (
     <section aria-labelledby={titleId}>
       <GroupHeader
+        ref={headerRef}
+        sticky
         id={titleId}
         title={block.label}
         count={items.length}
@@ -113,27 +145,29 @@ export function RecordsEditor({ block }: { block: RecordsBlock }) {
         }
       />
 
-      {items.length === 0 ? (
-        <p className="pf-meta pf-faint py-6">Nothing here yet.</p>
-      ) : sortable ? (
-        <SortableList ids={keys.map(String)} onMove={reorder}>
-          {items.map((item, index) => (
-            <SortableRow
-              key={keys[index]}
-              id={String(keys[index])}
-              label={summaryOf(block, item)}
-            >
-              {(handle) => row(index, handle)}
-            </SortableRow>
-          ))}
-        </SortableList>
-      ) : (
-        <ol className="pf-rule divide-y">
-          {items.map((_, index) => (
-            <li key={keys[index]}>{row(index)}</li>
-          ))}
-        </ol>
-      )}
+      <div ref={listRef}>
+        {items.length === 0 ? (
+          <p className="pf-meta pf-faint py-6">Nothing here yet.</p>
+        ) : sortable ? (
+          <SortableList ids={keys.map(String)} onMove={reorder}>
+            {items.map((item, index) => (
+              <SortableRow
+                key={keys[index]}
+                id={String(keys[index])}
+                label={summaryOf(block, item)}
+              >
+                {(handle) => row(index, handle)}
+              </SortableRow>
+            ))}
+          </SortableList>
+        ) : (
+          <ol className="pf-rule divide-y">
+            {items.map((_, index) => (
+              <li key={keys[index]}>{row(index)}</li>
+            ))}
+          </ol>
+        )}
+      </div>
     </section>
   );
 }
@@ -336,6 +370,7 @@ function RecordThumb({ block, item }: { block: RecordsBlock; item: unknown }) {
 function Record({
   block,
   index,
+  recordKey,
   handle,
   open,
   confirming,
@@ -345,6 +380,7 @@ function Record({
 }: {
   block: RecordsBlock;
   index: number;
+  recordKey: number;
   handle?: ReactNode;
   open: boolean;
   confirming: boolean;
@@ -363,6 +399,7 @@ function Record({
   const summary = summaryOf(block, item);
   const meta = metaOf(block, item);
   const hidden = Boolean(getPath(item, "hidden"));
+  const pinned = Boolean(getPath(item, "pinned"));
   const noun = nounOf(block);
 
   useEffect(() => {
@@ -383,6 +420,7 @@ function Record({
   return (
     <div
       className="pf-record"
+      data-record-key={recordKey}
       data-hidden={hidden || undefined}
       data-open={open || undefined}
       data-indent={handle ? true : undefined}
@@ -403,8 +441,9 @@ function Record({
           <span className="min-w-0 flex-1">
             <span className="pf-title block">{summary}</span>
 
-            {hidden || meta.length > 0 ? (
+            {hidden || pinned || meta.length > 0 ? (
               <span className="pf-meta mt-0.5 flex flex-wrap gap-x-2.5">
+                {pinned ? <span className="pf-strong">Pinned</span> : null}
                 {hidden ? <span className="pf-strong">Hidden</span> : null}
                 {meta.map((value, at) => (
                   <span
@@ -421,6 +460,10 @@ function Record({
 
         <div className="pf-record-actions">
           {block.page ? <PageLink block={block} index={index} /> : null}
+
+          {"pinned" in block.record.blank ? (
+            <PinToggle path={`${block.path}.${index}.pinned`} label={summary} />
+          ) : null}
 
           {"hidden" in block.record.blank ? (
             <HideToggle

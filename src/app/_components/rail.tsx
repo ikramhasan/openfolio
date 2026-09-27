@@ -34,8 +34,31 @@ export function Rail({
   actions?: ReactNode;
 }) {
   const pathname = usePathname();
+  const railRef = useRef<HTMLDivElement>(null);
   const scrollerRef = useRef<HTMLUListElement>(null);
   const mountedRef = useRef(false);
+
+  useEffect(() => {
+    const rail = railRef.current;
+    if (!rail) return;
+
+    const root = document.documentElement;
+    const measure = () => {
+      root.style.setProperty(
+        "--pf-rail-height",
+        `${rail.getBoundingClientRect().height}px`,
+      );
+    };
+
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(rail);
+
+    return () => {
+      observer.disconnect();
+      root.style.removeProperty("--pf-rail-height");
+    };
+  }, []);
 
   useEffect(() => {
     const scroller = scrollerRef.current;
@@ -166,7 +189,10 @@ export function Rail({
   }, []);
 
   return (
-    <div className="pf-rule sticky top-0 z-20 -mx-6 flex min-w-0 items-center gap-4 border-b bg-[var(--pf-bg)] px-6 py-0.5 sm:-mx-10 sm:px-10 lg:mx-0 lg:h-screen lg:flex-col lg:items-stretch lg:gap-0 lg:self-start lg:border-b-0 lg:px-0 lg:pt-16 lg:pb-8">
+    <div
+      ref={railRef}
+      className="pf-rule sticky top-0 z-20 -mx-6 flex min-w-0 items-center gap-4 border-b bg-[var(--pf-bg)] px-6 py-0.5 sm:-mx-10 sm:px-10 lg:mx-0 lg:h-screen lg:flex-col lg:items-stretch lg:gap-0 lg:self-start lg:border-b-0 lg:px-0 lg:pt-16 lg:pb-8"
+    >
       {identity}
       <nav aria-label={label} className="min-w-0 flex-1 lg:flex-none">
         <ul

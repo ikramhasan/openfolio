@@ -1,20 +1,27 @@
-import type { ReactNode } from "react";
+import type { ReactNode, Ref } from "react";
 
 export function GroupHeader({
+  ref,
   id,
   title,
   count,
   note,
   actions,
+  sticky = false,
 }: {
+  ref?: Ref<HTMLDivElement>;
   id?: string;
   title: string;
   count?: number;
   note?: ReactNode;
   actions?: ReactNode;
+  sticky?: boolean;
 }) {
   return (
-    <div className="pf-rule flex flex-wrap items-end justify-between gap-x-6 gap-y-3 border-b pb-3">
+    <div
+      ref={ref}
+      className={`pf-rule flex flex-wrap items-end justify-between gap-x-6 gap-y-3 border-b pb-3${sticky ? " pf-sticky-head" : ""}`}
+    >
       <div className="min-w-0 flex-1">
         <h2 id={id} className="pf-section-title">
           {title}
