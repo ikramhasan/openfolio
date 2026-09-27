@@ -20,11 +20,13 @@ import type * as lib_authz from "../lib/authz.js";
 import type * as lib_body from "../lib/body.js";
 import type * as lib_images from "../lib/images.js";
 import type * as lib_project from "../lib/project.js";
+import type * as lib_seedData from "../lib/seedData.js";
 import type * as lib_validators from "../lib/validators.js";
 import type * as lib_wire from "../lib/wire.js";
 import type * as lib_writable from "../lib/writable.js";
 import type * as lib_write from "../lib/write.js";
 import type * as newsletter from "../newsletter.js";
+import type * as seed from "../seed.js";
 import type * as users from "../users.js";
 
 import type {
@@ -46,11 +48,13 @@ declare const fullApi: ApiFromModules<{
   "lib/body": typeof lib_body;
   "lib/images": typeof lib_images;
   "lib/project": typeof lib_project;
+  "lib/seedData": typeof lib_seedData;
   "lib/validators": typeof lib_validators;
   "lib/wire": typeof lib_wire;
   "lib/writable": typeof lib_writable;
   "lib/write": typeof lib_write;
   newsletter: typeof newsletter;
+  seed: typeof seed;
   users: typeof users;
 }>;
 

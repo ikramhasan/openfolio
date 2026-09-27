@@ -188,6 +188,9 @@ dependencies:
   lowlight:
     specifier: ^3.3.0
     version: 3.3.0
+  lucia:
+    specifier: 3.2.2
+    version: 3.2.2
   lucide-react:
     specifier: ^1.47.0
     version: 1.48.0(react@19.2.8)
@@ -1180,6 +1183,7 @@ packages:
   /@img/colour@1.1.0:
     resolution: {integrity: sha512-Td76q7j57o/tLVdgS746cYARfSyxk8iEfRxewL9h4OMzYhbW4TAcppl0mT4eyqXddh6L/jwoM75mo7ixa/pCeQ==}
     engines: {node: '>=18'}
+    requiresBuild: true
     dev: false
     optional: true
 
@@ -8511,6 +8515,7 @@ packages:
     resolution: {integrity: sha512-Y7/KDsb8LjooZpwaqGyulO6DQlksgCncchHGk+sZIY4SBvUocMBEFH5Ur1fI4dV+Jvl0w6cjvucaIi40puRioA==}
     engines: {node: '>=10'}
     hasBin: true
+    requiresBuild: true
     dev: false
     optional: true
 
