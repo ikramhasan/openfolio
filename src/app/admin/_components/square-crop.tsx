@@ -72,7 +72,7 @@ export function SquareCrop({
         </div>
 
         <div className="mt-4 flex items-center gap-3">
-          <span className="pf-column shrink-0">Zoom</span>
+          <span className="pf-label shrink-0">Zoom</span>
           <input
             type="range"
             min={1}

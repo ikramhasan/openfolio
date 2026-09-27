@@ -1,12 +1,17 @@
 "use client";
 
+import ArrowDown01Icon from "@hugeicons/core-free-icons/ArrowDown01Icon";
+import { HugeiconsIcon } from "@hugeicons/react";
 import Link from "next/link";
 import { type ReactNode, useEffect, useId, useRef, useState } from "react";
+import { faviconUrl, hostOf } from "../../_components/data";
 import { slugOf } from "../../_components/writing";
 import { useDraft } from "../_lib/draft";
 import { getPath, move } from "../_lib/paths";
 import type { Block } from "../_lib/schema";
+import { dayDate } from "./day-date";
 import { FieldInput } from "./fields";
+import { GroupHeader } from "./group-header";
 import { HideToggle } from "./hide-toggle";
 import { SortableList, SortableRow } from "./sortable";
 
@@ -16,6 +21,7 @@ const keysFor = (count: number) => Array.from({ length: count }, (_, at) => at);
 
 export function RecordsEditor({ block }: { block: RecordsBlock }) {
   const draft = useDraft();
+  const titleId = useId();
   const items = draft.readList(block.path);
   const [openKey, setOpenKey] = useState<number | null>(null);
   const [confirmKey, setConfirmKey] = useState<number | null>(null);
@@ -58,7 +64,10 @@ export function RecordsEditor({ block }: { block: RecordsBlock }) {
         handle={handle}
         open={openKey === key}
         confirming={confirmKey === key}
-        onToggle={() => setOpenKey(openKey === key ? null : key)}
+        onToggle={() => {
+          setConfirmKey(null);
+          setOpenKey(openKey === key ? null : key);
+        }}
         onConfirming={(asking) => setConfirmKey(asking ? key : null)}
         onRemove={() => remove(index)}
       />
@@ -66,22 +75,21 @@ export function RecordsEditor({ block }: { block: RecordsBlock }) {
   }
 
   return (
-    <section className="mt-10">
-      <div className="pf-rule flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 border-b pb-2">
-        <h3 className="pf-column">
-          {block.label}
-          <span className="pf-faint pf-figure ml-2">{items.length}</span>
-        </h3>
-
-        <button type="button" onClick={add} className="pf-button-quiet">
-          {block.addLabel}
-        </button>
-      </div>
-
-      {block.note ? <p className="pf-meta mt-2">{block.note}</p> : null}
+    <section aria-labelledby={titleId}>
+      <GroupHeader
+        id={titleId}
+        title={block.label}
+        count={items.length}
+        note={block.note}
+        actions={
+          <button type="button" onClick={add} className="pf-button-quiet">
+            {block.addLabel}
+          </button>
+        }
+      />
 
       {items.length === 0 ? (
-        <p className="pf-meta pf-faint mt-4">Nothing here yet.</p>
+        <p className="pf-meta pf-faint py-6">Nothing here yet.</p>
       ) : sortable ? (
         <SortableList ids={keys.map(String)} onMove={reorder}>
           {items.map((item, index) => (
@@ -124,6 +132,52 @@ function summaryOf(block: RecordsBlock, item: unknown): string {
   );
 }
 
+function metaText(value: unknown): string {
+  if (Array.isArray(value)) {
+    return value
+      .map((entry) => String(entry).trim())
+      .filter(Boolean)
+      .join(", ");
+  }
+
+  const text = String(value ?? "").trim();
+  if (/^https?:\/\//i.test(text)) return hostOf(text);
+  if (/^\d{4}-\d{2}-\d{2}$/.test(text)) return dayDate(text) || text;
+
+  return text;
+}
+
+function metaOf(block: RecordsBlock, item: unknown): string[] {
+  return (block.record.metaKeys ?? [])
+    .map((key) => metaText(getPath(item, key)))
+    .filter(Boolean);
+}
+
+function nounOf(block: RecordsBlock): string {
+  return block.addLabel.replace(/^add\s+/i, "");
+}
+
+function RecordThumb({ block, item }: { block: RecordsBlock; item: unknown }) {
+  const draft = useDraft();
+  const image = block.record.image;
+  if (!image) return null;
+
+  const own = image.key ? String(getPath(item, image.key) ?? "").trim() : "";
+  const token =
+    own ||
+    (image.from ? faviconUrl(String(getPath(item, image.from) ?? "")) : "");
+  const src = token.startsWith("storage:") ? draft.previewFor(token) : token;
+
+  return (
+    <span className="pf-record-thumb" data-shape={image.shape ?? "logo"}>
+      {src ? (
+        // biome-ignore lint/performance/noImgElement: an arbitrary, unoptimisable host
+        <img src={src} alt="" className="size-full" />
+      ) : null}
+    </span>
+  );
+}
+
 function Record({
   block,
   index,
@@ -146,85 +200,142 @@ function Record({
   const draft = useDraft();
   const bodyId = useId();
   const confirmRef = useRef<HTMLButtonElement>(null);
+  const toggleRef = useRef<HTMLButtonElement>(null);
+  const refocus = useRef(false);
 
   const items = draft.readList(block.path);
   const item = items[index];
   const summary = summaryOf(block, item);
+  const meta = metaOf(block, item);
   const hidden = Boolean(getPath(item, "hidden"));
+  const noun = nounOf(block);
 
   useEffect(() => {
     if (confirming) confirmRef.current?.focus();
   }, [confirming]);
 
+  useEffect(() => {
+    if (open || !refocus.current) return;
+    refocus.current = false;
+    toggleRef.current?.focus();
+  }, [open]);
+
+  function close() {
+    refocus.current = true;
+    onToggle();
+  }
+
   return (
-    <div className="pf-record" data-hidden={hidden || undefined}>
-      <div className="flex items-center gap-1 py-1.5">
+    <div
+      className="pf-record"
+      data-hidden={hidden || undefined}
+      data-open={open || undefined}
+      data-indent={handle ? true : undefined}
+    >
+      <div className="pf-record-row">
         {handle}
 
         <button
           type="button"
+          ref={toggleRef}
           onClick={onToggle}
           aria-expanded={open}
           aria-controls={open ? bodyId : undefined}
           className="pf-record-toggle"
         >
-          <span className="pf-meta pf-figure pf-faint shrink-0">
-            {String(index + 1).padStart(2, "0")}
-          </span>
-          <span className="pf-title truncate">{summary}</span>
-          <span aria-hidden="true" className="pf-caret">
-            ▾
+          <RecordThumb block={block} item={item} />
+
+          <span className="min-w-0 flex-1">
+            <span className="pf-title block">{summary}</span>
+
+            {hidden || meta.length > 0 ? (
+              <span className="pf-meta mt-0.5 flex flex-wrap gap-x-2.5">
+                {hidden ? <span className="pf-strong">Hidden</span> : null}
+                {meta.map((value, at) => (
+                  <span
+                    key={`${at}-${value}`}
+                    className={at === 0 ? "pf-muted" : "pf-faint"}
+                  >
+                    {value}
+                  </span>
+                ))}
+              </span>
+            ) : null}
           </span>
         </button>
 
-        {"hidden" in block.record.blank ? (
-          <HideToggle path={`${block.path}.${index}.hidden`} label={summary} />
-        ) : null}
+        <div className="pf-record-actions">
+          {block.page ? <PageLink block={block} index={index} /> : null}
 
-        {block.page ? <PageLink block={block} index={index} /> : null}
+          {"hidden" in block.record.blank ? (
+            <HideToggle
+              path={`${block.path}.${index}.hidden`}
+              label={summary}
+            />
+          ) : null}
 
-        {confirming ? (
-          <span className="flex shrink-0 items-center gap-1">
-            <button
-              type="button"
-              ref={confirmRef}
-              onClick={onRemove}
-              className="pf-button-quiet"
-            >
-              Confirm
-            </button>
-            <button
-              type="button"
-              onClick={() => onConfirming(false)}
-              className="pf-button-quiet"
-            >
-              Cancel
-            </button>
-          </span>
-        ) : (
           <button
             type="button"
-            onClick={() => onConfirming(true)}
-            aria-label={`Remove ${summary}`}
-            className="pf-button-quiet shrink-0"
+            tabIndex={-1}
+            aria-hidden="true"
+            onClick={onToggle}
+            className="pf-chevron-button"
           >
-            Remove
+            <HugeiconsIcon icon={ArrowDown01Icon} size={18} strokeWidth={1.6} />
           </button>
-        )}
+        </div>
       </div>
 
       {open ? (
         <div id={bodyId} className="pf-record-body">
-          {block.record.fields.map((field) => (
-            <FieldInput
-              key={field.key}
-              field={field}
-              path={`${block.path}.${index}.${field.key}`}
-              suggestions={
-                field.suggest ? suggestionsFor(items, field.key) : undefined
-              }
-            />
-          ))}
+          <div className="pf-record-fields">
+            {block.record.fields.map((field) => (
+              <FieldInput
+                key={field.key}
+                field={field}
+                path={`${block.path}.${index}.${field.key}`}
+                suggestions={
+                  field.suggest ? suggestionsFor(items, field.key) : undefined
+                }
+              />
+            ))}
+          </div>
+
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
+            {confirming ? (
+              <span className="flex flex-wrap items-center gap-2">
+                <span className="pf-meta pf-strong">Remove this {noun}?</span>
+                <button
+                  type="button"
+                  ref={confirmRef}
+                  onClick={onRemove}
+                  className="pf-button-quiet pf-button-danger"
+                >
+                  Remove
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onConfirming(false)}
+                  className="pf-button-quiet"
+                >
+                  Cancel
+                </button>
+              </span>
+            ) : (
+              <button
+                type="button"
+                onClick={() => onConfirming(true)}
+                aria-label={`Remove ${summary}`}
+                className="pf-link-quiet pf-meta"
+              >
+                Remove {noun}
+              </button>
+            )}
+
+            <button type="button" onClick={close} className="pf-button-quiet">
+              Done
+            </button>
+          </div>
         </div>
       ) : null}
     </div>

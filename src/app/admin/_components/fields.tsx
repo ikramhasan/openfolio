@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useRef, useState } from "react";
+import { type ReactNode, useId, useRef, useState } from "react";
 import { faviconUrl, formatCount } from "../../_components/data";
 import { createUploadUrl, lookupContribution } from "../_lib/actions";
 import { useDraft } from "../_lib/draft";
@@ -61,6 +61,12 @@ export function FieldInput({
       ? `${id}-options`
       : undefined;
 
+  const placeholder = field.fallbackFrom
+    ? String(
+        draft.read(`${recordBase(path, field)}${field.fallbackFrom}`) ?? "",
+      )
+    : undefined;
+
   const multiline = field.kind === "textarea" || field.kind === "lines";
   const type =
     field.kind === "url"
@@ -77,15 +83,9 @@ export function FieldInput({
 
   return (
     <div className={field.wide ? "sm:col-span-2" : undefined}>
-      <div className="flex items-baseline justify-between gap-x-4">
-        <label htmlFor={id} className="pf-column">
-          {field.label}
-        </label>
-
-        {field.kind === "image" && field.from ? (
-          <SiteIcon path={path} source={siblingPath(path, field)} />
-        ) : null}
-      </div>
+      <label htmlFor={id} className="pf-label block">
+        {field.label}
+      </label>
 
       <div className="mt-1.5 flex items-start gap-2">
         {field.kind === "image" ? <Thumbnail token={text} /> : null}
@@ -106,6 +106,7 @@ export function FieldInput({
             type={type}
             value={text}
             list={listId}
+            placeholder={placeholder}
             inputMode={field.kind === "number" ? "numeric" : undefined}
             aria-describedby={describedBy}
             onChange={(event) => commit(event.target.value)}
@@ -135,7 +136,11 @@ export function FieldInput({
           label={field.label}
           square={field.square}
           sizeBase={field.probeSize ? recordBase(path, field) : undefined}
-        />
+        >
+          {field.from ? (
+            <SiteIcon path={path} source={siblingPath(path, field)} />
+          ) : null}
+        </Upload>
       ) : null}
 
       {field.kind === "file" ? (
@@ -148,10 +153,22 @@ export function FieldInput({
 
       {field.hint ? (
         <p id={describedBy} className="pf-meta pf-faint mt-1.5">
-          {field.hint}
+          <Hint text={field.hint} />
         </p>
       ) : null}
     </div>
+  );
+}
+
+function Hint({ text }: { text: string }) {
+  return text.split("`").map((part, at) =>
+    at % 2 === 1 ? (
+      <span key={`${at}-${part}`} className="pf-muted">
+        {part}
+      </span>
+    ) : (
+      part
+    ),
   );
 }
 
@@ -247,12 +264,9 @@ function SiteIcon({ path, source }: { path: string; source: string }) {
     <button
       type="button"
       disabled={icon === ""}
+      title={icon === "" ? "Add a URL first" : undefined}
       onClick={() => draft.setField(path, icon)}
-      className={
-        icon === ""
-          ? "pf-meta pf-faint shrink-0 cursor-not-allowed"
-          : "pf-link-quiet pf-meta shrink-0"
-      }
+      className="pf-button-quiet shrink-0 disabled:cursor-not-allowed disabled:opacity-50"
     >
       Use site icon
     </button>
@@ -267,12 +281,14 @@ function Upload({
   sizeBase,
   square,
   accept: mime,
+  children,
 }: {
   path: string;
   label: string;
   sizeBase?: string;
   square?: boolean;
   accept?: string;
+  children?: ReactNode;
 }) {
   const draft = useDraft();
   const input = useRef<HTMLInputElement>(null);
@@ -349,19 +365,32 @@ function Upload({
   }
 
   return (
-    <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1">
+    <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1.5">
       <input
         ref={input}
         type="file"
         accept={mime ?? "image/*"}
-        aria-label={`Upload ${label.toLowerCase()}`}
+        tabIndex={-1}
+        aria-hidden="true"
         disabled={state === "busy"}
         onChange={(event) => {
           const file = event.target.files?.[0];
           if (file) accept(file);
         }}
-        className="pf-meta pf-faint min-w-0 max-w-full"
+        className="sr-only"
       />
+
+      <button
+        type="button"
+        disabled={state === "busy"}
+        onClick={() => input.current?.click()}
+        aria-label={`Upload ${label.toLowerCase()}`}
+        className="pf-button-quiet shrink-0 disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        {mime === "application/pdf" ? "Upload PDF" : "Upload image"}
+      </button>
+
+      {children}
 
       {state === "busy" ? (
         <output className="pf-meta pf-muted">Uploading…</output>

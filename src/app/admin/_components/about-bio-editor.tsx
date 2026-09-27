@@ -2,12 +2,13 @@
 
 import { normalizeStaticValue, type Value } from "platejs";
 import { Plate, usePlateEditor } from "platejs/react";
-import { useState } from "react";
+import { useId, useState } from "react";
 import { EditorKit } from "@/components/editor/editor-kit";
 import "../../prose.css";
 import { Editor, EditorContainer } from "@/components/ui/editor";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { saveAboutBio } from "../_lib/actions";
+import { GroupHeader } from "./group-header";
 
 type SaveState = "idle" | "saving" | "saved" | "failed";
 
@@ -25,6 +26,7 @@ export function AboutBioEditor({
     value: initial(body),
   });
 
+  const titleId = useId();
   const [dirty, setDirty] = useState(false);
   const [state, setState] = useState<SaveState>("idle");
   const [message, setMessage] = useState<string | null>(null);
@@ -62,22 +64,16 @@ export function AboutBioEditor({
           setMessage(null);
         }}
       >
-        <fieldset className="mt-10 min-w-0 first:mt-0">
-          <div className="flex items-baseline justify-between gap-x-4">
-            <legend className="pf-rule pf-column w-full border-b pb-2">
-              {label}
-            </legend>
-          </div>
+        <section aria-labelledby={titleId} className="min-w-0">
+          <GroupHeader id={titleId} title={label} note={note} />
 
-          {note ? <p className="pf-meta pf-faint mt-2">{note}</p> : null}
-
-          <div className="pf-rule mt-3 overflow-hidden rounded-md border">
+          <div className="pf-rule mt-5 overflow-hidden rounded-md border">
             <EditorContainer className="h-auto min-h-[16rem]">
               <Editor variant="none" className="pf-prose px-4 py-4" />
             </EditorContainer>
           </div>
 
-          <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5">
+          <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5">
             <button
               type="button"
               onClick={save}
@@ -97,7 +93,7 @@ export function AboutBioEditor({
               </output>
             ) : null}
           </div>
-        </fieldset>
+        </section>
       </Plate>
     </TooltipProvider>
   );

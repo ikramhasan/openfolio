@@ -38,10 +38,19 @@ export type Field = {
   probeSize?: boolean;
   square?: boolean;
   accept?: string;
+  fallbackFrom?: string;
+};
+
+export type RecordImage = {
+  key?: string;
+  from?: string;
+  shape?: "logo" | "cover" | "avatar";
 };
 
 export type RecordSchema = {
   summaryKey: string;
+  metaKeys?: string[];
+  image?: RecordImage;
   fields: Field[];
   blank: Record<string, unknown>;
 };
@@ -59,6 +68,7 @@ export type Block =
   | {
       kind: "fields";
       label?: string;
+      note?: string;
       base: string;
       fields: Field[];
       sectionToggle?: string;
@@ -107,6 +117,7 @@ const HEADING_FIELDS: Field[] = [
     label: "Rail label",
     kind: "text",
     hint: "Defaults to the heading.",
+    fallbackFrom: "title",
   },
 ];
 
@@ -114,6 +125,7 @@ function heading(id: string): Block {
   return {
     kind: "fields",
     label: "Heading",
+    note: "The title and subtitle above this section, and its name in the rail.",
     base: `sections.${id}`,
     fields: HEADING_FIELDS,
     sectionToggle: id,
@@ -123,6 +135,8 @@ function heading(id: string): Block {
 
 const LINK_RECORD: RecordSchema = {
   summaryKey: "title",
+  metaKeys: ["url"],
+  image: { from: "url" },
   fields: [
     { key: "title", label: "Label", kind: "text" },
     {
@@ -147,6 +161,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
       {
         kind: "fields",
         label: "Site",
+        note: "What browser tabs and search results show.",
         base: "site",
         collapsible: true,
         fields: [
@@ -215,6 +230,8 @@ export const ADMIN_GROUPS: AdminGroup[] = [
         page: writeRoute("experience"),
         record: {
           summaryKey: "title",
+          metaKeys: ["company", "dateRange"],
+          image: { key: "logo", from: "url" },
           fields: [
             { key: "title", label: "Role", kind: "text" },
             { key: "company", label: "Company", kind: "text" },
@@ -268,6 +285,8 @@ export const ADMIN_GROUPS: AdminGroup[] = [
         page: writeRoute("projects"),
         record: {
           summaryKey: "title",
+          metaKeys: ["link", "tags"],
+          image: { key: "logo", from: "link" },
           fields: [
             { key: "title", label: "Title", kind: "text" },
             { key: "logo", label: "Logo", kind: "image", from: "link" },
@@ -315,6 +334,8 @@ export const ADMIN_GROUPS: AdminGroup[] = [
         orderKey: "order",
         record: {
           summaryKey: "title",
+          metaKeys: ["category", "url"],
+          image: { key: "icon", from: "url" },
           fields: [
             { key: "title", label: "Name", kind: "text" },
             {
@@ -362,6 +383,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
         orderKey: "order",
         record: {
           summaryKey: "title",
+          metaKeys: ["artist"],
           fields: [
             { key: "title", label: "Track", kind: "text" },
             { key: "artist", label: "Artist", kind: "text" },
@@ -402,6 +424,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
         page: writeRoute("articles"),
         record: {
           summaryKey: "title",
+          metaKeys: ["publishedAt", "url"],
           fields: [
             { key: "title", label: "Title", kind: "text", wide: true },
             {
@@ -451,6 +474,8 @@ export const ADMIN_GROUPS: AdminGroup[] = [
         orderKey: "order",
         record: {
           summaryKey: "alt",
+          metaKeys: ["title"],
+          image: { key: "url", shape: "cover" },
           fields: [
             {
               key: "url",
@@ -502,6 +527,8 @@ export const ADMIN_GROUPS: AdminGroup[] = [
         orderKey: "order",
         record: {
           summaryKey: "title",
+          metaKeys: ["url"],
+          image: { key: "thumbnail", shape: "cover" },
           fields: [
             { key: "title", label: "Title", kind: "text", wide: true },
             { key: "url", label: "URL", kind: "url", wide: true },
@@ -533,6 +560,8 @@ export const ADMIN_GROUPS: AdminGroup[] = [
         addLabel: "Add qualification",
         record: {
           summaryKey: "title",
+          metaKeys: ["institution", "dateRange"],
+          image: { key: "logo", from: "url" },
           fields: [
             { key: "title", label: "Qualification", kind: "text", wide: true },
             { key: "institution", label: "Institution", kind: "text" },
@@ -584,6 +613,8 @@ export const ADMIN_GROUPS: AdminGroup[] = [
         note: "Shown newest first by date — nothing to drag.",
         record: {
           summaryKey: "title",
+          metaKeys: ["repo", "state", "date"],
+          image: { key: "avatar", shape: "avatar" },
           fields: [
             {
               key: "url",
@@ -627,6 +658,8 @@ export const ADMIN_GROUPS: AdminGroup[] = [
         page: writeRoute("awards"),
         record: {
           summaryKey: "title",
+          metaKeys: ["organization", "date"],
+          image: { key: "logo", from: "url" },
           fields: [
             { key: "title", label: "Award", kind: "text", wide: true },
             { key: "organization", label: "Organisation", kind: "text" },
@@ -670,6 +703,8 @@ export const ADMIN_GROUPS: AdminGroup[] = [
         addLabel: "Add testimonial",
         record: {
           summaryKey: "title",
+          metaKeys: ["author.name", "author.bio"],
+          image: { key: "author.image", shape: "avatar" },
           fields: [
             {
               key: "title",
