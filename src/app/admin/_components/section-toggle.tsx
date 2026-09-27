@@ -11,6 +11,7 @@ export function SectionToggle({ section }: { section: string }) {
     <HideToggle
       path={`sections.${section}.hidden`}
       label={`the ${title.toLowerCase()} section`}
+      labelled
     />
   );
 }
