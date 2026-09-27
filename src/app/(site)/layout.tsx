@@ -15,12 +15,12 @@ export default async function SiteLayout({ children }: LayoutProps<"/">) {
   return (
     <div
       id="top"
-      className="mx-auto grid w-full max-w-6xl flex-1 grid-cols-[minmax(0,1fr)] gap-x-16 px-6 sm:px-10 lg:grid-cols-[200px_minmax(0,1fr)]"
+      className="mx-auto grid w-full max-w-6xl flex-1 grid-cols-[minmax(0,1fr)] grid-rows-[auto_1fr] gap-x-16 px-6 sm:px-10 lg:grid-cols-[200px_minmax(0,1fr)] lg:grid-rows-[1fr]"
     >
       <Rail items={items} identity={<Identity />} admin />
 
-      <div className="min-w-0">
-        <main>{children}</main>
+      <div className="flex min-w-0 flex-col">
+        <main className="flex-1">{children}</main>
         <Footer />
       </div>
     </div>
