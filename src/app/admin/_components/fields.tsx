@@ -261,15 +261,20 @@ function SiteIcon({ path, source }: { path: string; source: string }) {
   const icon = faviconUrl(String(draft.read(source) ?? ""));
 
   return (
-    <button
-      type="button"
-      disabled={icon === ""}
-      title={icon === "" ? "Add a URL first" : undefined}
-      onClick={() => draft.setField(path, icon)}
-      className="pf-button-quiet shrink-0 disabled:cursor-not-allowed disabled:opacity-50"
-    >
-      Use site icon
-    </button>
+    <>
+      <button
+        type="button"
+        disabled={icon === ""}
+        onClick={() => draft.setField(path, icon)}
+        className="pf-button-quiet shrink-0 disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        Use site icon
+      </button>
+
+      {icon === "" ? (
+        <span className="pf-meta pf-faint">Add a URL first.</span>
+      ) : null}
+    </>
   );
 }
 

@@ -235,6 +235,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
           fields: [
             { key: "title", label: "Role", kind: "text" },
             { key: "company", label: "Company", kind: "text" },
+            { key: "url", label: "URL", kind: "url" },
             { key: "logo", label: "Logo", kind: "image", from: "url" },
             { key: "location", label: "Location", kind: "text" },
             {
@@ -243,7 +244,6 @@ export const ADMIN_GROUPS: AdminGroup[] = [
               kind: "text",
               hint: "`October, 2022 - Present`. A trailing `(Contract)` is shown as a qualifier.",
             },
-            { key: "url", label: "URL", kind: "url" },
             {
               key: "details",
               label: "Bullets",
@@ -288,9 +288,9 @@ export const ADMIN_GROUPS: AdminGroup[] = [
           metaKeys: ["link", "tags"],
           image: { key: "logo", from: "link" },
           fields: [
-            { key: "title", label: "Title", kind: "text" },
+            { key: "title", label: "Title", kind: "text", wide: true },
+            { key: "link", label: "URL", kind: "url" },
             { key: "logo", label: "Logo", kind: "image", from: "link" },
-            { key: "link", label: "URL", kind: "url", wide: true },
             {
               key: "tags",
               label: "Tags",
@@ -345,12 +345,11 @@ export const ADMIN_GROUPS: AdminGroup[] = [
               suggest: true,
               hint: "Reuse the same wording to file tools together.",
             },
-            { key: "url", label: "URL", kind: "url", wide: true },
+            { key: "url", label: "URL", kind: "url" },
             {
               key: "icon",
               label: "Icon",
               kind: "image",
-              wide: true,
               from: "url",
               hint: "Take the site's own favicon, paste a URL, or upload a file.",
             },
@@ -565,15 +564,15 @@ export const ADMIN_GROUPS: AdminGroup[] = [
           fields: [
             { key: "title", label: "Qualification", kind: "text", wide: true },
             { key: "institution", label: "Institution", kind: "text" },
-            { key: "logo", label: "Logo", kind: "image", from: "url" },
             { key: "location", label: "Location", kind: "text" },
+            { key: "url", label: "URL", kind: "url" },
+            { key: "logo", label: "Logo", kind: "image", from: "url" },
             {
               key: "dateRange",
               label: "Dates",
               kind: "text",
               hint: "`2019 - 2022`.",
             },
-            { key: "url", label: "URL", kind: "url", wide: true },
             {
               key: "description",
               label: "Description",
@@ -663,9 +662,9 @@ export const ADMIN_GROUPS: AdminGroup[] = [
           fields: [
             { key: "title", label: "Award", kind: "text", wide: true },
             { key: "organization", label: "Organisation", kind: "text" },
-            { key: "logo", label: "Logo", kind: "image" },
             { key: "date", label: "Date", kind: "date" },
             { key: "url", label: "URL", kind: "url" },
+            { key: "logo", label: "Logo", kind: "image", from: "url" },
             {
               key: "description",
               label: "Description",
