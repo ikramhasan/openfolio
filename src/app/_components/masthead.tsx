@@ -6,9 +6,8 @@ export async function Masthead() {
   const intro = await getIntro();
   const words = intro.title.trim().split(/\s+/);
   const last = words.pop();
-  const meetingLink = /^https?:\/\//i.test(intro.meetingLink.trim())
-    ? intro.meetingLink.trim()
-    : null;
+  const meetingUrl = (intro.meetingLink ?? "").trim();
+  const meetingLink = /^https?:\/\//i.test(meetingUrl) ? meetingUrl : null;
 
   return (
     <header className="pt-10 pb-6 lg:pt-16 lg:pb-8 xl:pt-20">
