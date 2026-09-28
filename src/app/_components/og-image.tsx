@@ -344,7 +344,7 @@ export async function renderPageCard({
               lineClamp: 2,
             }}
           >
-            {clip(standfirst, 130)}
+            {clip(standfirst, 150)}
           </div>
         ) : null}
       </div>
