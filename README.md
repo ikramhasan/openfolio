@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://openfolio-six.vercel.app">Live site</a>
+  <a href="https://ikramhasan.com?ref=github.com">Live site</a>
   ·
   <a href="#getting-started">Getting started</a>
   ·
