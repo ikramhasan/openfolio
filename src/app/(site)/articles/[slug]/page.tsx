@@ -9,6 +9,8 @@ import {
   writtenParams,
 } from "../../../_components/content";
 import { formatCount, longDate } from "../../../_components/data";
+import { bodyExcerpt, isoDate, pageMetadata } from "../../../_components/seo";
+import { ArticleJsonLd } from "../../../_components/structured-data";
 import { slugOf } from "../../../_components/writing";
 import { Written } from "../../../_components/written";
 
@@ -21,6 +23,10 @@ async function post(slug: string) {
   return items.find((item) => slugOf(item) === slug) ?? null;
 }
 
+async function summary(slug: string, excerpt: string | null) {
+  return excerpt?.trim() || bodyExcerpt(await getBody("articles", slug));
+}
+
 export async function generateMetadata({
   params,
 }: PageProps<"/articles/[slug]">): Promise<Metadata> {
@@ -29,21 +35,14 @@ export async function generateMetadata({
 
   if (!article) return {};
 
-  const description = article.excerpt ?? undefined;
-
-  return {
+  return pageMetadata({
     title: article.title,
-    ...(description ? { description } : {}),
-    alternates: { canonical: `/articles/${slug}` },
-    openGraph: {
-      type: "article",
-      title: article.title,
-      ...(description ? { description } : {}),
-      url: `/articles/${slug}`,
-      publishedTime: article.publishedAt,
-      ...(article.coverImage ? { images: [article.coverImage] } : {}),
-    },
-  };
+    description: await summary(slug, article.excerpt),
+    path: `/articles/${slug}`,
+    type: "article",
+    publishedTime: isoDate(article.publishedAt),
+    section: "Articles",
+  });
 }
 
 export default function ArticlePage({ params }: PageProps<"/articles/[slug]">) {
@@ -72,23 +71,33 @@ async function CachedArticle({
   if (!article || !body) notFound();
 
   return (
-    <Written
-      title={article.title}
-      standfirst={article.excerpt}
-      cover={article.coverImage}
-      meta={
-        <>
-          <time dateTime={article.publishedAt}>
-            {longDate(article.publishedAt)}
-          </time>
-          <span aria-hidden="true"> · </span>
-          {article.readTimeMinutes} min read
-          <span aria-hidden="true"> · </span>
-          {formatCount(article.views)} views
-        </>
-      }
-      body={body}
-      back={{ href: "/articles", label: "Articles" }}
-    />
+    <>
+      <ArticleJsonLd
+        title={article.title}
+        description={article.excerpt?.trim() || bodyExcerpt(body)}
+        path={`/articles/${slug}`}
+        publishedAt={article.publishedAt}
+        image={article.coverImage}
+        section="articles"
+      />
+      <Written
+        title={article.title}
+        standfirst={article.excerpt}
+        cover={article.coverImage}
+        meta={
+          <>
+            <time dateTime={article.publishedAt}>
+              {longDate(article.publishedAt)}
+            </time>
+            <span aria-hidden="true"> · </span>
+            {article.readTimeMinutes} min read
+            <span aria-hidden="true"> · </span>
+            {formatCount(article.views)} views
+          </>
+        }
+        body={body}
+        back={{ href: "/articles", label: "Articles" }}
+      />
+    </>
   );
 }

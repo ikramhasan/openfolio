@@ -1,6 +1,6 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
-import { getIntro, getSite } from "./_components/content";
+import { FEED_PATH, identity } from "./_components/seo";
 import { siteUrl } from "./_components/site-url";
 import "./globals.css";
 
@@ -10,29 +10,54 @@ const inter = Inter({
   display: "swap",
 });
 
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#121110" },
+  ],
+  colorScheme: "light dark",
+};
+
 export async function generateMetadata(): Promise<Metadata> {
-  const [site, intro] = await Promise.all([getSite(), getIntro()]);
+  const { site, name, twitter } = await identity();
 
   return {
     metadataBase: new URL(siteUrl),
     title: {
-      template: `%s | ${intro.title}`,
+      template: `%s | ${name}`,
       default: site.title,
     },
     description: site.description,
-    alternates: { canonical: "/" },
+    applicationName: site.title,
+    authors: [{ name, url: siteUrl }],
+    creator: name,
+    publisher: name,
+    alternates: {
+      types: {
+        "application/rss+xml": [{ url: FEED_PATH, title: site.title }],
+      },
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+        "max-video-preview": -1,
+      },
+    },
     openGraph: {
-      type: "profile",
+      type: "website",
+      locale: "en_US",
       siteName: site.title,
       title: site.title,
       description: site.description,
-      url: "/",
-      ...(intro.profileImage ? { images: [intro.profileImage] } : {}),
     },
     twitter: {
-      card: "summary",
-      title: site.title,
-      description: site.description,
+      card: "summary_large_image",
+      ...(twitter ? { creator: twitter, site: twitter } : {}),
     },
   };
 }
