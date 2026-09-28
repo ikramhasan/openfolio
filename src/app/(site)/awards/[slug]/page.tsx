@@ -9,6 +9,8 @@ import {
   writtenParams,
 } from "../../../_components/content";
 import { longDate } from "../../../_components/data";
+import { isoDate, pageMetadata } from "../../../_components/seo";
+import { WorkJsonLd } from "../../../_components/structured-data";
 import { slugOf } from "../../../_components/writing";
 import { Outbound, Written } from "../../../_components/written";
 
@@ -29,18 +31,14 @@ export async function generateMetadata({
 
   if (!item) return {};
 
-  return {
+  return pageMetadata({
     title: item.title,
     description: item.description,
-    alternates: { canonical: `/awards/${slug}` },
-    openGraph: {
-      type: "article",
-      title: item.title,
-      description: item.description,
-      url: `/awards/${slug}`,
-      publishedTime: item.date,
-    },
-  };
+    path: `/awards/${slug}`,
+    type: "article",
+    publishedTime: isoDate(item.date),
+    section: "Awards",
+  });
 }
 
 export default function AwardPage({ params }: PageProps<"/awards/[slug]">) {
@@ -69,24 +67,33 @@ async function CachedAward({
   if (!item || !body) notFound();
 
   return (
-    <Written
-      title={item.title}
-      standfirst={item.description}
-      meta={
-        <>
-          {item.organization}
-          <span aria-hidden="true"> · </span>
-          <time dateTime={item.date}>{longDate(item.date)}</time>
-          {item.url ? (
-            <>
-              <span aria-hidden="true"> · </span>
-              <Outbound href={item.url} label="Announcement" />
-            </>
-          ) : null}
-        </>
-      }
-      body={body}
-      back={{ href: "/awards", label: "Awards" }}
-    />
+    <>
+      <WorkJsonLd
+        title={item.title}
+        description={item.description}
+        path={`/awards/${slug}`}
+        link={item.url}
+        section="awards"
+      />
+      <Written
+        title={item.title}
+        standfirst={item.description}
+        meta={
+          <>
+            {item.organization}
+            <span aria-hidden="true"> · </span>
+            <time dateTime={item.date}>{longDate(item.date)}</time>
+            {item.url ? (
+              <>
+                <span aria-hidden="true"> · </span>
+                <Outbound href={item.url} label="Announcement" />
+              </>
+            ) : null}
+          </>
+        }
+        body={body}
+        back={{ href: "/awards", label: "Awards" }}
+      />
+    </>
   );
 }

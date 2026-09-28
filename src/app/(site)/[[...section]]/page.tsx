@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { Masthead } from "../../_components/masthead";
 import { Panel } from "../../_components/panel";
 import { routedSections, sectionForPath } from "../../_components/sections";
+import { identity, ogImagePath, pageMetadata } from "../../_components/seo";
+import { HomeJsonLd } from "../../_components/structured-data";
 
 export const instant = false;
 
@@ -27,18 +29,25 @@ export async function generateMetadata({
 
   if (!entry) return {};
 
-  if (entry.home) return { alternates: { canonical: "/" } };
+  const { site, intro, name } = await identity();
 
-  return {
+  if (entry.home) {
+    return pageMetadata({
+      title: site.title,
+      description: site.description || intro.bio,
+      path: "/",
+      type: "profile",
+      absoluteTitle: true,
+      image: { url: ogImagePath("/"), alt: site.title },
+    });
+  }
+
+  return pageMetadata({
     title: entry.title,
-    ...(entry.note ? { description: entry.note } : {}),
-    alternates: { canonical: entry.path },
-    openGraph: {
-      title: entry.title,
-      ...(entry.note ? { description: entry.note } : {}),
-      url: entry.path,
-    },
-  };
+    description: entry.note ?? `${entry.title}, from the portfolio of ${name}.`,
+    path: entry.path,
+    image: { url: ogImagePath(entry.path), alt: entry.title },
+  });
 }
 
 export default async function SectionPage({
@@ -65,6 +74,7 @@ async function CachedSection({ path }: { path: string }) {
   if (entry.home) {
     return (
       <>
+        <HomeJsonLd />
         <Masthead />
 
         <Panel title={entry.title} note={entry.note} aside={entry.aside} lead>

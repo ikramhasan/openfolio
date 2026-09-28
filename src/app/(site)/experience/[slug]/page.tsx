@@ -9,6 +9,8 @@ import {
   writtenParams,
 } from "../../../_components/content";
 import { cleanBullet } from "../../../_components/data";
+import { pageMetadata } from "../../../_components/seo";
+import { BreadcrumbJsonLd } from "../../../_components/structured-data";
 import { slugOf } from "../../../_components/writing";
 import { Outbound, Written } from "../../../_components/written";
 
@@ -29,19 +31,17 @@ export async function generateMetadata({
 
   if (!item) return {};
 
-  const description = `${item.title} at ${item.company}, ${item.dateRange}.`;
+  const lead = item.details.map(cleanBullet).find(Boolean);
 
-  return {
+  return pageMetadata({
     title: `${item.title} · ${item.company}`,
-    description,
-    alternates: { canonical: `/experience/${slug}` },
-    openGraph: {
-      type: "article",
-      title: `${item.title} · ${item.company}`,
-      description,
-      url: `/experience/${slug}`,
-    },
-  };
+    description: [`${item.title} at ${item.company}, ${item.dateRange}.`, lead]
+      .filter(Boolean)
+      .join(" "),
+    path: `/experience/${slug}`,
+    type: "article",
+    section: "Experience",
+  });
 }
 
 export default function RolePage({ params }: PageProps<"/experience/[slug]">) {
@@ -70,43 +70,50 @@ async function CachedRole({
   if (!item || !body) notFound();
 
   return (
-    <Written
-      title={item.title}
-      meta={
-        <>
-          {item.company}
-          <span aria-hidden="true"> · </span>
-          {item.location.trim()}
-          <span aria-hidden="true"> · </span>
-          {item.dateRange}
-          {item.url ? (
-            <>
-              <span aria-hidden="true"> · </span>
-              <Outbound href={item.url} label="Company" />
-            </>
-          ) : null}
-        </>
-      }
-      intro={
-        item.details.length > 0 ? (
-          <ul className="max-w-[72ch] space-y-1.5">
-            {item.details.map((detail) => {
-              const text = cleanBullet(detail);
+    <>
+      <BreadcrumbJsonLd
+        title={`${item.title} · ${item.company}`}
+        path={`/experience/${slug}`}
+        section="experience"
+      />
+      <Written
+        title={item.title}
+        meta={
+          <>
+            {item.company}
+            <span aria-hidden="true"> · </span>
+            {item.location.trim()}
+            <span aria-hidden="true"> · </span>
+            {item.dateRange}
+            {item.url ? (
+              <>
+                <span aria-hidden="true"> · </span>
+                <Outbound href={item.url} label="Company" />
+              </>
+            ) : null}
+          </>
+        }
+        intro={
+          item.details.length > 0 ? (
+            <ul className="max-w-[72ch] space-y-1.5">
+              {item.details.map((detail) => {
+                const text = cleanBullet(detail);
 
-              return (
-                <li key={text} className="pf-body flex gap-2.5">
-                  <span aria-hidden="true" className="pf-faint select-none">
-                    ·
-                  </span>
-                  <span>{text}</span>
-                </li>
-              );
-            })}
-          </ul>
-        ) : null
-      }
-      body={body}
-      back={{ href: "/experience", label: "Experience" }}
-    />
+                return (
+                  <li key={text} className="pf-body flex gap-2.5">
+                    <span aria-hidden="true" className="pf-faint select-none">
+                      ·
+                    </span>
+                    <span>{text}</span>
+                  </li>
+                );
+              })}
+            </ul>
+          ) : null
+        }
+        body={body}
+        back={{ href: "/experience", label: "Experience" }}
+      />
+    </>
   );
 }
