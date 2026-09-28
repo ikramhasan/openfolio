@@ -210,6 +210,13 @@ export const ADMIN_GROUPS: AdminGroup[] = [
             accept: "application/pdf",
             hint: "A PDF. Adds a View resume button to the masthead, linking to /cv. Clear the field to remove it.",
           },
+          {
+            key: "meetingLink",
+            label: "Meeting link",
+            kind: "url",
+            wide: true,
+            hint: "A scheduling link such as Cal.com or Calendly. Adds a Book a call button beside View resume, opening in a new tab. Leave empty to hide it.",
+          },
         ],
       },
       {

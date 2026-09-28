@@ -880,6 +880,19 @@ html[data-theme="dark"] .pf-theme-icon[data-value="dark"] {
   }
 }
 
+.pf-cta-secondary {
+  background-color: transparent;
+  color: var(--pf-ink);
+  box-shadow: inset 0 0 0 1px var(--pf-rule);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pf-cta-secondary:hover {
+    opacity: 1;
+    background-color: var(--pf-hover);
+  }
+}
+
 .pf-cta:focus-visible {
   outline: 2px solid var(--pf-ink);
   outline-offset: 2px;

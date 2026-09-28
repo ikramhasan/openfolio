@@ -134,6 +134,9 @@ export async function writeSection(
         bio: section.bio,
         profileImage: optionalImage(section.profileImage),
         resume: optionalImage(section.resume),
+        ...(section.meetingLink.trim()
+          ? { meetingLink: section.meetingLink.trim() }
+          : {}),
       });
 
       await replaceSocialLinks(ctx, "intro", section.socialLinks);

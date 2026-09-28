@@ -290,6 +290,7 @@ export async function intro(ctx: QueryCtx, image: RenderImage) {
     bio: row?.bio ?? "",
     profileImage: await image(row?.profileImage),
     resume: await image(row?.resume),
+    meetingLink: row?.meetingLink ?? "",
     socialLinks: await socialLinks(ctx, "intro"),
   };
 }
