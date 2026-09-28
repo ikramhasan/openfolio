@@ -201,11 +201,6 @@ export async function renderHomeCard(): Promise<ImageResponse> {
   const words = name.split(/\s+/);
   const last = words.pop() ?? "";
   const mark = signature(name, 48);
-  const elsewhere = intro.socialLinks
-    .filter((link) => !link.url.startsWith("mailto:"))
-    .slice(0, 4)
-    .map((link) => link.title);
-
   return new ImageResponse(
     <Canvas>
       <div style={{ display: "flex" }}>
@@ -267,7 +262,7 @@ export async function renderHomeCard(): Promise<ImageResponse> {
         ) : null}
       </div>
 
-      <Footer path="/" meta={elsewhere} />
+      <Footer path="/" meta={[]} />
     </Canvas>,
     { ...OG_SIZE, fonts },
   );
