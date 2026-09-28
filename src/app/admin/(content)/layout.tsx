@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Identity } from "../../_components/identity";
 import { Rail } from "../../_components/rail";
+import { AccountMenu } from "../_components/account-menu";
 import { SaveDock } from "../_components/save-dock";
 import { SignOutButton } from "../_components/sign-out";
 import { save } from "../_lib/actions";
@@ -25,16 +26,22 @@ export default async function ContentLayout({
           plain
           actions={
             <>
-              <Link
-                href="/"
-                target="_blank"
-                rel="noreferrer"
-                className="pf-link-quiet pf-meta"
-              >
-                View site
-              </Link>
+              <div className="hidden lg:contents">
+                <Link
+                  href="/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="pf-link-quiet pf-meta"
+                >
+                  View site
+                </Link>
 
-              <SignOutButton />
+                <SignOutButton />
+              </div>
+
+              <div className="contents lg:hidden">
+                <AccountMenu />
+              </div>
             </>
           }
         />
