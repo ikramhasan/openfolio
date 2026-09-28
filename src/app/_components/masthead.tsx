@@ -6,6 +6,9 @@ export async function Masthead() {
   const intro = await getIntro();
   const words = intro.title.trim().split(/\s+/);
   const last = words.pop();
+  const meetingLink = /^https?:\/\//i.test(intro.meetingLink.trim())
+    ? intro.meetingLink.trim()
+    : null;
 
   return (
     <header className="pt-10 pb-6 lg:pt-16 lg:pb-8 xl:pt-20">
@@ -29,10 +32,24 @@ export async function Masthead() {
 
       <p className="pf-standfirst mt-5 max-w-[38ch] text-pretty">{intro.bio}</p>
 
-      {intro.resume ? (
-        <Link href="/cv" className="pf-cta mt-7">
-          View resume
-        </Link>
+      {intro.resume || meetingLink ? (
+        <div className="mt-7 flex flex-wrap items-center gap-2.5">
+          {intro.resume ? (
+            <Link href="/cv" className="pf-cta">
+              View resume
+            </Link>
+          ) : null}
+          {meetingLink ? (
+            <a
+              href={meetingLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="pf-cta pf-cta-secondary"
+            >
+              Book a call
+            </a>
+          ) : null}
+        </div>
       ) : null}
     </header>
   );
