@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
   const { children, selection, toolName: toolNameParam } = ctx;
 
   const editor = createSlateEditor({
-    plugins: BaseEditorKit,
+    plugins: [...BaseEditorKit],
     selection,
     value: children,
   });

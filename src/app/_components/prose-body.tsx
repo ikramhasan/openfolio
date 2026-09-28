@@ -7,7 +7,10 @@ export function ProseBody({ value }: { value: string }) {
   const parsed = parse(value);
   if (!parsed) return null;
 
-  const editor = createSlateEditor({ plugins: BaseEditorKit, value: parsed });
+  const editor = createSlateEditor({
+    plugins: [...BaseEditorKit],
+    value: parsed,
+  });
 
   return <PlateStatic editor={editor} className="pf-prose" />;
 }

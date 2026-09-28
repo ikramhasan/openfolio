@@ -15,7 +15,7 @@ export const AIChatEditor = React.memo(function AIChatEditor({
   content: string;
 }) {
   const aiEditor = usePlateEditor({
-    plugins: BaseEditorKit,
+    plugins: [...BaseEditorKit],
   });
 
   const value = useAIChatEditor(aiEditor, content);

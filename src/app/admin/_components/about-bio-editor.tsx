@@ -22,7 +22,7 @@ export function AboutBioEditor({
   body: string;
 }) {
   const editor = usePlateEditor({
-    plugins: EditorKit,
+    plugins: [...EditorKit],
     value: initial(body),
   });
 

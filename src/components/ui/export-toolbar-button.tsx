@@ -101,7 +101,7 @@ export function ExportToolbarButton(props: DropdownMenuProps) {
 
   const exportToHtml = async () => {
     const editorStatic = createSlateEditor({
-      plugins: BaseEditorKit,
+      plugins: [...BaseEditorKit],
       value: editor.children,
     });
 
