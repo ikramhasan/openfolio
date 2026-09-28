@@ -30,7 +30,7 @@ export function BodyEditor({
   readPath: string;
 }) {
   const editor = usePlateEditor({
-    plugins: EditorKit,
+    plugins: [...EditorKit],
     value: initial(body),
   });
 

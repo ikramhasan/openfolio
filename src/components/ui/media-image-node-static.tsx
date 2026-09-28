@@ -15,7 +15,15 @@ export function ImageElementStatic(
 
   return (
     <SlateElement {...props} className="pf-prose-block pf-prose-figure">
-      <figure className="m-0" style={{ width, textAlign: align }}>
+      <figure
+        className={cn(
+          'my-0',
+          align === 'left' && 'mr-auto',
+          align === 'right' && 'ml-auto',
+          align === 'center' && 'mx-auto'
+        )}
+        style={{ width: width ?? '100%', maxWidth: '100%', textAlign: align }}
+      >
         {url ? (
           <img
             className={cn('pf-prose-image')}
