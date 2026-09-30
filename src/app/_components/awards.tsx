@@ -14,17 +14,18 @@ function monthYear(iso: string): string {
   });
 }
 
-export async function Awards() {
+export async function Awards({ limit }: { limit?: number } = {}) {
   const [{ items }, written] = await Promise.all([
     getAwards(),
     getWritten("awards"),
   ]);
 
   const native = new Set(written);
+  const listed = byOrder(items).slice(0, limit);
 
   return (
     <EntryList>
-      {byOrder(items).map((award) => {
+      {listed.map((award) => {
         const slug = slugOf(award);
         const here = native.has(slug);
 

@@ -1,13 +1,15 @@
 import { getMusic } from "./content";
 import { byOrder, spotifyEmbed } from "./data";
 
-export async function Music() {
+export async function Music({ limit }: { limit?: number } = {}) {
   const { items } = await getMusic();
 
-  const players = byOrder(items).flatMap((item) => {
-    const embed = spotifyEmbed(item.url);
-    return embed ? [{ item, embed }] : [];
-  });
+  const players = byOrder(items)
+    .flatMap((item) => {
+      const embed = spotifyEmbed(item.url);
+      return embed ? [{ item, embed }] : [];
+    })
+    .slice(0, limit);
 
   return (
     <ul className="space-y-3">

@@ -7,12 +7,12 @@ function sourceLabel(url: string): string {
   return host.endsWith("linkedin.com") ? "View on LinkedIn" : `View on ${host}`;
 }
 
-export async function Recommendations() {
+export async function Recommendations({ limit }: { limit?: number } = {}) {
   const { items } = await getRecommendations();
 
   return (
     <ul className="pf-rule divide-y border-t">
-      {items.map((item) => (
+      {items.slice(0, limit).map((item) => (
         <li key={item.title} className="py-8 sm:py-10">
           <figure className="grid gap-y-5 sm:grid-cols-[11rem_minmax(0,1fr)] sm:gap-x-10">
             <blockquote className="pf-testimonial relative max-w-[62ch] text-pretty sm:col-start-2 sm:row-start-1">

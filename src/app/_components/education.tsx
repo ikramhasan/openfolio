@@ -13,12 +13,12 @@ function years(dateRange: string): string {
   return start === end ? String(start) : `${start} – ${end}`;
 }
 
-export async function Education() {
+export async function Education({ limit }: { limit?: number } = {}) {
   const { items } = await getEducation();
 
   return (
     <EntryList>
-      {items.map((item) => (
+      {items.slice(0, limit).map((item) => (
         <li key={item.institution}>
           <Entry
             logo={item.logo}

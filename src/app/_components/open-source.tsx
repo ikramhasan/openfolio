@@ -130,12 +130,15 @@ function Repository({ items }: { items: Contribution[] }) {
   );
 }
 
-export async function OpenSource() {
+export async function OpenSource({ limit }: { limit?: number } = {}) {
   const { items } = await getOpenSource();
 
   const groups = new Map<string, Contribution[]>();
-  for (const item of sortedContributions(items)) {
-    if (item.title === "") continue;
+  const listed = sortedContributions(items)
+    .filter((item) => item.title !== "")
+    .slice(0, limit);
+
+  for (const item of listed) {
     const key = item.repo.trim().toLowerCase() || item.url;
     groups.set(key, [...(groups.get(key) ?? []), item]);
   }
