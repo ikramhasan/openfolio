@@ -5,10 +5,12 @@ import {
   type EmbeddableSection,
   embedLimit,
   isEmbeddableSection,
+  sectionLabel,
   type TSectionEmbedElement,
 } from "@/components/editor/plugins/section-embed-base-plugin";
 import { Articles } from "./articles";
 import { Awards } from "./awards";
+import { getNav } from "./content";
 import { Education } from "./education";
 import { Experience } from "./experience";
 import { Music } from "./music";
@@ -17,10 +19,17 @@ import { Projects } from "./projects";
 import { Recommendations } from "./recommendations";
 import { Videos } from "./videos";
 
-async function pageOf(section: EmbeddableSection): Promise<string | undefined> {
+async function headingOf(section: EmbeddableSection) {
   const { routedSections } = await import("./sections");
-  const route = (await routedSections()).find((entry) => entry.id === section);
-  return route && !route.home ? route.path : undefined;
+  const [nav, routes] = await Promise.all([getNav(), routedSections()]);
+  const heading = nav.byKey[section];
+  const route = routes.find((entry) => entry.id === section);
+
+  return {
+    title: heading?.title || sectionLabel(section),
+    note: heading?.note,
+    page: route && !route.home ? route.path : undefined,
+  };
 }
 
 function Listing({
@@ -61,20 +70,27 @@ export async function SectionEmbed({
   section: EmbeddableSection;
   limit?: number;
 }) {
-  const page = await pageOf(section);
+  const { title, note, page } = await headingOf(section);
 
   return (
-    <div className="pf-section-embed">
-      <Listing section={section} limit={limit} page={page} />
+    <section className="pf-section-embed">
+      <header>
+        <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
+          <h2 className="pf-section-title">{title}</h2>
+          {page ? (
+            <Link href={page} className="pf-link-quiet pf-meta">
+              View all
+            </Link>
+          ) : null}
+        </div>
 
-      {page ? (
-        <p className="mt-4">
-          <Link href={page} className="pf-link-quiet pf-meta inline-flex">
-            View all
-          </Link>
-        </p>
-      ) : null}
-    </div>
+        {note ? <p className="pf-meta mt-1">{note}</p> : null}
+      </header>
+
+      <div className="mt-6">
+        <Listing section={section} limit={limit} page={page} />
+      </div>
+    </section>
   );
 }
 
