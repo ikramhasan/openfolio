@@ -49,9 +49,9 @@ function VideoCard({ video, featured }: { video: Video; featured: boolean }) {
   );
 }
 
-export async function Videos() {
+export async function Videos({ limit }: { limit?: number } = {}) {
   const { items } = await getVideos();
-  const [first, ...rest] = byOrder(items);
+  const [first, ...rest] = byOrder(items).slice(0, limit);
 
   if (!first) return null;
 

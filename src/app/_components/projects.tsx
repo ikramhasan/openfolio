@@ -111,17 +111,18 @@ function ProjectItem({
   );
 }
 
-export async function Projects() {
+export async function Projects({ limit }: { limit?: number } = {}) {
   const [{ items }, written] = await Promise.all([
     getProjects(),
     getWritten("projects"),
   ]);
 
   const native = new Set(written);
+  const listed = byOrder(items).slice(0, limit);
 
   return (
     <ul className="pf-rule divide-y border-t">
-      {byOrder(items).map((project) => {
+      {listed.map((project) => {
         const slug = slugOf(project);
         const here = native.has(slug);
 

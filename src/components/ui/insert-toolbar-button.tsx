@@ -29,6 +29,15 @@ import {
   SuperscriptIcon,
   TableIcon,
   TableOfContentsIcon,
+  BriefcaseIcon,
+  ClapperboardIcon,
+  FolderIcon,
+  GitForkIcon,
+  GraduationCapIcon,
+  MusicIcon,
+  NewspaperIcon,
+  AwardIcon,
+  MessageSquareQuoteIcon,
 } from 'lucide-react';
 import { KEYS } from 'platejs';
 import { type PlateEditor, useEditorRef } from 'platejs/react';
@@ -42,7 +51,13 @@ import {
 import {
   insertBlock,
   insertInlineElement,
+  insertSectionEmbed,
 } from '@/components/editor/transforms';
+import {
+  type EmbeddableSection,
+  EMBEDDABLE_SECTIONS,
+  SECTION_EMBED_KEY,
+} from '@/components/editor/plugins/section-embed-base-plugin';
 import { WEBSITE_CHIP_KEY } from '@/components/editor/plugins/website-chip-base-plugin';
 
 import { ToolbarButton, ToolbarMenuGroup } from './toolbar';
@@ -58,6 +73,18 @@ type Item = {
   onSelect: (editor: PlateEditor, value: string) => void;
   focusEditor?: boolean;
   label?: string;
+};
+
+const SECTION_ICONS: Record<EmbeddableSection, React.ReactNode> = {
+  experience: <BriefcaseIcon />,
+  projects: <FolderIcon />,
+  education: <GraduationCapIcon />,
+  openSource: <GitForkIcon />,
+  articles: <NewspaperIcon />,
+  awards: <AwardIcon />,
+  youtubeVideos: <ClapperboardIcon />,
+  music: <MusicIcon />,
+  recommendations: <MessageSquareQuoteIcon />,
 };
 
 const groups: Group[] = [
@@ -194,6 +221,19 @@ const groups: Group[] = [
       ...item,
       onSelect: (editor, value) => {
         insertBlock(editor, value);
+      },
+    })),
+  },
+  {
+    group: 'Sections',
+    items: EMBEDDABLE_SECTIONS.map(({ id, label, keywords }) => ({
+      focusEditor: true,
+      icon: SECTION_ICONS[id],
+      keywords: [...keywords, 'section', 'embed'],
+      label,
+      value: `${SECTION_EMBED_KEY}:${id}`,
+      onSelect: (editor: PlateEditor) => {
+        insertSectionEmbed(editor, id);
       },
     })),
   },

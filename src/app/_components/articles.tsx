@@ -142,7 +142,7 @@ function Row({
   );
 }
 
-export async function Articles() {
+export async function Articles({ limit }: { limit?: number } = {}) {
   const [{ items }, written] = await Promise.all([
     getArticles(),
     getWritten("articles"),
@@ -150,8 +150,12 @@ export async function Articles() {
 
   const native = new Set(written);
   const sorted = sortedArticles(items);
-  const pinned = sorted.filter((article) => article.pinned);
-  const rest = sorted.filter((article) => !article.pinned);
+  const listed = [
+    ...sorted.filter((article) => article.pinned),
+    ...sorted.filter((article) => !article.pinned),
+  ].slice(0, limit);
+  const pinned = listed.filter((article) => article.pinned);
+  const rest = listed.filter((article) => !article.pinned);
 
   const years = new Map<string, Article[]>();
   for (const article of rest) {

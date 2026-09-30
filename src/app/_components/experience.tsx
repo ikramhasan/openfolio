@@ -26,7 +26,15 @@ type Role = {
 const LANE_HEIGHT = 30;
 const LABEL_EDGE = 88;
 
-function Ruler({ roles, now }: { roles: Role[]; now: number }) {
+function Ruler({
+  roles,
+  now,
+  hrefOf,
+}: {
+  roles: Role[];
+  now: number;
+  hrefOf: (role: Role) => string;
+}) {
   const placed = [...roles].sort((a, b) => a.start - b.start);
   const lanes: Role[] = [];
   const laneOf = new Map<Role, number>();
@@ -67,7 +75,7 @@ function Ruler({ roles, now }: { roles: Role[]; now: number }) {
           return (
             <li key={role.anchor} className="absolute" style={style}>
               <a
-                href={`#${role.anchor}`}
+                href={hrefOf(role)}
                 aria-label={`${role.item.company}, ${monthLabel(role.start)} to ${until}`}
                 className="pf-span block"
                 data-current={role.current ? "true" : undefined}
@@ -149,7 +157,13 @@ function RoleEntry({
   );
 }
 
-export async function Experience() {
+export async function Experience({
+  limit,
+  page,
+}: {
+  limit?: number;
+  page?: string;
+} = {}) {
   const [{ items }, written] = await Promise.all([
     getExperience(),
     getWritten("experience"),
@@ -172,12 +186,19 @@ export async function Experience() {
     };
   });
 
+  const listed = roles.slice(0, limit);
+  const shown = new Set(listed);
+  const hrefOf = (role: Role) =>
+    shown.has(role) || !page ? `#${role.anchor}` : `${page}#${role.anchor}`;
+
   return (
     <div>
-      {roles.length > 1 ? <Ruler roles={roles} now={now} /> : null}
+      {roles.length > 1 ? (
+        <Ruler roles={roles} now={now} hrefOf={hrefOf} />
+      ) : null}
 
       <EntryList>
-        {roles.map((role) => {
+        {listed.map((role) => {
           const slug = slugOf(role.item);
           const here = native.has(slug);
           const href = here ? readPath("experience", slug) : role.item.url;

@@ -28,6 +28,10 @@ import {
   PathApi,
 } from 'platejs';
 
+import {
+  type EmbeddableSection,
+  SECTION_EMBED_KEY,
+} from '@/components/editor/plugins/section-embed-base-plugin';
 import { WEBSITE_CHIP_KEY } from '@/components/editor/plugins/website-chip-base-plugin';
 
 const ACTION_THREE_COLUMNS = 'action_three_columns';
@@ -170,6 +174,33 @@ export const insertBlock = (
         editor.tf.removeNodes({ previousEmptyBlock: true });
       });
     }
+  });
+};
+
+export const insertSectionEmbed = (
+  editor: PlateEditor,
+  section: EmbeddableSection
+) => {
+  editor.tf.withoutNormalizing(() => {
+    const block = editor.api.block();
+
+    if (!block) return;
+
+    const [, path] = block;
+
+    editor.tf.insertNodes(
+      {
+        type: SECTION_EMBED_KEY,
+        section,
+        prompt: true,
+        children: [{ text: '' }],
+      },
+      { at: PathApi.next(path), select: true }
+    );
+
+    editor.getApi(SuggestionPlugin).suggestion.withoutSuggestions(() => {
+      editor.tf.removeNodes({ previousEmptyBlock: true });
+    });
   });
 };
 

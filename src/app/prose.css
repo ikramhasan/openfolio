@@ -22,6 +22,20 @@
   margin-top: var(--pf-prose-gap);
 }
 
+.pf-prose-block + .pf-prose-section,
+.pf-prose-block + .pf-prose-block:has(.pf-prose-section),
+.pf-prose-section + .pf-prose-block,
+.pf-prose-block:has(.pf-prose-section) + .pf-prose-block {
+  margin-top: 2rem;
+}
+
+.pf-prose-section {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  letter-spacing: normal;
+  text-wrap: wrap;
+}
+
 .pf-prose-block
   + :is(
     .pf-prose-h1,

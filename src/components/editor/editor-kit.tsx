@@ -32,6 +32,7 @@ import { MarkdownKit } from '@/components/editor/plugins/markdown-kit';
 import { MathKit } from '@/components/editor/plugins/math-kit';
 import { MediaKit } from '@/components/editor/plugins/media-kit';
 import { MentionKit } from '@/components/editor/plugins/mention-kit';
+import { SectionEmbedKit } from '@/components/editor/plugins/section-embed-kit';
 import { SlashKit } from '@/components/editor/plugins/slash-kit';
 import { SuggestionKit } from '@/components/editor/plugins/suggestion-kit';
 import { TableKit } from '@/components/editor/plugins/table-kit';
@@ -57,6 +58,7 @@ export const EditorKit = [
   ...LinkKit,
   ...MentionKit,
   ...WebsiteChipKit,
+  ...SectionEmbedKit,
 
   // Marks
   ...BasicMarksKit,
